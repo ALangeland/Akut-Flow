@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ASA Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: værktøjslinje øverst, editor med faneblade til venstre, live forhåndsvisning til højre (stables på mobil) */
+:root{
+  --bg:#f5f7f7; --surface:#ffffff; --sunk:#eef2f1; --fg:#17201f; --muted:#5b6866; --line:#d8dfde; --accent:#1f6f66;
+  --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111716; --surface:#19211f; --sunk:#141b1a; --fg:#e6eceb; --muted:#9aa8a5; --line:#2d3836; --accent:#5cc2b4; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111716; --surface:#19211f; --sunk:#141b1a; --fg:#e6eceb; --muted:#9aa8a5; --line:#2d3836; --accent:#5cc2b4; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:20px;font-weight:600;margin:0;letter-spacing:-.01em}
+h1 small{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--muted)}
+button:disabled{opacity:.45;cursor:default}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:500}
+button.ghost{background:transparent;border-color:transparent;padding:4px 8px;color:var(--muted)}
+button.ghost:hover:not(:disabled){color:var(--fg);border-color:var(--line)}
+button.danger{color:#c0392b}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=text],input[type=date],textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:100%}
+textarea{resize:vertical;min-height:88px}
+.label{font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:500}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.toast{font-size:13px;color:var(--accent);min-height:1em}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.toolbar .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.toolbar .sep{width:1px;align-self:stretch;background:var(--line)}
+@media (max-width:640px){.toolbar .sep{display:none}}
+.savest{font-size:13px;color:var(--muted)}
+.savest.ok{color:var(--accent);font-weight:500}
+.savest.err{color:#c0392b}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px -4px 2px}
+.tabs button{border:none;border-radius:8px 8px 0 0;background:transparent;padding:8px 14px;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--accent)}
+.tabpanel{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{font-size:13px;padding:4px 10px}
+.seg[aria-pressed=true]{border-color:var(--accent);color:var(--accent);font-weight:500;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.group{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.group h3{margin:0;font-size:14px;font-weight:600}
+.check{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--accent)}
+input.short{width:90px}
+/* trin */
+.steps{display:flex;flex-direction:column;gap:6px}
+.step{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:0 10px 10px 0;background:var(--surface)}
+.step.phase{background:color-mix(in srgb,var(--c) 7%,var(--surface));border-style:dashed;border-left-style:solid}
+.step.open{box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent)}
+.sum{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 4px;cursor:pointer;min-width:0}
+.sum:hover{background:color-mix(in srgb,var(--c) 6%,transparent)}
+.sum .st{font-family:var(--mono);font-size:12px;color:var(--muted);flex:none;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sum .sh{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.sum .sh.empty{color:var(--muted);font-style:italic}
+.sum .si{flex:none;color:color-mix(in srgb,var(--c) 75%,var(--fg));display:grid}
+.sum .chev{flex:none;color:var(--muted);transition:transform .15s;padding:2px 6px}
+.step.open .chev{transform:rotate(180deg)}
+.phase .sum .sh{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 75%,var(--fg))}
+.handle{cursor:grab;touch-action:none;font-size:16px;line-height:1;padding:4px 6px;flex:none}
+.handle:active{cursor:grabbing}
+.step.dragging{opacity:.75;outline:2px dashed var(--accent);outline-offset:2px}
+body.is-dragging{user-select:none;cursor:grabbing}
+.det{padding:4px 12px 12px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line)}
+.steprow{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px}
+@media (max-width:460px){.steprow{grid-template-columns:minmax(0,1fr)}}
+.steprow input.time{font-family:var(--mono);font-size:13px}
+.sublabel{font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;font-weight:500;min-width:44px}
+.fmtbar{display:flex;gap:4px;align-items:center}
+.fmtbar button{padding:2px 10px;font-weight:700;font-size:13px}
+.sw{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.sw button{width:22px;height:22px;border-radius:50%;padding:0;background:var(--s);border:2px solid transparent}
+.sw button[aria-pressed=true]{border-color:var(--fg)}
+.sw input[type=color]{width:26px;height:24px;border:1px solid var(--line);border-radius:6px;padding:0;background:none;cursor:pointer}
+.ic{display:flex;gap:3px;flex-wrap:wrap;align-items:center}
+.ic button{width:30px;height:30px;padding:0;display:grid;place-items:center;border-radius:7px;color:var(--muted);background:transparent;border:1px solid transparent}
+.ic button:hover{border-color:var(--line);color:var(--fg)}
+.ic button[aria-pressed=true]{border-color:var(--c);color:color-mix(in srgb,var(--c) 75%,var(--fg));background:color-mix(in srgb,var(--c) 12%,var(--surface))}
+.ic .none{font-size:11px;width:auto;padding:0 8px}
+.icname{font-size:12px;color:var(--muted);margin-left:6px}
+.acts{display:flex;flex-wrap:wrap;gap:2px;justify-content:flex-end;border-top:1px dashed var(--line);padding-top:8px}
+/* forhåndsvisning */
+.preview{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.pv-top{display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.04em;color:var(--muted)}
+.pv-title{font-size:18px;font-weight:600;margin:0}
+.tl{display:flex;flex-direction:column;gap:12px;position:relative}
+.tl-item,.tl-phase{display:grid;grid-template-columns:92px 18px minmax(0,1fr);gap:10px;align-items:center;position:relative}
+.tl-time{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--c);justify-self:center;position:relative;z-index:1;box-shadow:0 0 0 3px var(--surface)}
+.tl::before{content:"";position:absolute;left:111px;top:14px;bottom:14px;width:1px;background:var(--line)}
+.tl-phase{margin-top:6px}
+.tl-phase:first-child{margin-top:0}
+.tl-phase .mk{width:12px;height:12px;border-radius:3px;background:var(--c);justify-self:center;position:relative;z-index:1;box-shadow:0 0 0 3px var(--surface)}
+.tl-phase .pt{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:color-mix(in srgb,var(--c) 75%,var(--fg))}
+.tl-phase .pt::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--c) 40%,var(--surface))}
+.card{background:color-mix(in srgb,var(--c) 13%,var(--surface));border:1px solid color-mix(in srgb,var(--c) 50%,var(--surface));border-radius:10px;padding:10px 14px;min-width:0;display:flex;gap:10px;align-items:flex-start}
+.card .cic{flex:none;color:color-mix(in srgb,var(--c) 75%,var(--fg));margin-top:1px}
+.card .cb{min-width:0;flex:1}
+.card h3{margin:0;font-size:15px;font-weight:600;color:color-mix(in srgb,var(--c) 70%,var(--fg))}
+.card p,.card li{margin:2px 0 0;font-size:13px;color:color-mix(in srgb,var(--c) 35%,var(--fg));overflow-wrap:anywhere}
+.card strong{font-weight:600;color:color-mix(in srgb,var(--c) 60%,var(--fg))}
+.card ul{margin:4px 0 0;padding-left:18px}
+@media (max-width:460px){.tl-item,.tl-phase{grid-template-columns:62px 14px minmax(0,1fr);gap:8px}.tl::before{left:76px}}
+.pv-credit{font-size:11px;letter-spacing:.04em;color:var(--muted);text-align:center;border-top:1px solid var(--line);padding-top:8px}
+.empty{color:var(--muted);font-size:14px;padding:24px 0;text-align:center}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:color-mix(in srgb,#c0392b 10%,var(--surface));border:1px solid color-mix(in srgb,#c0392b 40%,var(--surface));border-radius:8px;padding:8px 12px;font-size:14px}
+.io textarea{font-family:var(--mono);font-size:12px;min-height:120px}
+/* printvisning */
+body.present .toolbar,body.present .grid,body.present #confirm-slot{display:none}
+.sheet-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}
+.sheet{background:#fff;position:relative;overflow:hidden;max-width:100%;box-shadow:0 1px 2px rgba(20,30,28,.12),0 10px 30px rgba(20,30,28,.10);border:1px solid var(--line)}
+.sheet-credit{position:absolute;text-align:center;color:#828c8a;font-family:Helvetica,Arial,sans-serif;white-space:nowrap}
+.sheet-cut{position:absolute;top:2%;bottom:2%;border-left:1px dashed #aab3b1}
+.credit{font-size:12px;color:var(--muted);text-align:center;padding-top:6px}
+@media (prefers-reduced-motion:reduce){.sum .chev{transition:none}}
+.afhome2{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;color:inherit;text-decoration:none;font-size:1rem;margin-right:10px;vertical-align:middle;flex:none}.afhome2:hover{border-color:var(--muted)}.h1row{display:flex;align-items:center}.edtag2{font:600 .62rem ui-monospace,Consolas,monospace;letter-spacing:.08em;border:1px solid var(--line);color:var(--muted);border-radius:4px;padding:1px 6px;margin-left:8px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="h1row"><h1>ASA Flow<span class="edtag2">LOKAL</span><small>Byg tidslinjer for vagtfunktioner – ændringer gemmes i din browser</small></h1></div>
+    <div class="bar">
+      <label class="label" for="pdf-format">Format</label>
+      <select id="pdf-format" style="width:auto">
+        <option value="a4p">A4 stående</option>
+        <option value="a4l">A4 liggende</option>
+        <option value="a5p">A5 stående</option>
+        <option value="a5l">A5 liggende</option>
+        <option value="2a5">2 × A5 på ét A4-ark</option>
+      </select>
+      <button id="btn-pdf" type="button" class="primary">Gem som PDF</button>
+      <button id="btn-present" type="button">Visningstilstand</button>
+    </div>
+  </header>
+  <div class="toast" id="pdf-msg" role="status" style="text-align:right;margin-top:-10px"></div>
+
+  <div class="toolbar">
+    <div class="grp">
+      <label class="label" for="flow-select">Flow</label>
+      <select id="flow-select" style="width:auto;min-width:170px"></select>
+      <button id="btn-save" type="button" class="primary">Gem flow</button>
+      <span id="save-status" class="savest" role="status"></span>
+    </div>
+    <span class="sep"></span>
+    <div class="grp">
+      <button id="btn-undo" type="button" class="ghost" title="Fortryd (Ctrl+Z)">↶ Fortryd</button>
+      <button id="btn-redo" type="button" class="ghost" title="Gendan (Ctrl+Y)">↷ Gendan</button>
+    </div>
+    <span class="sep"></span>
+    <div class="grp">
+      <button id="btn-new" type="button">Nyt flow</button>
+      <button id="btn-dup" type="button">Dupliker</button>
+      <button id="btn-example" type="button">Indlæs ASA-eksempel</button>
+      <button id="btn-del" type="button" class="danger">Slet flow</button>
+    </div>
+  </div>
+  <div id="confirm-slot"></div>
+
+  <div class="grid">
+    <section class="panel editor" aria-label="Rediger flow">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" id="tab-content" aria-selected="true" aria-controls="panel-content">Indhold</button>
+        <button type="button" role="tab" id="tab-layout" aria-selected="false" aria-controls="panel-layout">Layout og print</button>
+        <button type="button" role="tab" id="tab-file" aria-selected="false" aria-controls="panel-file">Fil og backup</button>
+      </div>
+
+      <div class="tabpanel" id="panel-content" role="tabpanel" aria-labelledby="tab-content">
+        <div class="field">
+          <label class="label" for="flow-name">Titel</label>
+          <input type="text" id="flow-name">
+        </div>
+        <div class="field">
+          <div class="row" style="justify-content:space-between">
+            <span class="label">Faser og trin</span>
+            <button type="button" class="ghost" id="btn-collapse" style="font-size:13px">Fold alle sammen</button>
+          </div>
+          <div class="steps" id="steps"></div>
+        </div>
+        <div class="bar">
+          <button id="btn-add" type="button" class="primary">+ Tilføj trin</button>
+          <button id="btn-add-phase" type="button">+ Tilføj fase</button>
+        </div>
+        <p class="hint">Klik på et trin for at redigere det. Træk i ⠿ for at flytte. Linjer der starter med "-" bliver til punkter, og **tekst** bliver fed.</p>
+      </div>
+
+      <div class="tabpanel" id="panel-layout" role="tabpanel" aria-labelledby="tab-layout" hidden>
+        <div class="group">
+          <h3>Titel</h3>
+          <div class="row" role="group" aria-label="Placering af titel">
+            <button type="button" class="seg" id="al-left" data-align="left">Venstrestillet</button>
+            <button type="button" class="seg" id="al-center" data-align="center">Centreret</button>
+          </div>
+        </div>
+        <div class="group">
+          <h3>Dato og version</h3>
+          <label class="check"><input type="checkbox" id="meta-show"> Vis dato og version øverst på arket</label>
+          <div class="row">
+            <label class="sublabel" for="meta-version">Version</label>
+            <input type="text" id="meta-version" class="short">
+            <button type="button" id="btn-bump">Ny version</button>
+          </div>
+          <div class="row">
+            <label class="sublabel" for="meta-date">Dato</label>
+            <input type="date" id="meta-date" style="width:auto">
+          </div>
+          <label class="check"><input type="checkbox" id="meta-auto"> Opdatér datoen automatisk, når flowet ændres</label>
+        </div>
+        <div class="group">
+          <h3>Kreditering</h3>
+          <div class="row" role="group" aria-label="Kreditering">
+            <button type="button" class="seg" id="cr-bottom" data-credit="bottom">I bunden</button>
+            <button type="button" class="seg" id="cr-top" data-credit="top">Vandmærke i toppen</button>
+            <button type="button" class="seg" id="cr-none" data-credit="none">Ingen</button>
+          </div>
+        </div>
+        <p class="hint">Vælg papirformat og gem PDF øverst til højre. "2 × A5 på ét A4-ark" udskriver to ens kort med en klippelinje imellem.</p>
+      </div>
+
+      <div class="tabpanel" id="panel-file" role="tabpanel" aria-labelledby="tab-file" hidden>
+        <div class="group">
+          <h3>Gem og åbn som fil</h3>
+          <p class="hint">Gem flowet som fil for at have en sikker kopi eller flytte det til en anden computer eller browser.</p>
+          <div class="bar">
+            <button id="btn-savefile" type="button" class="primary">Gem flow som fil</button>
+            <button id="btn-openfile" type="button">Åbn fil</button>
+            <input type="file" id="file-in" accept=".json,application/json" hidden>
+          </div>
+        </div>
+        <details class="group io">
+          <summary style="cursor:pointer;font-weight:600;font-size:14px">Kopiér og indsæt som tekst</summary>
+          <textarea id="io-text" aria-label="JSON-data" placeholder="Indsæt et flow (JSON) her for at importere"></textarea>
+          <div class="bar">
+            <button id="btn-export" type="button">Kopiér dette flow</button>
+            <button id="btn-export-all" type="button">Kopiér alle flows</button>
+            <button id="btn-import" type="button">Importér</button>
+          </div>
+        </details>
+        <div class="toast" id="io-msg" role="status"></div>
+      </div>
+    </section>
+
+    <section class="panel preview" aria-label="Forhåndsvisning">
+      <div class="pv-top" id="pv-top" hidden><span id="pv-wm"></span><span id="pv-meta"></span></div>
+      <h2 class="pv-title" id="pv-title"></h2>
+      <div class="tl" id="pv"></div>
+      <div class="pv-credit" id="pv-credit-bottom" hidden></div>
+    </section>
+  </div>
+
+  <div class="sheet-wrap" id="sheet-wrap" hidden>
+    <div class="sheet" id="sheet"></div>
+    <p class="hint" id="sheet-info"></p>
+  </div>
+  <footer class="credit">Flowchart udarbejdet med Vagtflow · udviklet af Asbjørn Langeland</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const PALETTE=[
+  {n:"Turkis",h:"#1d9e75"},{n:"Lilla",h:"#6a5fd0"},{n:"Blå",h:"#2f80d1"},{n:"Koral",h:"#d85a30"},
+  {n:"Rav",h:"#c98a12"},{n:"Rød",h:"#d64545"},{n:"Grøn",h:"#5a9a22"},{n:"Grå",h:"#7d7c76"}];
+const ICONS={
+  patient:{n:"Patient",s:'<circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/>'},
+  fordel:{n:"Fordel",s:'<path d="M21 17h-8l-3.5-5H3"/><path d="M21 7h-8l-3.5 5"/><path d="M18 10l3-3-3-3"/><path d="M18 20l3-3-3-3"/>'},
+  tavle:{n:"Tavle / skærm",s:'<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M7 20h10"/><path d="M9 16v4"/><path d="M15 16v4"/>'},
+  notat:{n:"Notat",s:'<path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6"/><path d="M9 17h6"/>'},
+  telefon:{n:"Telefon",s:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>'},
+  print:{n:"Printer",s:'<path d="M17 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2"/><path d="M17 9V4H7v5"/><rect x="7" y="13" width="10" height="8" rx="1"/><path d="M10 16.5h4"/><path d="M10 18.5h3"/><path d="M17.5 12h.01"/>'},
+  konference:{n:"Konference",s:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/>'},
+  transport:{n:"Transport",s:'<circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 17H3V6a1 1 0 0 1 1-1h9v12"/><path d="M9 17h6"/><path d="M19 17h2v-6l-3-5h-5"/>'},
+  liste:{n:"Liste",s:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6"/><path d="M9 16h6"/>'},
+  ur:{n:"Tidspunkt",s:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>'},
+  advarsel:{n:"Vigtigt",s:'<path d="M12 9v4"/><path d="M10.4 3.6L2.3 17.1a1.9 1.9 0 0 0 1.6 2.9h16.2a1.9 1.9 0 0 0 1.6-2.9L13.6 3.6a1.9 1.9 0 0 0-3.2 0z"/><path d="M12 16h.01"/>'},
+  medicin:{n:"Medicin",s:'<path d="M4.5 12.5l8-8a4.95 4.95 0 0 1 7 7l-8 8a4.95 4.95 0 0 1-7-7"/><path d="M8.5 8.5l7 7"/>'},
+  tjek:{n:"Tjek",s:'<circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/>'}
+};
+const iconSVG=(k,size,stroke)=>ICONS[k]?`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${stroke||"currentColor"}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k].s}</svg>`:"";
+const CHEV='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+const KEY="vagtflow-editor-v1";
+const DELETE_CODE="1234"; /* beskytter mod sletning ved en fejl – ikke en adgangskode */
+const CREDIT="Flowchart udarbejdet med Vagtflow · udviklet af Asbjørn Langeland";
+const uid=()=>Math.random().toString(36).slice(2,9);
+const todayISO=()=>{const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`};
+const fmtDate=iso=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||"");return m?`${m[3]}.${m[2]}.${m[1]}`:""};
+const T="#2f80d1",L="#5a9a22",A="#c98a12";
+const seed=()=>({id:uid(),name:"ASA Vagt",titleAlign:"center",credit:"bottom",version:"1",updated:todayISO(),showMeta:true,autoDate:true,steps:[
+  {id:uid(),time:"15:00",title:"Overtag telefonen fra afgående vagt",text:"ASA Konference lokale.",color:T,icon:"telefon"},
+  {id:uid(),time:"Inden 17:00",title:"Ufordelte patienter på Cetrea fordeles til specialerne.",text:"Nye patienter med markeringen \"Akut medicin\" fordeles til specialerne.\n\"Akut\" Lunge + Gastro + Infektion + Endo + Nyre.",color:T,icon:"fordel"},
+  {id:uid(),time:"Inden 17:00",title:"Stuegangsaktiviteter",text:"Der oprettes \"Aften\"-stuegangs aktiviteter på patienterne så de figurere for de stuegangsgående læger.",color:T,icon:"tavle"},
+  {id:uid(),time:"Morgen",title:"Udvælg patient til overflytning til Hobro.",text:"Vurdering af patienten og udfærdigelse af overleveringsnotat med klinisk status.",color:L,icon:"patient"},
+  {id:uid(),time:"07:30",title:"Meld patienten Medicinsk Bagvagt i Hobro",text:"",color:L,icon:"telefon"},
+  {id:uid(),time:"Før Konference",title:"Fælles morgenkonference",text:"- Print stuegangsseddel via Skyprint",color:A,icon:"print"},
+  {id:uid(),time:"08:00",title:"Morgenkonference",text:"- Print stuegangsseddel via Skyprint\n- Præsentér dårlige patienter fra vagten\n- Nævn totalt antal indlagte",color:A,icon:"konference"}]});
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+const plainText=s=>String(s??"").replace(/\*\*(.+?)\*\*/g,"$1");
+const isPhase=s=>s.type==="phase";
+const okHex=h=>/^#[0-9a-f]{6}$/i.test(h);
+const splitText=t=>{const lines=(t||"").split("\n").map(l=>l.trim()).filter(Boolean),re=/^[-•*]\s+|^[-•]/;
+  return{plain:lines.filter(l=>!re.test(l)||/^\*\*/.test(l)),bullets:lines.filter(l=>re.test(l)&&!/^\*\*/.test(l)).map(l=>l.replace(re,""))}};
+function normalize(f){
+  f.titleAlign=f.titleAlign==="center"?"center":"left";
+  f.credit=["top","none"].includes(f.credit)?f.credit:"bottom";
+  f.version=String(f.version??"1");f.updated=/^\d{4}-\d{2}-\d{2}$/.test(f.updated||"")?f.updated:todayISO();
+  f.showMeta=f.showMeta!==false;f.autoDate=f.autoDate!==false;return f;
+}
+
+let state;
+try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!state||!Array.isArray(state.flows)||!state.flows.length){const f=seed();state={flows:[f],cur:f.id}}
+state.flows.forEach(normalize);
+const cur=()=>state.flows.find(f=>f.id===state.cur)||state.flows[0];
+const open=new Set();
+
+/* gem + historik (fortryd/gendan) */
+const hhmm=()=>new Date().toLocaleTimeString("da-DK",{hour:"2-digit",minute:"2-digit"});
+let stTimer,histTimer,hist=[],hi=-1;
+function snap(){clearTimeout(histTimer);const s=JSON.stringify(state);if(hist[hi]===s)return;hist=hist.slice(0,hi+1);hist.push(s);if(hist.length>150)hist.shift();hi=hist.length-1;updHistBtns()}
+function updHistBtns(){$("btn-undo").disabled=hi<=0;$("btn-redo").disabled=hi>=hist.length-1}
+function save(manual,changed=true){
+  const f=cur();if(changed&&f.autoDate)f.updated=todayISO();
+  const el=$("save-status");
+  try{localStorage.setItem(KEY,JSON.stringify(state));
+    if(manual||changed){el.className="savest"+(manual?" ok":"");el.textContent=(manual?"Flow gemt kl. ":"Gemt automatisk kl. ")+hhmm();
+      if(manual){clearTimeout(stTimer);stTimer=setTimeout(()=>el.className="savest",2500)}}}
+  catch(e){el.className="savest err";el.textContent='Kunne ikke gemme i browseren. Brug "Gem flow som fil".'}
+  if(manual)snap();else{clearTimeout(histTimer);histTimer=setTimeout(snap,450)}
+  if(changed)renderMeta();
+}
+function restore(s){
+  const fid=document.activeElement&&document.activeElement.id;
+  state=JSON.parse(s);state.flows.forEach(normalize);renderAll(false);
+  if(fid&&$(fid)){const el=$(fid);el.focus();if(el.setSelectionRange&&typeof el.value==="string")try{el.setSelectionRange(el.value.length,el.value.length)}catch(_){}}
+}
+function undo(){if(histTimer){snap()}if(hi>0){hi--;restore(hist[hi]);updHistBtns()}}
+function redo(){if(hi<hist.length-1){hi++;restore(hist[hi]);updHistBtns()}}
+document.addEventListener("keydown",e=>{
+  const mod=e.ctrlKey||e.metaKey;if(!mod)return;const k=e.key.toLowerCase();
+  if(k==="z"&&!e.shiftKey){e.preventDefault();undo()}
+  else if(k==="y"||(k==="z"&&e.shiftKey)){e.preventDefault();redo()}
+  else if(k==="s"){e.preventDefault();save(true,false)}
+  else if(k==="b"&&document.activeElement&&/^[dh]-/.test(document.activeElement.id)){e.preventDefault();boldSel(document.activeElement)}
+},true);
+
+/* rendering */
+function renderSelect(){
+  $("flow-select").innerHTML=state.flows.map(f=>`<option value="${f.id}"${f.id===cur().id?" selected":""}>${esc(f.name||"Uden titel")}</option>`).join("");
+}
+const metaText=f=>{const p=[];const d=fmtDate(f.updated);if(d)p.push("Opdateret "+d);if(f.version.trim())p.push("Version "+f.version.trim());return p.join(" · ")};
+function renderPreview(){
+  const f=cur();
+  $("pv-title").innerHTML=fmt(f.name||"Uden titel");
+  $("pv-title").style.textAlign=f.titleAlign;
+  const top=f.credit==="top",meta=f.showMeta&&metaText(f);
+  $("pv-top").hidden=!(top||meta);$("pv-wm").textContent=top?CREDIT:"";$("pv-meta").textContent=meta||"";
+  $("pv-top").style.justifyContent=meta&&top?"space-between":meta?"flex-end":(f.titleAlign==="center"?"center":"flex-start");
+  $("pv-credit-bottom").hidden=f.credit!=="bottom";$("pv-credit-bottom").textContent=CREDIT;
+  if(!f.steps.length){$("pv").innerHTML='<div class="empty">Tilføj et trin for at se tidslinjen.</div>';return}
+  $("pv").innerHTML=f.steps.map(s=>{
+    if(isPhase(s))return `<div class="tl-phase" style="--c:${esc(s.color)}"><div></div><div class="mk"></div><div class="pt">${fmt(s.title||"Fase")}</div></div>`;
+    const {plain,bullets}=splitText(s.text);
+    return `<div class="tl-item" style="--c:${esc(s.color)}">
+      <div class="tl-time">${esc(s.time)}</div><div class="tl-dot"></div>
+      <div class="card">${s.icon&&ICONS[s.icon]?`<span class="cic">${iconSVG(s.icon,20)}</span>`:""}<div class="cb"><h3>${fmt(s.title||"Uden titel")}</h3>
+      ${plain.map(p=>`<p>${fmt(p)}</p>`).join("")}
+      ${bullets.length?`<ul>${bullets.map(b=>`<li>${fmt(b)}</li>`).join("")}</ul>`:""}</div></div></div>`}).join("");
+}
+function swatches(s){
+  return PALETTE.map(p=>`<button type="button" style="--s:${p.h}" title="${p.n}" aria-label="${p.n}" aria-pressed="${p.h===s.color}" data-act="color" data-val="${p.h}"></button>`).join("")
+    +`<input type="color" id="c-${s.id}" aria-label="Egen farve" value="${esc(s.color)}" data-f="color">`;
+}
+const handle=()=>`<button type="button" class="ghost handle" title="Træk for at flytte" aria-label="Træk for at flytte">⠿</button>`;
+function actions(i,n,isPh){
+  return `<div class="acts">
+    <button type="button" class="ghost" data-act="up" ${i===0?"disabled":""}>↑ Op</button>
+    <button type="button" class="ghost" data-act="down" ${i===n-1?"disabled":""}>↓ Ned</button>
+    ${isPh?"":'<button type="button" class="ghost" data-act="copy">Kopiér</button>'}
+    <button type="button" class="ghost danger" data-act="del">Slet ${isPh?"fase":"trin"}</button></div>`;
+}
+function summary(s){
+  const t=plainText(s.title);
+  if(isPhase(s))return `${handle()}<span class="sh${t?"":" empty"}">${esc(t||"Ny fase")}</span><span class="chev">${CHEV}</span>`;
+  return `${handle()}<span class="st">${esc(s.time||"–")}</span><span class="si">${s.icon&&ICONS[s.icon]?iconSVG(s.icon,16):""}</span><span class="sh${t?"":" empty"}">${esc(t||"Nyt trin")}</span><span class="chev">${CHEV}</span>`;
+}
+function stepHTML(s,i,n){
+  const isOpen=open.has(s.id);
+  const head=`<div class="sum" data-act="toggle" role="button" tabindex="0" aria-expanded="${isOpen}">${summary(s)}</div>`;
+  if(isPhase(s))return `<div class="step phase${isOpen?" open":""}" style="--c:${esc(s.color)}" data-id="${s.id}">${head}
+    ${isOpen?`<div class="det">
+      <div class="field"><label class="sublabel" for="h-${s.id}">Fasens navn</label>
+      <input type="text" id="h-${s.id}" placeholder="Fx Eftermiddag" value="${esc(s.title)}" data-f="title"></div>
+      <div class="row"><span class="sublabel">Farve</span><div class="sw">${swatches(s)}</div></div>
+      ${actions(i,n,true)}</div>`:""}</div>`;
+  const icons=`<button type="button" class="none" data-act="icon" data-val="" aria-pressed="${!s.icon}">Intet</button>`+
+    Object.entries(ICONS).map(([k,v])=>`<button type="button" data-act="icon" data-val="${k}" title="${v.n}" aria-label="${v.n}" aria-pressed="${s.icon===k}">${iconSVG(k,18)}</button>`).join("");
+  return `<div class="step${isOpen?" open":""}" style="--c:${esc(s.color)}" data-id="${s.id}">${head}
+    ${isOpen?`<div class="det">
+      <div class="steprow">
+        <div class="field"><label class="sublabel" for="t-${s.id}">Tid</label><input type="text" class="time" id="t-${s.id}" placeholder="Fx 07:30" value="${esc(s.time)}" data-f="time"></div>
+        <div class="field"><label class="sublabel" for="h-${s.id}">Titel</label><input type="text" id="h-${s.id}" placeholder="Hvad skal gøres?" value="${esc(s.title)}" data-f="title"></div>
+      </div>
+      <div class="field">
+        <div class="row" style="justify-content:space-between"><label class="sublabel" for="d-${s.id}">Beskrivelse</label>
+          <div class="fmtbar"><button type="button" data-act="bold" title="Fed (Ctrl+B)" aria-label="Gør markeret tekst fed">F</button><button type="button" data-act="bullet" title="Punkt" aria-label="Tilføj punkt" style="font-weight:400">• Punkt</button></div></div>
+        <textarea id="d-${s.id}" placeholder="Valgfri. Start en linje med - for at lave et punkt." data-f="text">${esc(s.text)}</textarea>
+      </div>
+      <div class="row" style="align-items:flex-start"><span class="sublabel" style="padding-top:6px">Ikon</span><div class="ic" role="group" aria-label="Ikon" style="flex:1">${icons}<span class="icname">${s.icon&&ICONS[s.icon]?ICONS[s.icon].n:"Intet ikon"}</span></div></div>
+      <div class="row"><span class="sublabel">Farve</span><div class="sw">${swatches(s)}</div></div>
+      ${actions(i,n,false)}</div>`:""}</div>`;
+}
+function renderSteps(){
+  const f=cur();
+  $("steps").innerHTML=f.steps.map((s,i)=>stepHTML(s,i,f.steps.length)).join("")||'<div class="empty">Ingen trin endnu.</div>';
+}
+function renderMeta(){
+  const f=cur();
+  $("meta-show").checked=f.showMeta;$("meta-auto").checked=f.autoDate;
+  if(document.activeElement!==$("meta-version"))$("meta-version").value=f.version;
+  if(document.activeElement!==$("meta-date"))$("meta-date").value=f.updated;
+  $("al-left").setAttribute("aria-pressed",f.titleAlign==="left");$("al-center").setAttribute("aria-pressed",f.titleAlign==="center");
+  ["bottom","top","none"].forEach(k=>$("cr-"+k).setAttribute("aria-pressed",f.credit===k));
+}
+function renderAll(changed){$("flow-name").value=cur().name;renderSelect();renderSteps();renderMeta();renderPreview();save(false,!!changed);if(isPresent())renderSheet()}
+const isPresent=()=>document.body.classList.contains("present");
+const refresh=()=>{renderPreview();save()};
+
+/* faneblade */
+const TABS=["content","layout","file"];
+TABS.forEach(t=>$("tab-"+t).onclick=()=>TABS.forEach(u=>{$("tab-"+u).setAttribute("aria-selected",u===t);$("panel-"+u).hidden=u!==t}));
+
+/* redigering af trin */
+function setColor(f,i,newC){
+  const s=f.steps[i],old=s.color;s.color=newC;
+  if(isPhase(s)){for(let j=i+1;j<f.steps.length&&!isPhase(f.steps[j]);j++)if(f.steps[j].color===old)f.steps[j].color=newC}
+}
+function updSummary(box,s){box.querySelector(".sum").innerHTML=summary(s)}
+function boldSel(ta){
+  const box=ta.closest(".step");if(!box)return;const s=cur().steps.find(x=>x.id===box.dataset.id);
+  const a=ta.selectionStart,b=ta.selectionEnd,v=ta.value,sel=v.slice(a,b);
+  if(sel.startsWith("**")&&sel.endsWith("**")&&sel.length>4){ta.value=v.slice(0,a)+sel.slice(2,-2)+v.slice(b);ta.setSelectionRange(a,b-4)}
+  else{const inner=sel||"fed tekst";ta.value=v.slice(0,a)+"**"+inner+"**"+v.slice(b);ta.setSelectionRange(a+2,a+2+inner.length)}
+  s[ta.dataset.f]=ta.value;ta.focus();updSummary(box,s);refresh();
+}
+$("steps").addEventListener("input",e=>{
+  const el=e.target,box=el.closest(".step");if(!box||!el.dataset.f)return;
+  const f=cur(),i=f.steps.findIndex(x=>x.id===box.dataset.id),s=f.steps[i];
+  if(el.dataset.f==="color"){setColor(f,i,el.value);box.style.setProperty("--c",el.value)}
+  else s[el.dataset.f]=el.value;
+  if(el.dataset.f!=="text")updSummary(box,s);
+  refresh();
+});
+$("steps").addEventListener("change",e=>{if(e.target.dataset.f==="color")renderSteps()});
+$("steps").addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.classList.contains("sum")){e.preventDefault();e.target.click()}});
+$("steps").addEventListener("click",e=>{
+  if(e.target.closest(".handle"))return;
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const f=cur(),box=b.closest(".step"),i=f.steps.findIndex(x=>x.id===box.dataset.id),s=f.steps[i];
+  const a=b.dataset.act;
+  if(a==="toggle"){open.has(s.id)?open.delete(s.id):open.add(s.id);renderSteps();
+    if(open.has(s.id)){const el=$((isPhase(s)?"h-":"h-")+s.id);el&&el.focus()}return}
+  if(a==="bold"){boldSel($("d-"+s.id));return}
+  if(a==="bullet"){const ta=$("d-"+s.id),v=ta.value,p=ta.selectionStart,ls=v.lastIndexOf("\n",p-1)+1;
+    ta.value=v.slice(0,ls)+"- "+v.slice(ls);s.text=ta.value;ta.focus();ta.setSelectionRange(p+2,p+2);refresh();return}
+  if(a==="color")setColor(f,i,b.dataset.val);
+  if(a==="icon")s.icon=b.dataset.val;
+  if(a==="up"&&i>0)[f.steps[i-1],f.steps[i]]=[f.steps[i],f.steps[i-1]];
+  if(a==="down"&&i<f.steps.length-1)[f.steps[i+1],f.steps[i]]=[f.steps[i],f.steps[i+1]];
+  if(a==="copy"){const c={...s,id:uid()};f.steps.splice(i+1,0,c);open.delete(s.id);open.add(c.id)}
+  if(a==="del"){f.steps.splice(i,1);open.delete(s.id)}
+  renderSteps();refresh();
+});
+let drag=null;
+$("steps").addEventListener("pointerdown",e=>{
+  const h=e.target.closest(".handle");if(!h||e.button>0)return;
+  e.preventDefault();const box=h.closest(".step");
+  drag={box};box.classList.add("dragging");document.body.classList.add("is-dragging");
+  try{h.setPointerCapture(e.pointerId)}catch(_){}
+});
+document.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  const list=$("steps"),others=[...list.querySelectorAll(".step")].filter(b=>b!==drag.box);
+  let before=null;for(const b of others){const r=b.getBoundingClientRect();if(e.clientY<r.top+r.height/2){before=b;break}}
+  if(drag.box.nextElementSibling!==before)list.insertBefore(drag.box,before);
+  if(e.clientY<70)window.scrollBy(0,-14);else if(e.clientY>innerHeight-70)window.scrollBy(0,14);
+});
+const endDrag=()=>{
+  if(!drag)return;
+  const order=[...$("steps").querySelectorAll(".step")].map(b=>b.dataset.id),f=cur(),before=f.steps.map(s=>s.id).join();
+  f.steps.sort((a,b)=>order.indexOf(a.id)-order.indexOf(b.id));
+  drag.box.classList.remove("dragging");document.body.classList.remove("is-dragging");drag=null;
+  renderSteps();if(f.steps.map(s=>s.id).join()!==before)refresh();
+};
+document.addEventListener("pointerup",endDrag);document.addEventListener("pointercancel",endDrag);
+$("btn-collapse").onclick=()=>{open.clear();renderSteps()};
+$("btn-add").onclick=()=>{const f=cur(),last=f.steps[f.steps.length-1];
+  const s={id:uid(),time:"",title:"",text:"",icon:"",color:last?last.color:PALETTE[0].h};f.steps.push(s);open.add(s.id);renderSteps();refresh();
+  const el=$("t-"+s.id);el&&el.focus()};
+$("btn-add-phase").onclick=()=>{const f=cur(),used=f.steps.filter(isPhase).map(p=>p.color);
+  const c=(PALETTE.find(p=>!used.includes(p.h))||PALETTE[0]).h;
+  const s={id:uid(),type:"phase",title:"",color:c};f.steps.push(s);open.add(s.id);renderSteps();refresh();
+  const el=$("h-"+s.id);el&&el.focus()};
+$("flow-name").oninput=e=>{cur().name=e.target.value;renderSelect();refresh()};
+
+/* layout-fanen */
+["al-left","al-center"].forEach(id=>$(id).onclick=e=>{cur().titleAlign=e.currentTarget.dataset.align;renderMeta();refresh()});
+["cr-bottom","cr-top","cr-none"].forEach(id=>$(id).onclick=e=>{cur().credit=e.currentTarget.dataset.credit;renderMeta();refresh()});
+$("meta-show").onchange=e=>{cur().showMeta=e.target.checked;refresh()};
+$("meta-auto").onchange=e=>{cur().autoDate=e.target.checked;refresh()};
+$("meta-version").oninput=e=>{cur().version=e.target.value;renderPreview();save(false,false)};
+$("meta-date").onchange=e=>{const f=cur();if(e.target.value){f.updated=e.target.value;f.autoDate=false}renderMeta();renderPreview();save(false,false)};
+$("btn-bump").onclick=()=>{const f=cur(),m=/^(.*?)(\d+)$/.exec(f.version.trim());f.version=m?m[1]+(parseInt(m[2],10)+1):(f.version.trim()?f.version.trim()+".1":"1");f.updated=todayISO();renderMeta();renderPreview();save(false,false)};
+
+/* flows */
+$("flow-select").onchange=e=>{state.cur=e.target.value;open.clear();renderAll(false)};
+$("btn-save").onclick=()=>save(true,false);
+$("btn-undo").onclick=undo;$("btn-redo").onclick=redo;
+$("btn-new").onclick=()=>{const s={id:uid(),time:"",title:"",text:"",icon:"",color:PALETTE[0].h};
+  const f=normalize({id:uid(),name:"Nyt flow",steps:[s]});state.flows.push(f);state.cur=f.id;open.clear();open.add(s.id);renderAll(false);$("flow-name").select()};
+$("btn-dup").onclick=()=>{const c=JSON.parse(JSON.stringify(cur()));c.id=uid();c.name+=" (kopi)";c.steps.forEach(s=>s.id=uid());state.flows.push(c);state.cur=c.id;open.clear();renderAll(false)};
+$("btn-example").onclick=()=>{const f=seed();f.name="ASA Vagt (eksempel)";state.flows.push(f);state.cur=f.id;open.clear();renderAll(false)};
+$("btn-del").onclick=()=>{
+  const f=cur();
+  $("confirm-slot").innerHTML=`<form class="confirm" id="del-form"><span>Skriv koden for at slette "${esc(f.name)}":</span>
+    <input type="password" id="del-code" inputmode="numeric" autocomplete="off" aria-label="Kode til sletning" style="width:90px">
+    <button type="submit" class="danger" id="yes-del">Slet</button><button type="button" id="no-del">Annullér</button>
+    <span id="del-err" style="color:#c0392b;font-size:13px" role="alert"></span></form>`;
+  $("del-code").focus();
+  $("del-code").oninput=()=>$("del-err").textContent="";
+  $("no-del").onclick=()=>$("confirm-slot").innerHTML="";
+  $("del-form").onsubmit=e=>{e.preventDefault();
+    if($("del-code").value.trim()!==DELETE_CODE){$("del-err").textContent="Forkert kode. Flowet er ikke slettet.";$("del-code").select();return}
+    state.flows=state.flows.filter(x=>x.id!==f.id);
+    if(!state.flows.length){const n=seed();state.flows=[n]}state.cur=state.flows[0].id;$("confirm-slot").innerHTML="";open.clear();renderAll(false)};
+};
+
+/* fil og backup */
+function copyOut(txt){
+  $("io-text").value=txt;
+  const fail=()=>{$("io-text").select();$("io-msg").textContent="Teksten er markeret – kopiér den manuelt."};
+  try{navigator.clipboard.writeText(txt).then(()=>$("io-msg").textContent="Kopieret.",fail)}catch(e){fail()}
+}
+$("btn-export").onclick=()=>copyOut(JSON.stringify(cur(),null,2));
+$("btn-export-all").onclick=()=>copyOut(JSON.stringify(state.flows,null,2));
+$("btn-import").onclick=()=>importText($("io-text").value);
+function importText(txt){
+  let d;try{d=JSON.parse(txt)}catch(e){$("io-msg").textContent="Kunne ikke læse teksten. Brug en fil eller tekst fra denne editor.";return}
+  const arr=(Array.isArray(d)?d:[d]).filter(f=>f&&Array.isArray(f.steps));
+  if(!arr.length){$("io-msg").textContent="Fandt ingen flows.";return}
+  arr.forEach(f=>{f.id=uid();f.name=String(f.name||"Importeret flow");normalize(f);
+    f.steps=f.steps.map(s=>{const c=okHex(s.color)?s.color:PALETTE[0].h;
+      return s.type==="phase"?{id:uid(),type:"phase",title:String(s.title||""),color:c}
+        :{id:uid(),time:String(s.time||""),title:String(s.title||""),text:String(s.text||""),icon:ICONS[s.icon]?s.icon:"",color:c}});
+    state.flows.push(f)});
+  state.cur=arr[arr.length-1].id;open.clear();renderAll(false);$("io-msg").textContent=`Åbnede ${arr.length} flow${arr.length>1?"s":""}.`;
+}
+const safeName=n=>plainText(n||"flow").replace(/[\\/:*?"<>|]+/g,"-").trim()||"flow";
+async function saveFile(filename,data,mime){
+  const dl=window.claude?.use?await window.claude.use("downloads"):null;
+  if(dl){await dl.save({filename,data});return true}
+  if(window.claude)return false;
+  const url=URL.createObjectURL(data instanceof Blob?data:new Blob([data],{type:mime})),a=document.createElement("a");
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);return true;
+}
+$("btn-savefile").onclick=async()=>{
+  const f=cur(),msg=$("io-msg");
+  try{const ok=await saveFile(safeName(f.name)+".json",JSON.stringify(f,null,2),"application/json");
+    msg.textContent=ok?'Flowet er gemt som fil. Åbn den igen med "Åbn fil".':"Gem-funktionen er ikke tilgængelig i denne visning."}
+  catch(e){msg.textContent=e&&e.code==="declined"?"Gemning annulleret.":"Filen kunne ikke gemmes. Prøv igen."}
+};
+$("btn-openfile").onclick=()=>$("file-in").click();
+$("file-in").onchange=e=>{const file=e.target.files&&e.target.files[0];if(!file)return;
+  const r=new FileReader();r.onload=()=>{importText(String(r.result));e.target.value=""};
+  r.onerror=()=>$("io-msg").textContent="Filen kunne ikke læses.";r.readAsText(file)};
+
+/* print-layout: fast lyst layout, samme indhold i alle formater */
+const FORMATS={a4p:{f:"a4",o:"portrait",mm:[210,297],px:794,lab:"A4"},a4l:{f:"a4",o:"landscape",mm:[297,210],px:1123,lab:"A4"},
+  a5p:{f:"a5",o:"portrait",mm:[148,210],px:640,lab:"A5"},a5l:{f:"a5",o:"landscape",mm:[210,148],px:906,lab:"A5"},
+  "2a5":{f:"a4",o:"landscape",mm:[297,210],lab:"2xA5",dup:true}};
+const contentFormat=F=>F.dup?FORMATS.a5p:F;
+const hexRgb=h=>{const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]};
+const mixHex=(a,b,t)=>{const A=hexRgb(a),B=hexRgb(b);return"#"+A.map((v,i)=>Math.round(v*t+B[i]*(1-t)).toString(16).padStart(2,"0")).join("")};
+const iconImg=(k,size,color)=>`<img alt="" width="${size}" height="${size}" style="display:block" src="data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconSVG(k,size,color))}">`;
+function buildExport(f,widthPx,small,g=0){
+  const ink="#17201f",pad=small?"40px 42px":"56px 60px",tw=small?90:110,strong=c=>s=>fmt(s).replace(/<strong>/g,`<strong style="font-weight:600;color:${c}">`);
+  const node=document.createElement("div");
+  node.style.cssText=`position:absolute;left:-20000px;top:0;width:${widthPx}px;background:#fff;color:${ink};padding:${pad};font-family:"Instrument Sans",system-ui,sans-serif;box-sizing:border-box;line-height:1.45`;
+  const rows=f.steps.map((s,idx)=>{
+    const c=okHex(s.color)?s.color:"#7d7c76";
+    if(isPhase(s))return `<div style="display:flex;align-items:center;gap:14px;margin:${idx?16+g*.5:0}px 0 12px">
+      <div style="width:${tw}px;flex:none"></div>
+      <div style="width:18px;flex:none;display:flex;justify-content:center"><div style="position:relative;z-index:1;width:15px;height:15px;border-radius:4px;background:${c};border:3px solid #fff"></div></div>
+      <div style="font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:${mixHex(c,ink,.75)};white-space:nowrap">${fmt(s.title||"Fase")}</div>
+      <div style="flex:1;height:1px;background:${mixHex(c,"#ffffff",.4)}"></div></div>`;
+    const {plain,bullets}=splitText(s.text),tc=mixHex(c,ink,.35),F=strong(mixHex(c,ink,.6));
+    return `<div class="x-item" style="display:flex;align-items:center;gap:14px;margin-bottom:${12+g}px">
+      <div style="width:${tw}px;flex:none;text-align:right;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;color:#5b6866">${esc(s.time)}</div>
+      <div style="width:18px;flex:none;display:flex;justify-content:center"><div style="position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:${c};border:3px solid #fff"></div></div>
+      <div style="flex:1;min-width:0;background:${mixHex(c,"#ffffff",.13)};border:1px solid ${mixHex(c,"#ffffff",.5)};border-radius:10px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start">
+        ${s.icon&&ICONS[s.icon]?`<div style="flex:none;padding-top:1px">${iconImg(s.icon,22,mixHex(c,ink,.75))}</div>`:""}
+        <div style="flex:1;min-width:0">
+        <div style="font-size:16px;font-weight:600;color:${mixHex(c,ink,.7)}">${fmt(s.title||"Uden titel")}</div>
+        ${plain.map(p=>`<div style="font-size:14px;margin-top:3px;color:${tc}">${F(p)}</div>`).join("")}
+        ${bullets.length?`<ul style="margin:5px 0 0;padding-left:20px">${bullets.map(b=>`<li style="font-size:14px;margin-top:2px;color:${tc}">${F(b)}</li>`).join("")}</ul>`:""}
+      </div></div></div>`}).join("");
+  const top=f.credit==="top",meta=f.showMeta&&metaText(f);
+  const topRow=(top||meta)?`<div style="display:flex;gap:16px;justify-content:${meta&&top?"space-between":meta?"flex-end":(f.titleAlign==="center"?"center":"flex-start")};font-size:12px;letter-spacing:.03em;color:#8a9694;margin-bottom:10px">
+    <span>${top?esc(CREDIT):""}</span><span style="font-variant-numeric:tabular-nums">${meta?esc(meta):""}</span></div>`:"";
+  node.innerHTML=topRow+`<div style="font-size:24px;font-weight:600;margin-bottom:22px;letter-spacing:-.01em;text-align:${f.titleAlign}">${fmt(f.name||"Uden titel")}</div>
+    <div style="position:relative">
+      <div style="position:absolute;z-index:0;left:${tw+23}px;top:14px;bottom:30px;width:1px;background:#d8dfde"></div>${rows}</div>`;
+  document.body.appendChild(node);
+  return node;
+}
+/* Fyld siden: forstør indholdet (smallere layout skaleret op) og fordel resten som luft mellem trin */
+function layoutFor(f,F){
+  const [pw,ph]=F.mm,widthPx=F.px,small=F.f==="a5",phC=ph-9,target=widthPx*phC/pw;
+  const fitH=(w,g)=>{const n=buildExport(f,w,small,g),h=n.offsetHeight;n.remove();return h};
+  const h1=fitH(widthPx,0);let k=1;
+  if(h1<target){let lo=1,hi=1.8;for(let it=0;it<9;it++){const m=(lo+hi)/2;if(fitH(widthPx/m,0)*m<=target)lo=m;else hi=m}k=lo}
+  const nodeW=Math.round(widthPx/k),pagePx=nodeW*phC/pw;let g=0;
+  if(h1<target){const h=fitH(nodeW,0),nI=f.steps.filter(s=>!isPhase(s)).length,nP=f.steps.filter((s,i)=>isPhase(s)&&i>0).length,slots=nI+nP*.5;
+    if(slots>0)g=Math.min(40,Math.max(0,(pagePx-h-2)/slots))}
+  return{node:buildExport(f,nodeW,small,g),k,nodeW,pagePx};
+}
+function renderSheet(){
+  const f=cur(),F=FORMATS[$("pdf-format").value],CF=contentFormat(F),[PW,PH]=F.mm,[cw,ch]=CF.mm,sheet=$("sheet");
+  sheet.innerHTML="";
+  const Lo=layoutFor(f,CF),totalPx=Lo.node.offsetHeight;
+  const avail=Math.max(200,$("sheet-wrap").clientWidth||document.querySelector(".wrap").clientWidth);
+  const W=Math.min(avail,F.o==="portrait"?(F.f==="a5"?560:720):(F.f==="a5"?820:1040)),q=W/PW;
+  let pages=1,z=1;
+  if(totalPx>Lo.pagePx*1.3)pages=Math.ceil(totalPx/Lo.pagePx);else z=Math.min(1,Lo.pagePx/totalPx);
+  const s=cw*q/Lo.nodeW*z,contentH=totalPx*s;
+  sheet.style.width=W+"px";sheet.style.height=Math.max(PH*q,pages>1?contentH+9*q:0)+"px";
+  const slotW=F.dup?PW/2:PW,offs=F.dup?[0,PW/2]:[0];
+  offs.forEach((ox,i)=>{
+    const node=i?Lo.node.cloneNode(true):Lo.node,dx=(slotW-cw)/2;
+    node.style.position="absolute";node.style.top="0";node.style.left=((ox+dx)*q+(cw*q-Lo.nodeW*s)/2)+"px";
+    node.style.transformOrigin="0 0";node.style.transform=`scale(${s})`;sheet.appendChild(node);
+    const parts=[];if(f.credit==="bottom")parts.push(CREDIT);if(pages>1)parts.push(`Side 1 af ${pages}`);
+    if(parts.length){const c=document.createElement("div");c.className="sheet-credit";c.textContent=parts.join("  ·  ");
+      c.style.left=ox*q+"px";c.style.width=slotW*q+"px";c.style.fontSize=(3.0*q)+"px";c.style.bottom=((PH-ch)*q+3.6*q)+"px";sheet.appendChild(c)}
+  });
+  if(F.dup){const cut=document.createElement("div");cut.className="sheet-cut";cut.style.left=(PW/2*q)+"px";sheet.appendChild(cut)}
+  $("sheet-info").textContent=(F.dup?"2 × A5 på A4 liggende – klip langs den stiplede linje":`${F.lab} ${F.o==="portrait"?"stående":"liggende"}`)+(pages>1?` · fylder ${pages} sider i PDF'en`:"");
+}
+$("btn-present").onclick=()=>{const on=document.body.classList.toggle("present");$("btn-present").textContent=on?"Tilbage til redigering":"Visningstilstand";
+  $("sheet-wrap").hidden=!on;if(on)renderSheet()};
+$("pdf-format").addEventListener("change",()=>{if(isPresent())renderSheet()});
+let rsT;window.addEventListener("resize",()=>{if(!isPresent())return;clearTimeout(rsT);rsT=setTimeout(renderSheet,150)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if(isPresent())renderSheet()});
+
+async function renderPages(f,CF){
+  const [pw]=CF.mm,Lo=layoutFor(f,CF),node=Lo.node;
+  try{
+    await Promise.all([...node.querySelectorAll("img")].map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r})));
+    const scale=(CF.f==="a5"?2.5:2)*Lo.k,canvas=await html2canvas(node,{scale,backgroundColor:"#ffffff",logging:false});
+    const totalPx=node.offsetHeight,pagePx=Lo.pagePx,nodeW=Lo.nodeW,out=[];
+    if(totalPx<=pagePx*1.3){
+      const z=Math.min(1,pagePx/totalPx),w=pw*z;
+      out.push({url:canvas.toDataURL("image/jpeg",.95),x:(pw-w)/2,w,h:totalPx*pw/nodeW*z});
+    }else{
+      const bottoms=[...node.querySelectorAll(".x-item")].map(el=>{let y=0,e=el;while(e&&e!==node){y+=e.offsetTop;e=e.offsetParent}return y+el.offsetHeight+6});
+      let start=0;
+      while(start<totalPx-1){
+        const limit=start+pagePx,fits=bottoms.filter(b=>b>start+40&&b<=limit);
+        const cut=limit>=totalPx?totalPx:(fits.length?Math.max(...fits):limit);
+        const slice=document.createElement("canvas");
+        slice.width=canvas.width;slice.height=Math.ceil((cut-start)*scale);
+        const ctx=slice.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,slice.width,slice.height);
+        ctx.drawImage(canvas,0,Math.floor(start*scale),canvas.width,slice.height,0,0,canvas.width,slice.height);
+        out.push({url:slice.toDataURL("image/jpeg",.95),x:0,w:pw,h:(cut-start)*pw/nodeW});start=cut;
+      }
+    }
+    return out;
+  }finally{node.remove()}
+}
+$("btn-pdf").onclick=async()=>{
+  const msg=$("pdf-msg"),btn=$("btn-pdf"),f=cur(),F=FORMATS[$("pdf-format").value],CF=contentFormat(F);
+  if(!window.html2canvas||!window.jspdf){msg.textContent="PDF-værktøjet kunne ikke indlæses. Genindlæs siden og prøv igen.";return}
+  btn.disabled=true;msg.textContent="Laver PDF …";
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const pages=await renderPages(f,CF),[PW,PH]=F.mm,[cw,ch]=CF.mm,total=pages.length;
+    const pdf=new window.jspdf.jsPDF({orientation:F.o,unit:"mm",format:F.f});
+    const slotW=F.dup?PW/2:PW,offs=F.dup?[0,PW/2]:[0];
+    pages.forEach((pg,i)=>{
+      if(i)pdf.addPage(F.f,F.o);
+      offs.forEach(ox=>{
+        const dx=(slotW-cw)/2;pdf.addImage(pg.url,"JPEG",ox+dx+pg.x,0,pg.w,pg.h);
+        const parts=[];if(f.credit==="bottom")parts.push(CREDIT);if(total>1)parts.push(`Side ${i+1} af ${total}`);
+        if(parts.length){pdf.setFont("helvetica","normal");pdf.setFontSize(8.5);pdf.setTextColor(130,140,138);pdf.text(parts.join("  ·  "),ox+slotW/2,ch-5,{align:"center"})}
+      });
+      if(F.dup){pdf.setDrawColor(170,179,177);pdf.setLineWidth(.2);pdf.setLineDashPattern([2,2],0);pdf.line(PW/2,4,PW/2,PH-4);pdf.setLineDashPattern([],0)}
+    });
+    const blob=pdf.output("blob"),filename=`${safeName(f.name)} ${F.lab}.pdf`;
+    const dl=window.claude?.use?await window.claude.use("downloads"):null;
+    if(dl)await dl.save({filename,data:blob});
+    else if(window.claude){msg.textContent="Gem-funktionen er ikke tilgængelig i denne visning. Åbn siden i claude.ai.";return}
+    else pdf.save(filename);
+    msg.textContent="PDF gemt.";
+  }catch(e){
+    const c=e&&e.code;
+    msg.textContent=c==="declined"?"Gemning annulleret.":c==="rate_limited"?"Der er allerede en gem-dialog åben.":"PDF'en kunne ikke laves. Prøv igen.";
+  }finally{btn.disabled=false}
+};
+renderAll(false);snap();
+</script>
+</body>
+</html>

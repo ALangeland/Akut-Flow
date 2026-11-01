@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Journalflow</title>
+<title>Ghostwriter</title>
 <script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -195,6 +195,9 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .altmenu .n{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:1em}
 .altmenu .ah{font-size:.68rem;color:var(--muted);padding:2px 10px 0}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
+.savebar{grid-template-columns:1fr 1fr 1fr!important}.savebar .sbtn{font-size:.82rem;padding:11px 6px}.sbtn.smail{background:#6f5bab}
+.btn.jfin{border-color:var(--go);color:var(--go);font-weight:700}
+#inDlg textarea{width:100%;min-height:220px;font:.85rem var(--mono);padding:8px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg)}
 .klwrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
 .kright{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 24px)}
 .klins{display:flex;flex-direction:column;min-height:0;flex:1}
@@ -402,9 +405,9 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 </head>
 <body>
 <header class="topbar"><div class="topbar-in">
-  <div class="brand"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Journalflow</h1><span class="edtag">WEB</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
+  <div class="brand"><h1>Ghostwriter</h1><span class="edtag">LOKAL</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
   <div class="topbtns">
-    <input type="file" id="ipFile" accept=".json,application/json" hidden>
+    <input type="file" id="ipFile" accept=".json,application/json,.txt,.eml,text/plain,message/rfc822" hidden>
     <button id="backBtn" class="solid" title="Tilbage til kladden (Alt+8)">← Kladde</button>
     <button id="archBtn" class="solid" title="Åbn arkivet og redigér planer">📚 Arkiv – redigér planer</button>
     <button id="newBtn" title="Ny plan (N)">+ Ny plan</button>
@@ -441,7 +444,7 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
   </main>
 
   <aside class="side">
-    <div class="savebar"><button class="sbtn sgem" data-xp="1" title="Gem alle planer, normalfund og indstillinger i én fil – til en anden computer eller til renskrivning (kladden/patientdata gemmes ikke)">💾 Gem</button><button class="sbtn sind" data-ip="1" title="Indlæs en gemt fil">📂 Indlæs</button></div>
+    <div class="savebar"><button class="sbtn sgem" data-xp="1" title="Gem alle planer, normalfund og indstillinger i én fil – til en anden computer eller til renskrivning (kladden/patientdata gemmes ikke)">💾 Gem</button><button class="sbtn sind" data-ip="1" title="Indlæs en gemt fil (planer og normalfund) – eller en gemt mail">📂 Indlæs fil</button><button class="sbtn smail" data-jfin="1" title="Indlæs en kladde sendt fra Ghostwriter mobil">📥 Fra mail</button></div>
     <h3>Datafil</h3>
     <div class="filebar" id="filebar">
       <div class="st" id="fileSt"></div>
@@ -1650,6 +1653,12 @@ D: Vågen og alderssvarende reagerende. Normal tonus. Fontanelle i niveau (spæd
 E: Ingen udslæt eller petekkier. Abdomen blød og uøm.`;
 
 </script>
+<dialog id="inDlg"><div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><b style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase">Indlæs kladde fra mail</b><button id="inX" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer" aria-label="Luk">✕</button></div>
+<div style="padding:14px 16px;width:min(640px,calc(100vw - 40px))">
+<p class="note" style="margin:0 0 8px">Åbn mailen fra Ghostwriter mobil, markér alt (Ctrl+A), kopiér (Ctrl+C) og indsæt her. Kladden fordeles felt for felt. Genvej: tryk bare Ctrl+V i Ghostwriter.</p>
+<textarea id="inText" spellcheck="false" placeholder="Indsæt mailen her …"></textarea>
+<div class="actions" style="margin-top:10px"><button class="btn primary" id="inGo">Indlæs i kladden</button><button class="btn" id="inPaste">Indsæt fra udklipsholder</button><span class="spacer"></span><span class="note" id="inSt"></span></div>
+</div></dialog>
 <script>
 (function(){
 'use strict';
@@ -1786,12 +1795,12 @@ async function fsContinue(){
   }catch(e){fileMsg='Kunne ikke åbne filen.';renderSide()}
 }
 async function fsOpen(){
-  try{const [h]=await showOpenFilePicker({types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
+  try{const [h]=await showOpenFilePicker({types:[{description:'Ghostwriter',accept:{'application/json':['.json']}}]});
     await useHandle(h);toast('Åbnede '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Filen kunne ikke læses som pasteplaner.';renderSide()}}
 }
 async function fsNew(){
-  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
+  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Ghostwriter',accept:{'application/json':['.json']}}]});
     await useHandle(h,{write:true});toast('Gemmer nu i '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Kunne ikke oprette filen.';renderSide()}}
 }
@@ -2259,7 +2268,7 @@ function klFilledCount(){return Object.entries(KL).filter(([k,v])=>!k.startsWith
 function klEsc(k){return CSS.escape(k)}
 function renderKL(){
   const box=$('#kl');
-  box.innerHTML=`<div class="klwrap"><section class="card" id="kldraft"></section><div class="kright"><div class="savebar"><button class="sbtn sgem" data-xp="1" title="Gem alle planer, normalfund og indstillinger i én fil – til en anden computer eller til renskrivning (kladden/patientdata gemmes ikke)">💾 Gem</button><button class="sbtn sind" data-ip="1" title="Indlæs en gemt fil">📂 Indlæs</button></div><aside class="card klins" id="klins"></aside></div></div>`;
+  box.innerHTML=`<div class="klwrap"><section class="card" id="kldraft"></section><div class="kright"><div class="savebar"><button class="sbtn sgem" data-xp="1" title="Gem alle planer, normalfund og indstillinger i én fil – til en anden computer eller til renskrivning (kladden/patientdata gemmes ikke)">💾 Gem</button><button class="sbtn sind" data-ip="1" title="Indlæs en gemt fil (planer og normalfund) – eller en gemt mail">📂 Indlæs fil</button><button class="sbtn smail" data-jfin="1" title="Indlæs en kladde sendt fra Ghostwriter mobil">📥 Fra mail</button></div><aside class="card klins" id="klins"></aside></div></div>`;
   renderKLDraft();renderKLIns();
 }
 function renderKLDraft(){
@@ -2269,6 +2278,7 @@ function renderKLDraft(){
     <div class="actions" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
       <button class="btn sm" data-kl="copyall">Kopiér hele kladden</button>
+      <button class="btn sm jfin" data-jfin="1" title="Indsæt en mail sendt fra Ghostwriter mobil – kladden fordeles i felterne">📥 Indlæs fra mail</button>
       <span class="spacer"></span>
       <button class="btn sm danger" data-kl="clear">Ny kladde</button>
     </div>
@@ -3144,8 +3154,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='35';
+const APP_VERSION='36';
 const CHANGELOG=[
+ {v:'36',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter. Filerne hedder ghostwriter.html og Ghostwriter-lokal.html. Kladder sendt på mail fra den gamle udgave kan stadig indlæses.']},
  {v:'35',d:'01.11.2026',items:['Pasteplaner hedder nu Journalflow og findes i tre udgaver, der hentes fra GitHub (ALangeland/Akut-Flow): lokal fil til PC, webudgave i browseren og mobiludgave, der kan installeres på telefonen.','Mobil: ✉ Send til mail sender hele kladden til den adresse, du skriver under ✉ Mail (gemmes kun på telefonen). På telefonen er kopiér-knapperne skjult.','Lokal: 📥 Indlæs fra mail – indsæt mailen, og kladden genopstår felt for felt (også A-gas, værdier, valg og NIHSS).','Mobil og web har ⌂-knap til Akut-Flow-startsiden.']},
  {v:'34',d:'01.11.2026',items:['Instruks-mærkater på fraserne: ✓ instruks (tjekket, kilde i tooltip), ⚠ instruks udløbet / over 3 år, afventer instruks og ikke tjekket.','Pneumoni opdateret efter PRI Samfundserhvervet pneumoni hos voksne (godk. 17.06.2025): CURB-65 med gradering, behandling for let, moderat og svær, særlige grupper, steroid og opfølgning.','Ny frase: Meningitis – akut bakteriel (voksne) efter PRI (godk. 17.12.2025) og præhospital instruks.','Klik på et valg som "akut/kronisk", "let/moderat/svær" eller ">/<" åbner en lille menu – vælg med mus eller tal-tast.','"Klar til overførsel!" nederst i kladden: alle udfyldte felter i journalrækkefølge med Kopiér-knap og Enter = næste.','Journalnotat (stuegang) starter altid med "…. indlæggelsesdøgn." og Plan med "Forventes indlagt >/< 48 timer." (holdes nederst i planen).','Voksen/Barn-vælger for normalfund (standard voksen) – eget sæt normalfund til børn.','Objektiv undersøgelse: de sjældne felter (fx Mammae, Otoskopi, Ører, Genitalia externa) ligger i en fold-ud "Tilvalgsfelter". Udfyldte felter vises altid.','A-gas-pile ↑/↓ blev til ¿ i journalen – nu skrives (høj)/(lav), og tegn som ≥, ≤ og → omskrives ved kopiering.']},
  {v:'33',d:'01.11.2026',items:['💾 Gem og 📂 Indlæs er flyttet fra topbjælken ned over Fraser (og øverst i arkivets højre kolonne) som store, farvede knapper. "Eksportér" hedder nu Gem.']},
@@ -3233,7 +3244,8 @@ function exportAll(){
   toast('Gemt: '+S.plans.length+' planer + normalfund og indstillinger – filen ligger i Overførsler');
 }
 async function importAll(file){
-  let d;try{d=JSON.parse(await file.text())}catch(e){toast('Filen kunne ikke læses');return}
+  let d;const _t=await file.text();if(/-----(GHOSTWRITER|JOURNALFLOW)-----/.test(_t)&&window.__gwImportText){window.__gwImportText(_t);return}
+  try{d=JSON.parse(_t)}catch(e){toast('Filen kunne ikke læses');return}
   if(d&&d.app==='pasteplaner-aendringer'){toast('Det er en ændringsfil til Claude – brug en fil fra "Gem"');return}
   let nS;try{nS=migrate(d)}catch(e){toast('Ikke en Pasteplaner-fil');return}
   const n=nS.plans.length;
@@ -3262,6 +3274,53 @@ renderAll();
 renderVersion();
 if(upgradeNote) setTimeout(()=>toast(upgradeNote),300);
 if(FS){idbGet().then(h=>{if(h&&!fh){pendingFh=h;renderSide()}})}
+/* ---------- Ghostwriter lokal: indlæs fra mail ---------- */
+{
+function decode(txt){
+  const m=String(txt).match(/-----(?:GHOSTWRITER|JOURNALFLOW)-----([\s\S]*?)-----SLUT-----/);
+  if(!m) return null;
+  try{const b=m[1].replace(/^[>\s]+/gm,'').replace(/[^A-Za-z0-9+/=]/g,'');const j=JSON.parse(decodeURIComponent(escape(atob(b))));if(j&&/^(ghostwriter|journalflow)-kladde$/.test(j.app)&&j.kl&&typeof j.kl==='object')return {type:KL_TYPES[j.type]?j.type:'optag',kl:j.kl,sent:j.sent}}catch(e){}
+  return null;
+}
+function parseText(txt){ // reserve: den læsbare tekst uden dataafsnit
+  const lines=String(txt).replace(/\r/g,'').split('\n').map(l=>l.replace(/^>+\s?/,''));
+  const type=lines.some(l=>l.trim()==='JOURNALNOTAT')?'notat':'optag';
+  const J=KL_TYPES[type].J;const kl={};let sec=null,key=null,n=0;
+  for(const raw of lines){
+    const t=raw.trim();
+    const hs=J.find(j=>j.s.toUpperCase()===t);
+    if(hs){sec=hs;key=null;continue}
+    if(!sec) continue;
+    if(/^-----(GHOSTWRITER|JOURNALFLOW)|^\(Dataafsnit/.test(t)) {sec=null;continue}
+    const m=raw.match(/^([^:\n]{1,60}):\s?(.*)$/);
+    if(m&&sec.f.length>1&&sec.f.includes(m[1].trim())){key=kk(sec.s,m[1].trim());kl[key]=m[2];n++;continue}
+    if(sec.ch&&!key&&sec.ch.some(c=>c.opts.some(o=>t.includes(o)))) continue;
+    if(!key){key=kk(sec.s,sec.f[0]);if(sec.f.length===1){kl[key]=raw;n++;continue}}
+    kl[key]=(kl[key]!==undefined&&kl[key]!==''?kl[key]+'\n':'')+raw;
+  }
+  for(const k in kl)kl[k]=kl[k].replace(/\s+$/,'').replace(/^\n+/,'');
+  return n?{type,kl}:null;
+}
+function realFilled(type){const k=type===klType?KL:klLoad(type);const def=type==='notat'?NOTAT_DEF():{};return Object.entries(k).filter(([a,v])=>!a.startsWith('__')&&typeof v==='string'&&v.trim()&&v!==def[a]).length}
+async function doImport(given){
+  const txt=typeof given==='string'?given:$('#inText').value;if(!txt.trim()){$('#inSt').textContent='Indsæt mailen først';return}
+  const d=decode(txt)||parseText(txt);
+  if(!d){if(typeof given==='string')toast('Fandt ingen kladde i teksten');else $('#inSt').textContent='Fandt ingen kladde i teksten';return}
+  if(realFilled(d.type)>0&&!confirm('Erstat den nuværende '+KL_TYPES[d.type].name.toLowerCase()+' med kladden fra mailen?')) return;
+  if(d.type!==klType) klSwitch(d.type);
+  KL=JSON.parse(JSON.stringify(d.kl));klDone.clear();klSave();renderKLDraft();renderKLIns();
+  if($('#inDlg').open)$('#inDlg').close();$('#inText').value='';
+  toast('Kladde indlæst fra mail: '+klFilledCount()+' felter'+(d.sent?' (sendt '+new Date(d.sent).toLocaleString('da-DK',{dateStyle:'short',timeStyle:'short'})+')':''));
+}
+document.addEventListener('click',e=>{if(e.target.closest('[data-jfin]')){e.preventDefault();e.stopPropagation();$('#inSt').textContent='';$('#inDlg').showModal();setTimeout(()=>$('#inText').focus(),30)}},true);
+$('#inX').addEventListener('click',()=>$('#inDlg').close());
+$('#inGo').addEventListener('click',()=>doImport());
+window.__gwImportText=t=>doImport(t);
+// Ctrl+V med en Ghostwriter-mail hvor som helst (uden for et skrivefelt) indlæser kladden direkte
+document.addEventListener('paste',e=>{const t=(e.clipboardData&&e.clipboardData.getData('text/plain'))||'';if(!/-----(GHOSTWRITER|JOURNALFLOW)-----/.test(t)) return;if(e.target.closest&&e.target.closest('#inDlg')) return;e.preventDefault();doImport(t)});
+$('#inPaste').addEventListener('click',async()=>{try{$('#inText').value=await navigator.clipboard.readText();doImport()}catch(e){$('#inSt').textContent='Brug Ctrl+V i feltet'}});
+window.__jfDecode=decode;window.__jfParse=parseText;
+}
 })();
 </script>
 </body>

@@ -3,7 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Journalflow</title>
+<title>Ghostwriter</title>
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b232b">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ghostwriter">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+<!--/PWA-->
 <script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -195,8 +206,22 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .altmenu .n{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:1em}
 .altmenu .ah{font-size:.68rem;color:var(--muted);padding:2px 10px 0}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
-.btn.jfin{border-color:var(--go);color:var(--go);font-weight:700}
-#inDlg textarea{width:100%;min-height:220px;font:.85rem var(--mono);padding:8px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg)}
+
+.btn.jfmail{background:var(--go);border-color:var(--go);color:#fff}:root[data-theme="dark"] .btn.jfmail{color:#10202b}
+.jfbar{display:none}
+@media (max-width:720px){
+  .jfbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;gap:6px;padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--bar);border-top:1px solid var(--line)}
+  .jfbar button{flex:1;font:700 .85rem var(--sans);padding:10px 4px;border-radius:6px;border:1px solid var(--bar-muted);background:transparent;color:#fff}
+  .jfbar button.m{background:var(--go);border-color:var(--go)}
+  body{padding-bottom:70px}
+  .topbtns #newBtn{display:none}
+}
+@media (max-width:720px),(pointer:coarse){
+  [data-kl="first"],[data-kl="copyall"],.klbtns .klc,[data-klxc],[data-klxfirst],.xfer .xh .sum{display:none!important}
+  .xrow{grid-template-columns:minmax(0,1fr)!important}
+  .btn.jfmail{font-size:1rem;padding:10px 18px}
+}
+#mailDlg input{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);margin:6px 0 10px}
 .klwrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
 .kright{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 24px)}
 .klins{display:flex;flex-direction:column;min-height:0;flex:1}
@@ -404,10 +429,11 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 </head>
 <body>
 <header class="topbar"><div class="topbar-in">
-  <div class="brand"><h1>Journalflow</h1><span class="edtag">LOKAL</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
+  <div class="brand"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Ghostwriter</h1><span class="edtag">MOBIL</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
   <div class="topbtns">
     <input type="file" id="ipFile" accept=".json,application/json" hidden>
     <button id="backBtn" class="solid" title="Tilbage til kladden (Alt+8)">← Kladde</button>
+    <button id="mailCfgBtn" title="Mailadresse kladden sendes til">✉ Mail</button>
     <button id="archBtn" class="solid" title="Åbn arkivet og redigér planer">📚 Arkiv – redigér planer</button>
     <button id="newBtn" title="Ny plan (N)">+ Ny plan</button>
     <button id="themeToggle"></button>
@@ -1652,11 +1678,13 @@ D: Vågen og alderssvarende reagerende. Normal tonus. Fontanelle i niveau (spæd
 E: Ingen udslæt eller petekkier. Abdomen blød og uøm.`;
 
 </script>
-<dialog id="inDlg"><div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><b style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase">Indlæs kladde fra mail</b><button id="inX" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer" aria-label="Luk">✕</button></div>
-<div style="padding:14px 16px;width:min(640px,calc(100vw - 40px))">
-<p class="note" style="margin:0 0 8px">Åbn mailen fra Journalflow mobil, markér alt (Ctrl+A), kopiér og indsæt her. Kladden fordeles felt for felt.</p>
-<textarea id="inText" spellcheck="false" placeholder="Indsæt mailen her …"></textarea>
-<div class="actions" style="margin-top:10px"><button class="btn primary" id="inGo">Indlæs i kladden</button><button class="btn" id="inPaste">Indsæt fra udklipsholder</button><span class="spacer"></span><span class="note" id="inSt"></span></div>
+<div class="jfbar" id="jfbar"><button data-jfgo="fraser">Fraser</button><button data-jfgo="xfer">Gennemse</button><button class="m" data-jfmail="1">✉ Mail</button></div>
+<dialog id="mailDlg"><div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><b style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase">Send kladden til mail</b><button id="mailX" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer" aria-label="Luk">✕</button></div>
+<div style="padding:14px 16px;max-width:440px">
+<label style="font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)" for="mailTo">Modtager</label>
+<input id="mailTo" type="email" inputmode="email" autocomplete="email" placeholder="navn@rn.dk">
+<p class="note" style="margin:0 0 12px">Adressen gemmes kun på denne enhed. Kladden sendes gennem telefonens egen mail-app og kan indlæses i Ghostwriter lokal med 📥 Indlæs fra mail.</p>
+<div class="actions"><button class="btn primary" id="mailSave">Gem</button><button class="btn jfmail" id="mailSend">Gem og send nu</button><span class="spacer"></span><button class="btn sm" id="jfShare" hidden>↗ Del i anden app</button></div>
 </div></dialog>
 <script>
 (function(){
@@ -1794,12 +1822,12 @@ async function fsContinue(){
   }catch(e){fileMsg='Kunne ikke åbne filen.';renderSide()}
 }
 async function fsOpen(){
-  try{const [h]=await showOpenFilePicker({types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
+  try{const [h]=await showOpenFilePicker({types:[{description:'Ghostwriter',accept:{'application/json':['.json']}}]});
     await useHandle(h);toast('Åbnede '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Filen kunne ikke læses som pasteplaner.';renderSide()}}
 }
 async function fsNew(){
-  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
+  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Ghostwriter',accept:{'application/json':['.json']}}]});
     await useHandle(h,{write:true});toast('Gemmer nu i '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Kunne ikke oprette filen.';renderSide()}}
 }
@@ -2277,7 +2305,7 @@ function renderKLDraft(){
     <div class="actions" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
       <button class="btn sm" data-kl="copyall">Kopiér hele kladden</button>
-      <button class="btn sm jfin" data-jfin="1" title="Indsæt en mail sendt fra Journalflow mobil – kladden fordeles i felterne">📥 Indlæs fra mail</button>
+      <button class="btn sm jfmail" data-jfmail="1" title="Send hele kladden til din mail">✉ Send til mail</button>
       <span class="spacer"></span>
       <button class="btn sm danger" data-kl="clear">Ny kladde</button>
     </div>
@@ -2327,7 +2355,7 @@ function renderXfer(){
     const chs=chSummary(sec);if(chs.length)rows+=`<div class="xrow ch"><div class="xl">${esc(sec.s)}</div><div class="xv">Vælg i journalen: ${esc(chs.join(' · '))}</div><span></span></div>`;
   }
   const done=[...klDone].filter(k=>(KL[k]||'').trim()).length;
-  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button>':''}</div>${rows}`;
+  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button><button class="btn sm jfmail" data-jfmail="1">✉ Send til mail</button>':''}</div>${rows}`;
 }
 function renderKLIns(){
   const box=$('#klins');if(!box) return;
@@ -3153,8 +3181,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='35';
+const APP_VERSION='36';
 const CHANGELOG=[
+ {v:'36',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter. Filerne hedder ghostwriter.html og Ghostwriter-lokal.html. Kladder sendt på mail fra den gamle udgave kan stadig indlæses.']},
  {v:'35',d:'01.11.2026',items:['Pasteplaner hedder nu Journalflow og findes i tre udgaver, der hentes fra GitHub (ALangeland/Akut-Flow): lokal fil til PC, webudgave i browseren og mobiludgave, der kan installeres på telefonen.','Mobil: ✉ Send til mail sender hele kladden til den adresse, du skriver under ✉ Mail (gemmes kun på telefonen). På telefonen er kopiér-knapperne skjult.','Lokal: 📥 Indlæs fra mail – indsæt mailen, og kladden genopstår felt for felt (også A-gas, værdier, valg og NIHSS).','Mobil og web har ⌂-knap til Akut-Flow-startsiden.']},
  {v:'34',d:'01.11.2026',items:['Instruks-mærkater på fraserne: ✓ instruks (tjekket, kilde i tooltip), ⚠ instruks udløbet / over 3 år, afventer instruks og ikke tjekket.','Pneumoni opdateret efter PRI Samfundserhvervet pneumoni hos voksne (godk. 17.06.2025): CURB-65 med gradering, behandling for let, moderat og svær, særlige grupper, steroid og opfølgning.','Ny frase: Meningitis – akut bakteriel (voksne) efter PRI (godk. 17.12.2025) og præhospital instruks.','Klik på et valg som "akut/kronisk", "let/moderat/svær" eller ">/<" åbner en lille menu – vælg med mus eller tal-tast.','"Klar til overførsel!" nederst i kladden: alle udfyldte felter i journalrækkefølge med Kopiér-knap og Enter = næste.','Journalnotat (stuegang) starter altid med "…. indlæggelsesdøgn." og Plan med "Forventes indlagt >/< 48 timer." (holdes nederst i planen).','Voksen/Barn-vælger for normalfund (standard voksen) – eget sæt normalfund til børn.','Objektiv undersøgelse: de sjældne felter (fx Mammae, Otoskopi, Ører, Genitalia externa) ligger i en fold-ud "Tilvalgsfelter". Udfyldte felter vises altid.','A-gas-pile ↑/↓ blev til ¿ i journalen – nu skrives (høj)/(lav), og tegn som ≥, ≤ og → omskrives ved kopiering.']},
  {v:'33',d:'01.11.2026',items:['💾 Gem og 📂 Indlæs er flyttet fra topbjælken ned over Fraser (og øverst i arkivets højre kolonne) som store, farvede knapper. "Eksportér" hedder nu Gem.']},
@@ -3271,49 +3300,39 @@ renderAll();
 renderVersion();
 if(upgradeNote) setTimeout(()=>toast(upgradeNote),300);
 if(FS){idbGet().then(h=>{if(h&&!fh){pendingFh=h;renderSide()}})}
-/* ---------- Journalflow lokal: indlæs fra mail ---------- */
+/* ---------- Ghostwriter mobil: mail og del ---------- */
 {
-function decode(txt){
-  const m=String(txt).match(/-----JOURNALFLOW-----([\s\S]*?)-----SLUT-----/);
-  if(!m) return null;
-  try{const b=m[1].replace(/^[>\s]+/gm,'').replace(/[^A-Za-z0-9+/=]/g,'');const j=JSON.parse(decodeURIComponent(escape(atob(b))));if(j&&j.app==='journalflow-kladde'&&j.kl&&typeof j.kl==='object')return {type:KL_TYPES[j.type]?j.type:'optag',kl:j.kl,sent:j.sent}}catch(e){}
-  return null;
+function jfPack(){const o={app:'ghostwriter-kladde',v:1,type:klType,sent:new Date().toISOString(),kl:KL};const b=btoa(unescape(encodeURIComponent(JSON.stringify(o))));return '-----GHOSTWRITER-----\n'+b.replace(/(.{76})/g,'$1\n').trim()+'\n-----SLUT-----'}
+
+const K='journalflow.mailTo';
+const okMail=a=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a);
+function addr(){try{return localStorage.getItem(K)||''}catch(e){return ''}}
+function subj(){const d=new Date();return 'Ghostwriter – '+KL_TYPES[klType].name+' '+d.toLocaleDateString('da-DK')+' kl. '+d.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}
+function body(){const t=cpSafe(klText());if(!t) return '';return t+'\n\n\n(Dataafsnit til Ghostwriter lokal – 📥 Indlæs fra mail. Ret ikke i det.)\n'+jfPack()}
+function openDlg(){const d=$('#mailDlg');$('#mailTo').value=addr();$('#jfShare').hidden=!navigator.share;if(!d.open)d.showModal();setTimeout(()=>$('#mailTo').focus(),30)}
+function saveAddr(){const a=$('#mailTo').value.trim();if(!okMail(a)){toast('Skriv en gyldig mailadresse');$('#mailTo').focus();return false}try{localStorage.setItem(K,a)}catch(e){}return true}
+async function send(){
+  const to=addr();if(!to){openDlg();return}
+  const b=body();if(!b){toast('Kladden er tom');return}
+  await clip(b);
+  let text=b;
+  if(encodeURIComponent(b).length>60000) text='Den læsbare tekst er udeladt, fordi kladden er lang. Indlæs i Ghostwriter lokal med 📥 Indlæs fra mail.\n\n'+jfPack();
+  location.href='mailto:'+to+'?subject='+encodeURIComponent(subj())+'&body='+encodeURIComponent(text);
+  toast('Mailen åbnes – kladden er også kopieret');
 }
-function parseText(txt){ // reserve: den læsbare tekst uden dataafsnit
-  const lines=String(txt).replace(/\r/g,'').split('\n').map(l=>l.replace(/^>+\s?/,''));
-  const type=lines.some(l=>l.trim()==='JOURNALNOTAT')?'notat':'optag';
-  const J=KL_TYPES[type].J;const kl={};let sec=null,key=null,n=0;
-  for(const raw of lines){
-    const t=raw.trim();
-    const hs=J.find(j=>j.s.toUpperCase()===t);
-    if(hs){sec=hs;key=null;continue}
-    if(!sec) continue;
-    if(/^-----JOURNALFLOW|^\(Dataafsnit/.test(t)) {sec=null;continue}
-    const m=raw.match(/^([^:\n]{1,60}):\s?(.*)$/);
-    if(m&&sec.f.length>1&&sec.f.includes(m[1].trim())){key=kk(sec.s,m[1].trim());kl[key]=m[2];n++;continue}
-    if(sec.ch&&!key&&sec.ch.some(c=>c.opts.some(o=>t.includes(o)))) continue;
-    if(!key){key=kk(sec.s,sec.f[0]);if(sec.f.length===1){kl[key]=raw;n++;continue}}
-    kl[key]=(kl[key]!==undefined&&kl[key]!==''?kl[key]+'\n':'')+raw;
-  }
-  for(const k in kl)kl[k]=kl[k].replace(/\s+$/,'').replace(/^\n+/,'');
-  return n?{type,kl}:null;
-}
-function realFilled(type){const k=type===klType?KL:klLoad(type);const def=type==='notat'?NOTAT_DEF():{};return Object.entries(k).filter(([a,v])=>!a.startsWith('__')&&typeof v==='string'&&v.trim()&&v!==def[a]).length}
-async function doImport(){
-  const txt=$('#inText').value;if(!txt.trim()){$('#inSt').textContent='Indsæt mailen først';return}
-  const d=decode(txt)||parseText(txt);
-  if(!d){$('#inSt').textContent='Fandt ingen kladde i teksten';return}
-  if(realFilled(d.type)>0&&!confirm('Erstat den nuværende '+KL_TYPES[d.type].name.toLowerCase()+' med kladden fra mailen?')) return;
-  if(d.type!==klType) klSwitch(d.type);
-  KL=JSON.parse(JSON.stringify(d.kl));klDone.clear();klSave();renderKLDraft();renderKLIns();
-  $('#inDlg').close();$('#inText').value='';
-  toast('Kladde indlæst fra mail: '+klFilledCount()+' felter'+(d.sent?' (sendt '+new Date(d.sent).toLocaleString('da-DK',{dateStyle:'short',timeStyle:'short'})+')':''));
-}
-document.addEventListener('click',e=>{if(e.target.closest('[data-jfin]')){e.preventDefault();e.stopPropagation();$('#inSt').textContent='';$('#inDlg').showModal();setTimeout(()=>$('#inText').focus(),30)}},true);
-$('#inX').addEventListener('click',()=>$('#inDlg').close());
-$('#inGo').addEventListener('click',doImport);
-$('#inPaste').addEventListener('click',async()=>{try{$('#inText').value=await navigator.clipboard.readText();doImport()}catch(e){$('#inSt').textContent='Brug Ctrl+V i feltet'}});
-window.__jfDecode=decode;window.__jfParse=parseText;
+async function share(){const b=body();if(!b){toast('Kladden er tom');return}try{await navigator.share({title:subj(),text:b})}catch(e){}}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-jfmail]')){e.preventDefault();e.stopPropagation();send();return}
+  const g=e.target.closest('[data-jfgo]');
+  if(g){if($('#kl').hidden){const bb=$('#backBtn');if(bb)bb.click()}const el=g.dataset.jfgo==='fraser'?$('.kright'):$('#klxfer');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
+},true);
+$('#mailCfgBtn').addEventListener('click',openDlg);
+$('#mailX').addEventListener('click',()=>$('#mailDlg').close());
+$('#mailSave').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();toast('Mailadresse gemt på enheden')}});
+$('#mailSend').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();send()}});
+$('#jfShare').addEventListener('click',()=>{$('#mailDlg').close();share()});
+$('#mailTo').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#mailSend').click()}});
+window.__jfBody=body;
 }
 })();
 </script>
