@@ -220,6 +220,15 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 [hidden]{display:none!important}
 [title]{cursor:help}
 button[title],a[title],input[title]{cursor:pointer}
+.zmode{display:flex;justify-content:flex-end;margin-bottom:-6px}
+.seg2{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg2 button{border:0;border-radius:0;background:transparent;padding:6px 14px;font:700 .8rem var(--sans);color:var(--muted);cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--bar);color:#fff}
+:root[data-theme="dark"] .seg2 button[aria-pressed="true"]{background:var(--go);color:#10202b}
+body:not(.allasa) tr[data-zrow="zall"]{display:none!important}
+body.allasa tr[data-zrow]:not([data-zrow="zall"]){display:none!important}
+body.allasa .ztabs{display:none!important}
+@media (max-width:760px){body.allasa .zt tbody tr[data-zrow="zall"]{display:grid!important}}
 </style>
 <script>
 /* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
@@ -261,6 +270,7 @@ async function pickSave(blob,name,id){
 
   <p class="example" id="exampleNote">Felterne er udfyldt med eksempeltal. Tryk «Nulstil · ny vagt» øverst for at starte forfra.</p>
 
+  <div class="zmode"><div class="seg2" role="group" aria-label="Opdeling"><button type="button" data-zmode="zones" title="Tæl hver ASA-zone for sig. Ved lighed går patienten helst til et speciale, der allerede har patienter i samme zone – så ligger specialets patienter tættere på hinanden.">Med zoner</button><button type="button" data-zmode="all" title="Tæl hele ASA på én gang – fx fra Pleje ASA → Lommeseddel ASA, hvor alle zoner står samlet. Hurtigere, men uden hensyn til hvor patienterne ligger.">Hele ASA</button></div></div>
   <div class="zones" id="zones"></div>
 
   <h2 title="Nu = fordelt til specialet nu. + Akut = anbefalet fordeling af de ventende. I alt = efter fordeling.">Samlet status og fordeling ⓘ</h2>
@@ -294,14 +304,16 @@ const fullName=i=>"Akut-"+SPEC[i][1];
 // [nøgle, gruppe, visiteres?, kort tekst]
 const AKUT=[["akut","Akut medicin","akut"],["amb","Ambulant vurdering","amb."]];
 const FIELDS=[...SPEC.map(s=>s[0]),'akut','akutI','amb','ambI'];
-const ZONES=[["z78","ASA Zone 7-8"],["z910","ASA Zone 9-10"],["z1112","ASA Zone 11-12"]];
+const ZALL=[["z78","ASA Zone 7-8"],["z910","ASA Zone 9-10"],["z1112","ASA Zone 11-12"],["zall","Hele ASA"]];
+let ZMODE='zones';try{if(localStorage.getItem('fordelingshatten.mode')==='all')ZMODE='all'}catch(e){}
+const ZONES=ZALL.filter(([z])=>ZMODE==='all'?z==='zall':z!=='zall');
 const EX={z78:{inf:2,endo:2,gas:2,nyre:2,lunge:3,akut:3,akutI:1,amb:1,ambI:1},
           z910:{inf:3,endo:2,gas:1,nyre:2,lunge:3,akut:2,akutI:0,amb:1,ambI:0},
           z1112:{inf:2,endo:2,gas:2,nyre:2,lunge:2,akut:1,akutI:0,amb:2,ambI:1}};
 const KEY='cetrea-fordeling-v7';
 const $=id=>document.getElementById(id);
 const sName=k=>SPEC.find(s=>s[0]===k)[1];
-const zName=z=>ZONES.find(x=>x[0]===z)[1];
+const zName=z=>(ZALL.find(x=>x[0]===z)||[z,z])[1];
 const avail=(z,t)=>Math.max(0,val(z,t)-val(z,t+'I'));
 const stays=(z,t)=>Math.min(val(z,t),val(z,t+'I'));
 
@@ -311,13 +323,13 @@ const stepper=(z,k,lab,go)=>`<div class="step${go?' go':''}">
   <button type="button" data-step="1" data-for="in-${z}-${k}" aria-label="Tilføj én, ${lab}">+</button></div>`;
 const ZS=zn=>zn.replace('ASA Zone ','Zone ');
 $('zones').innerHTML=`<div class="card ztab">
-  <div class="ztabs" role="tablist">${ZONES.map(([z,zn],i)=>`<button type="button" role="tab" data-ztab="${z}" aria-selected="${i===0}">${ZS(zn)}</button>`).join('')}</div>
+  <div class="ztabs" role="tablist">${ZALL.filter(([z])=>z!=='zall').map(([z,zn],i)=>`<button type="button" role="tab" data-ztab="${z}" aria-selected="${i===0}">${ZS(zn)}</button>`).join('')}</div>
   <table class="zt">
     <thead>
       <tr class="g"><th></th><th colspan="3" class="gv" title="Patienter der venter på at blive fordelt: akut medicin og ambulant vurdering. «Ikke visit.» skal ikke visiteres og bliver på akut medicin.">Venter på fordeling ⓘ</th><th colspan="${SPEC.length}" class="gs" title="Patienter der er fordelt til specialerne. Flyt en patient med − under Akut med. og + under specialet i samme række.">Fordelt til speciale ⓘ</th></tr>
       <tr class="h"><th></th><th class="v">Akut med.</th><th class="v">Amb. vurd.</th><th class="v vi" title="Antal af de ventende (akut medicin + ambulant vurdering), der ikke skal visiteres. Trækkes først fra akut medicin.">Ikke visit.</th>${SPEC.map(([k,n])=>`<th class="s" style="${col(k)}">${n}</th>`).join('')}</tr>
     </thead>
-    <tbody>${ZONES.map(([z,zn],i)=>`<tr data-zrow="${z}"${i===0?' class="on"':''}>
+    <tbody>${ZALL.map(([z,zn],i)=>`<tr data-zrow="${z}"${i===0||z==='zall'?' class="on"':''}>
       <th class="zn" scope="row">${ZS(zn)}<span class="sum" id="sum-${z}"></span></th>
       ${AKUT.map(([k,n])=>`<td class="v" data-l="${k==='amb'?'Amb. vurd.':'Akut med.'}">${stepper(z,k,n+', '+zn,true)}<div hidden>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></td>`).join('')}
       <td class="v vi" data-l="Ikke visit.">${stepper(z,'skip','Ikke visiteres i alt, '+zn)}</td>
@@ -326,6 +338,7 @@ $('zones').innerHTML=`<div class="card ztab">
     <tfoot><tr><th scope="row">I alt</th><td class="v" id="ft-akut"></td><td class="v" id="ft-amb"></td><td class="v vi" id="ft-skip"></td>${SPEC.map(([k])=>`<td class="s" style="${col(k)}" id="ft-${k}"></td>`).join('')}</tr></tfoot>
   </table>
 </div>`;
+document.body.classList.toggle('allasa',ZMODE==='all');setTimeout(()=>document.querySelectorAll('[data-zmode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.zmode===ZMODE)),0);
 $('zones').addEventListener('click',e=>{const b=e.target.closest('[data-ztab]');if(!b)return;
   document.querySelectorAll('[data-ztab]').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('[data-zrow]').forEach(r=>r.classList.toggle('on',r.dataset.zrow===b.dataset.ztab));
@@ -344,14 +357,14 @@ let assign=[], snapshot=null, rnd=shuffle(), log=[], logAll=false, lastShot=null
 function shuffle(){const a=SPEC.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 function applyState(d,isExample){
-  ZONES.forEach(([z])=>FIELDS.forEach(k=>inp(z,k).value=(d[z]&&d[z][k])??''));
+  ZALL.forEach(([z])=>FIELDS.forEach(k=>inp(z,k).value=(d[z]&&d[z][k])??''));
   if(Array.isArray(d.rnd)&&d.rnd.length===SPEC.length) rnd=d.rnd.slice();
   log=Array.isArray(d.log)?d.log.slice():[];
-  ZONES.forEach(([z])=>{const s=val(z,'akutI')+val(z,'ambI');inp(z,'skip').value=s||''});
+  ZALL.forEach(([z])=>{const s=val(z,'akutI')+val(z,'ambI');inp(z,'skip').value=s||''});
   $('exampleNote').hidden=!isExample;
 }
 function getState(){
-  const d={rnd:rnd.slice(),log:log.slice()}; ZONES.forEach(([z])=>{d[z]={};FIELDS.forEach(k=>d[z][k]=inp(z,k).value)});
+  const d={rnd:rnd.slice(),log:log.slice(),mode:ZMODE}; ZALL.forEach(([z])=>{d[z]={};FIELDS.forEach(k=>d[z][k]=inp(z,k).value)});
   return d;
 }
 function load(){let s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
@@ -482,7 +495,7 @@ const FNAME={akut:"Akut medicin",akutI:"Akut medicin - skal ikke visiteres",amb:
 SPEC.forEach(([k,n])=>FNAME[k]='Akut-'+n);
 function toFile(){
   const s=getState(), out={app:"ASA-fordeling",version:4,gemt:new Date().toISOString(),lodtraekning:s.rnd.map(fullName),zoner:{},log:s.log};
-  ZONES.forEach(([z,zn])=>{out.zoner[zn]={};FIELDS.forEach(k=>out.zoner[zn][FNAME[k]]=parseInt(s[z][k],10)||0)});
+  out.tilstand=ZMODE==='all'?'Hele ASA':'Med zoner';ZALL.forEach(([z,zn])=>{out.zoner[zn]={};FIELDS.forEach(k=>out.zoner[zn][FNAME[k]]=parseInt(s[z][k],10)||0)});
   return JSON.stringify(out,null,2);
 }
 function fromFile(text){
@@ -491,7 +504,7 @@ function fromFile(text){
   const d={log:Array.isArray(j.log)?j.log:[]};
   const order=j.lodtraekning||j.tilfaeldigRaekkefoelge;
   if(Array.isArray(order)){const r=order.map(n=>SPEC.findIndex(s=>s[1]===String(n).replace('Akut-','')));if(r.length===SPEC.length&&r.every(i=>i>=0))d.rnd=r}
-  ZONES.forEach(([z,zn])=>{
+  ZALL.forEach(([z,zn])=>{
     const src=j.zoner[zn]||j.zoner[zn.replace('Zone ','')]||{}; d[z]={};
     FIELDS.forEach(k=>{const v=src[FNAME[k]]??src[FNAME[k].replace('Akut-','')];d[z][k]=v?String(v):''});
     const g=n=>parseInt(src[n],10)||0, str=n=>n?String(n):'';
@@ -580,7 +593,14 @@ $('upFile').addEventListener('change',async e=>{
 });
 
 /* ---------- Knapper og felter ---------- */
-function syncSkip(){ZONES.forEach(([z])=>{const s=val(z,'skip'),a=Math.min(s,val(z,'akut')),b=Math.min(s-a,val(z,'amb'));inp(z,'akutI').value=a||'';inp(z,'ambI').value=b||'';if(a+b<s)inp(z,'skip').value=(a+b)||''})}
+function setZMode(m){
+  ZMODE=m==='all'?'all':'zones';try{localStorage.setItem('fordelingshatten.mode',ZMODE)}catch(e){}
+  ZONES.length=0;ZALL.filter(([z])=>ZMODE==='all'?z==='zall':z!=='zall').forEach(x=>ZONES.push(x));
+  document.body.classList.toggle('allasa',ZMODE==='all');
+  document.querySelectorAll('[data-zmode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.zmode===ZMODE));
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-zmode]');if(!b||b.dataset.zmode===ZMODE)return;setZMode(b.dataset.zmode);save();calc()});
+function syncSkip(){ZALL.forEach(([z])=>{const s=val(z,'skip'),a=Math.min(s,val(z,'akut')),b=Math.min(s-a,val(z,'amb'));inp(z,'akutI').value=a||'';inp(z,'ambI').value=b||'';if(a+b<s)inp(z,'skip').value=(a+b)||''})}
 function changed(){syncSkip();snapshot=null;$('undo').hidden=true;save();calc()}
 document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('input',changed));
 $('zones').addEventListener('click',e=>{
@@ -630,7 +650,7 @@ load(); calc(); initFile();
 const APP_VERSION='3';
 const CHANGELOG=[
  {v:'3',d:'01.11.2026',items:['Hedder nu Specialefordelingshatten. Til koordinerende læge i akutmodtagelsen er der kommet en søster: Forvagtsfordelingshatten.']},
- {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ny opstilling: én tabel med én række pr. zone – Venter på fordeling til venstre, Fordelt til speciale til højre og I alt nederst. På telefonen vælges zonen med faneblade.','Forklaringsteksterne er flyttet ind i små hjælpetekster (hold musen over ⓘ, overskrifter og knapper).','Filknapperne er ryddet op: på PC vises kun Åbn regnskabsfil og Ny regnskabsfil (gemmer automatisk) – Gem fil/Indlæs fil vises kun, hvor browseren ikke kan gemme direkte i en fil (fx telefon).','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
+ {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ny opstilling: én tabel med én række pr. zone – Venter på fordeling til venstre, Fordelt til speciale til højre og I alt nederst. På telefonen vælges zonen med faneblade.','Vælg Med zoner (standard) eller Hele ASA øverst over tabellen. Hele ASA tæller alle zoner samlet – fx fra Pleje ASA → Lommeseddel ASA. Med zoner går patienten ved lighed helst til et speciale med patienter i samme zone.','Forklaringsteksterne er flyttet ind i små hjælpetekster (hold musen over ⓘ, overskrifter og knapper).','Filknapperne er ryddet op: på PC vises kun Åbn regnskabsfil og Ny regnskabsfil (gemmer automatisk) – Gem fil/Indlæs fil vises kun, hvor browseren ikke kan gemme direkte i en fil (fx telefon).','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
  {v:'1',d:'31.10.2026',items:['Optælling pr. speciale i ASA-zonerne 7-8, 9-10 og 11-12, fordeling af akut medicinske (lige antal, samme zone, lodtrækning), "står for skud", log og regnskabsfil.']}
 ];
 const $$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
