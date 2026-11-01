@@ -158,7 +158,14 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .case.t-l{background:color-mix(in srgb,var(--t-l) 8%,var(--bg))}
 .case.t-m{background:color-mix(in srgb,var(--t-m) 9%,var(--bg))}
 .case.t-t{background:color-mix(in srgb,var(--t-t) 11%,var(--bg))}
-.shot .assign .zs.ty{flex:1 1 200px}
+.shot .assign .zs.pb{flex:1 1 100%}
+.pbseg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.pbseg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:6px;background:var(--surface);color:var(--fg);font-size:.85rem}
+.pbseg button .em{font-size:1.25rem;line-height:1}
+.pbseg button b{font:800 .9rem var(--sans);color:var(--pc)}
+.pbseg button[aria-pressed="true"]{background:var(--pc);border-color:var(--pc)}
+.pbseg button[aria-pressed="true"] b{color:#fff}
+.pbt{display:inline-block;padding:1px 7px;border-radius:4px;font:800 .72rem var(--sans);color:#fff;background:var(--pc);vertical-align:middle}
 .sp-warn{margin-top:10px;padding:10px 12px;border-radius:6px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 40%,var(--line));font-size:.9rem}
 .sp-warn b{color:var(--warn)}
 .sp-warn ul{margin:6px 0 0;padding-left:18px}
@@ -228,7 +235,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
     <div class="assign">
       <div class="zs"><label class="lbl" for="caseZone">Zone</label><select id="caseZone"></select></div>
       <div class="zs"><label class="lbl" for="caseRoom">Stue</label><select id="caseRoom"></select><div id="roomHint" class="rh"></div></div>
-      <div class="zs ty"><span class="lbl">Tyngde</span><div class="tyseg" id="tySeg" role="group" aria-label="Estimeret tyngde"><button type="button" data-ty="l">Let</button><button type="button" data-ty="m" aria-pressed="true">Middel</button><button type="button" data-ty="t">Tung</button></div></div>
+      <div class="zs pb"><span class="lbl">Problematik</span><div class="pbseg" id="pbSeg" role="group" aria-label="Problematik A–E"></div></div>
       <button class="primary" id="assignNext" type="button">Tildel patient</button>
     </div>
   </section>
@@ -286,8 +293,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='7';
+const APP_VERSION='8';
 const CHANGELOG=[
+ {v:'8',d:'01.11.2026',items:['Tildeleren har kun Zone, Stue og Problematik: A 🗣️ Luftvej, B 🫁 Respiration, C ❤️ Kredsløb, D 🧠 Neurologi, E 🌡️ Eksponering (tryk igen for at fravælge).','Problematikken vises som farvet mærke på patienten og i loggen. Tyngden sættes nu på patienten (tryk på mærket; standard Middel).']},
  {v:'7',d:'01.11.2026',items:['Estimeret tyngde på hver patient: Let (grøn), Middel (gul) eller Tung (rød). Vælg den i tildeleren (standard Middel); tryk på mærket på patienten for at ændre den.','«Næste patient til» ser på samlet tyngde (let 1, middel 2, tung 3) i stedet for antal, og farven på tallet ved hver forvagt følger tyngden.','Soveplanen vægter både status og tyngde, når den foreslår, hvem der er vågne først.']},
  {v:'6',d:'01.11.2026',items:['Status på hver patient som i forvagternes app: Modtagelse startet (rød), Modtaget (orange), Planlagt (blå) og ✓ Afslut. Nye patienter starter som Modtagelse startet.','Kortet viser forvagtens patienter fordelt på status.','Soveplanen bruger status: dem med mest uafsluttet arbejde (startet > modtaget > planlagt) foreslås vågne først, og planen advarer, hvis en, der skal sove, har patienter, der ikke er planlagt.']},
  {v:'5',d:'01.11.2026',items:['Soveplan: vælg fra kl. (standard 23:00) og til kl., og tryk «Lav soveplan». Halvdelen er vågen første halvdel af natten, den anden halvdel sover – ved halvtid kaldes de næste. Tryk på et navn for at flytte det til den anden halvdel.','Dem med flest aktive patienter foreslås vågne først. Sovende forvagter får mærket 💤 og springes over i «Næste patient til».','Kopiér soveplan som tekst, og slet eller ryd planen igen. Ny vagt rydder planen.']},
@@ -325,12 +333,14 @@ const ROOMLABEL={};
 for(const [z,list] of Object.entries(ZONES))list.forEach((it,i)=>{const [nr,...rest]=it.split(' ');list[i]=nr;if(rest.length)ROOMLABEL[nr]=rest.join(' ')});
 const ST=[['start','Modtagelse startet','Startet',3],['recv','Modtaget','Modtaget',2],['plan','Planlagt','Planlagt',1]];
 const stOf=c=>ST.find(x=>x[0]===(c.st||'start'))||ST[0];
+const PB=[['A','🗣️','Luftvej','#2f75b3'],['B','🫁','Respiration','#2e8a6b'],['C','❤️','Kredsløb','#c8462e'],['D','🧠','Neurologi','#6f5bab'],['E','🌡️','Eksponering','#b98316']];
+const pbOf=c=>PB.find(x=>x[0]===c.pb)||null;
 const TY=[['l','Let',1],['m','Middel',2],['t','Tung',3]];
 const tyOf=c=>TY.find(x=>x[0]===(c.ty||'m'))||TY[1];
 const wload=id=>active(id).reduce((a,c)=>a+tyOf(c)[2],0);
 const load_=id=>active(id).reduce((a,c)=>a+stOf(c)[3]*tyOf(c)[2],0);
 function stSummary(list){const n={};list.forEach(c=>{const k=stOf(c)[0];n[k]=(n[k]||0)+1});return ST.filter(x=>n[x[0]]).map(x=>`${n[x[0]]} ${x[2].toLowerCase()}`).join(' · ')}
-const caseTxt=c=>[c.zone?'Zone '+c.zone:'',c.room?'St. '+c.room:'',(!c.zone&&!c.room&&c.label)?c.label:''].filter(Boolean).join(' · ');
+const caseTxt=c=>[c.pb&&pbOf(c)?pbOf(c)[0]+' '+pbOf(c)[2]:'',c.zone?'Zone '+c.zone:'',c.room?'St. '+c.room:'',(!c.zone&&!c.room&&c.label)?c.label:''].filter(Boolean).join(' · ');
 const SOON_MIN=30;
 function nextAt(hhmm){if(!hhmm) return null;const [h,m]=hhmm.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()-5*60000)d.setDate(d.getDate()+1);return d.getTime()}
 const left=d=>d.untilTs?d.untilTs-Date.now():null;
@@ -425,8 +435,8 @@ function assign(docId){
   const d=S.doctors.find(x=>x.id===docId);if(!d) return;
   const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';
   const before=JSON.stringify(S);
-  const c={id:uid(),doc:d.id,zone,room,start:Date.now(),end:null,st:'start',stAt:Date.now(),ty:curTy};S.cases.push(c);
-  save();$('#caseRoom').value='';$('#roomHint').textContent='';setTy('m');render();
+  const c={id:uid(),doc:d.id,zone,room,pb:curPb,start:Date.now(),end:null,st:'start',stAt:Date.now(),ty:'m'};S.cases.push(c);
+  save();$('#caseRoom').value='';$('#roomHint').textContent='';setPb('');render();
   const lt=caseTxt(c);toast(`Patient${lt?' ('+lt+')':''} tildelt ${d.name} kl. ${hm(Date.now())}`,true);undoState=before;
 }
 function finish(caseId){
@@ -439,9 +449,10 @@ function finish(caseId){
 function reopen(caseId){const c=S.cases.find(x=>x.id===caseId);if(!c) return;c.end=null;save();render()}
 
 $('#assignNext').addEventListener('click',()=>{const n=next();if(!n){$('#docName').focus();toast('Tilføj først de forvagter, der er på arbejde');return}assign(n.id)});
-let curTy='m';
-function setTy(t){curTy=t;document.querySelectorAll('#tySeg [data-ty]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ty===t))}
-$('#tySeg').addEventListener('click',e=>{const b=e.target.closest('[data-ty]');if(b)setTy(b.dataset.ty)});
+let curPb='';
+$('#pbSeg').innerHTML=PB.map(([k,em,n,col])=>`<button type="button" data-pb="${k}" style="--pc:${col}" title="${k} – ${n}"><span class="em">${em}</span><b>${k}</b></button>`).join('');
+function setPb(k){curPb=k;document.querySelectorAll('#pbSeg [data-pb]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pb===k))}
+$('#pbSeg').addEventListener('click',e=>{const b=e.target.closest('[data-pb]');if(b)setPb(curPb===b.dataset.pb?'':b.dataset.pb)});
 function roomOpt(z,r,sel){return `<option value="${z}|${esc(r)}"${sel?' selected':''}>${esc(r)}${ROOMLABEL[r]?' – '+esc(ROOMLABEL[r]):''}</option>`}
 function buildRooms(keep){const z=$('#caseZone').value;let h='<option value="">– vælg –</option>';
   if(z&&ZONES[z])h+=ZONES[z].map(r=>roomOpt(z,r,keep===z+'|'+r)).join('');
@@ -532,7 +543,7 @@ function render(){
     return `<article class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="stsum">${esc(stSummary(act))}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${esc(untilTxt(d))}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
-        <span class="cl"><button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button> ${esc(caseTxt(c)||'Patient')}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
+        <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button> ${esc([c.zone?'Zone '+c.zone:'',c.room?'St. '+c.room:''].filter(Boolean).join(' · ')||(pbOf(c)?pbOf(c)[2]:'Patient'))}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
         <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats"><span class="donec">✓ ${dn.length}</span> afsluttet · gns. ${avg}${la?' · sidst tildelt '+hm(la):''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
