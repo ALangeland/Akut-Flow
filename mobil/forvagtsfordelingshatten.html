@@ -243,12 +243,13 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
   .shot .assign .a-btn .lbl{display:none}
   .shot .assign #assignNext{height:44px}
 }
+.topbtns button[aria-pressed="true"]{background:rgba(255,255,255,.14)}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="topbar-in">
   <a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Forvagtsfordelingshatten</h1><span class="edtag">MOBIL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
-  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="newShift" type="button" title="Tømmer patienter og log. Forvagterne bliver på listen, men sættes som ikke på arbejde.">Ny vagt</button><button id="themeToggle" type="button"></button></div>
+  <div class="topbtns"><button id="sleepToggle" type="button" title="Vis/skjul soveplanen (vises automatisk kl. 20–08)">🌙 Soveplan</button><button id="cancelShift" type="button" hidden>Annullér</button><button id="newShift" type="button" title="Tømmer patienter og log. Forvagterne bliver på listen, men sættes som ikke på arbejde.">Ny vagt</button><button id="themeToggle" type="button"></button></div>
 </div></header>
 
 <main class="wrap">
@@ -318,8 +319,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='9';
+const APP_VERSION='10';
 const CHANGELOG=[
+ {v:'10',d:'01.11.2026',items:['Soveplanen vises kun om aftenen og natten (kl. 20–08) eller når der er en aktiv plan. Om dagen kan den åbnes med 🌙 Soveplan i topbjælken.','Tildeleren er afstemt: Zone, Stue og Problematik på én række; Tyngde, Note og Tildel på den næste.']},
  {v:'9',d:'01.11.2026',items:['Tyngde (Let/Middel/Tung) og en kort note er tilbage i tildeleren sammen med Zone, Stue og Problematik. Noten afvises, hvis den ligner et CPR-nummer.','B-problematik bruger 💨, som vises på alle enheder.']},
  {v:'8',d:'01.11.2026',items:['Tildeleren har kun Zone, Stue og Problematik: A 🗣️ Luftvej, B 💨 Respiration, C ❤️ Kredsløb, D 🧠 Neurologi, E 🌡️ Eksponering (tryk igen for at fravælge).','Problematikken vises som farvet mærke på patienten og i loggen. Tyngden sættes nu på patienten (tryk på mærket; standard Middel).']},
  {v:'7',d:'01.11.2026',items:['Estimeret tyngde på hver patient: Let (grøn), Middel (gul) eller Tung (rød). Vælg den i tildeleren (standard Middel); tryk på mærket på patienten for at ændre den.','«Næste patient til» ser på samlet tyngde (let 1, middel 2, tung 3) i stedet for antal, og farven på tallet ved hver forvagt følger tyngden.','Soveplanen vægter både status og tyngde, når den foreslår, hvem der er vågne først.']},
@@ -405,7 +407,12 @@ function makePlan(){
 }
 function planText(){const P=S.sleep;if(!P) return '';const nm=ids=>ids.map(id=>{const d=S.doctors.find(x=>x.id===id);return d?d.name+' ('+lvl(d.level)[1]+')':'?'}).join(', ')||'–';
   return `Soveplan forvagter\n${hm(P.start)}–${hm(P.mid)}: Vågen: ${nm(P.a)}. Sover: ${nm(P.b)}.\n${hm(P.mid)}–${hm(P.end)}: Vågen: ${nm(P.b)}. Sover: ${nm(P.a)}.\nVed skift kl. ${hm(P.mid)} kaldes ${nm(P.b)}.`}
+let sleepShow=null;
+const nightNow=()=>{const h=new Date().getHours();return h>=20||h<8};
+function sleepVisible(){return sleepShow!==null?sleepShow:(!!S.sleep&&planPhase()!=='over')||nightNow()}
 function renderSleep(){
+  const vis=sleepVisible();$('#sleepCard').hidden=!vis;$('#sleepToggle').setAttribute('aria-pressed',vis);
+  if(!vis) return;
   const P=S.sleep,ph=planPhase();
   $('#sleepForm').hidden=!!P&&ph!=='over';
   try{if(!P){const f=localStorage.getItem(KEY+'.sleepFrom'),t=localStorage.getItem(KEY+'.sleepTo');if(f&&!$('#sleepFrom').dataset.touched)$('#sleepFrom').value=f;if(t&&!$('#sleepTo').dataset.touched)$('#sleepTo').value=t}}catch(e){}
@@ -432,6 +439,7 @@ function renderSleep(){
   <div class="sp-acts"><button type="button" id="sleepCopy">Kopiér soveplan</button><button type="button" id="sleepDel">${ph==='over'?'Ryd soveplan':'Slet soveplan'}</button></div>`;
 }
 $('#sleepMake').addEventListener('click',makePlan);
+$('#sleepToggle').addEventListener('click',()=>{sleepShow=!sleepVisible();render();if(sleepShow)$('#sleepCard').scrollIntoView({behavior:'smooth',block:'start'})});
 ['sleepFrom','sleepTo'].forEach(id=>$('#'+id).addEventListener('input',e=>e.target.dataset.touched='1'));
 $('#sleepCard').addEventListener('click',async e=>{
   const sw=e.target.closest('[data-swap]');if(sw&&S.sleep){const id=sw.dataset.swap,P=S.sleep;if(P.a.includes(id)){P.a=P.a.filter(x=>x!==id);P.b.push(id)}else{P.b=P.b.filter(x=>x!==id);P.a.push(id)}save();render();return}
@@ -591,7 +599,7 @@ function render(){
     ${d.on?`<input type="time" data-until="${d.id}" value="${esc(d.until||'')}" title="Til kl." aria-label="${esc(d.name)} til kl.">`:''}
     <button type="button" data-act="toggle" data-id="${d.id}">${d.on?'Går hjem':'På arbejde'}</button>
     <button type="button" class="rm" data-act="rm" data-id="${d.id}" title="Fjern fra listen">✕</button></li>`).join('');
-  $('#rosterSum').textContent=S.doctors.length?`${ds.length} af ${S.doctors.length}`:'';
+  $('#rosterSum').textContent=S.doctors.length?`${ds.length} på arbejde${S.doctors.length>ds.length?' · '+(S.doctors.length-ds.length)+' har fri':''}`:'';
   // log
   const fin=S.cases.filter(c=>c.end).sort((a,b)=>b.end-a.end);
   $('#log').innerHTML=fin.map(c=>{const d=S.doctors.find(x=>x.id===c.doc);return `<li><time>${hm(c.start)}–${hm(c.end)}</time>
