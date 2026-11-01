@@ -285,7 +285,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 'use strict';
 const APP_VERSION='8';
 const CHANGELOG=[
- {v:'8',d:'01.11.2026',items:['Tildeleren har kun Zone, Stue og Problematik: A 🗣️ Luftvej, B 🫁 Respiration, C ❤️ Kredsløb, D 🧠 Neurologi, E 🌡️ Eksponering (tryk igen for at fravælge).','Problematikken vises som farvet mærke på patienten og i loggen. Tyngden sættes nu på patienten (tryk på mærket; standard Middel).']},
+ {v:'8',d:'01.11.2026',items:['Tildeleren har kun Zone, Stue og Problematik: A 🗣️ Luftvej, B 💨 Respiration, C ❤️ Kredsløb, D 🧠 Neurologi, E 🌡️ Eksponering (tryk igen for at fravælge).','Problematikken vises som farvet mærke på patienten og i loggen. Tyngden sættes nu på patienten (tryk på mærket; standard Middel).']},
  {v:'7',d:'01.11.2026',items:['Estimeret tyngde på hver patient: Let (grøn), Middel (gul) eller Tung (rød). Vælg den i tildeleren (standard Middel); tryk på mærket på patienten for at ændre den.','«Næste patient til» ser på samlet tyngde (let 1, middel 2, tung 3) i stedet for antal, og farven på tallet ved hver forvagt følger tyngden.','Soveplanen vægter både status og tyngde, når den foreslår, hvem der er vågne først.']},
  {v:'6',d:'01.11.2026',items:['Status på hver patient som i forvagternes app: Modtagelse startet (rød), Modtaget (orange), Planlagt (blå) og ✓ Afslut. Nye patienter starter som Modtagelse startet.','Kortet viser forvagtens patienter fordelt på status.','Soveplanen bruger status: dem med mest uafsluttet arbejde (startet > modtaget > planlagt) foreslås vågne først, og planen advarer, hvis en, der skal sove, har patienter, der ikke er planlagt.']},
  {v:'5',d:'01.11.2026',items:['Soveplan: vælg fra kl. (standard 23:00) og til kl., og tryk «Lav soveplan». Halvdelen er vågen første halvdel af natten, den anden halvdel sover – ved halvtid kaldes de næste. Tryk på et navn for at flytte det til den anden halvdel.','Dem med flest aktive patienter foreslås vågne først. Sovende forvagter får mærket 💤 og springes over i «Næste patient til».','Kopiér soveplan som tekst, og slet eller ryd planen igen. Ny vagt rydder planen.']},
@@ -323,7 +323,7 @@ const ROOMLABEL={};
 for(const [z,list] of Object.entries(ZONES))list.forEach((it,i)=>{const [nr,...rest]=it.split(' ');list[i]=nr;if(rest.length)ROOMLABEL[nr]=rest.join(' ')});
 const ST=[['start','Modtagelse startet','Startet',3],['recv','Modtaget','Modtaget',2],['plan','Planlagt','Planlagt',1]];
 const stOf=c=>ST.find(x=>x[0]===(c.st||'start'))||ST[0];
-const PB=[['A','🗣️','Luftvej','#2f75b3'],['B','🫁','Respiration','#2e8a6b'],['C','❤️','Kredsløb','#c8462e'],['D','🧠','Neurologi','#6f5bab'],['E','🌡️','Eksponering','#b98316']];
+const PB=[['A','🗣️','Luftvej','#2f75b3'],['B','💨','Respiration','#2e8a6b'],['C','❤️','Kredsløb','#c8462e'],['D','🧠','Neurologi','#6f5bab'],['E','🌡️','Eksponering','#b98316']];
 const pbOf=c=>PB.find(x=>x[0]===c.pb)||null;
 const TY=[['l','Let',1],['m','Middel',2],['t','Tung',3]];
 const tyOf=c=>TY.find(x=>x[0]===(c.ty||'m'))||TY[1];
