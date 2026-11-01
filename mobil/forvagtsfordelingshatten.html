@@ -109,6 +109,24 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .kpi.act{border-color:color-mix(in srgb,var(--go) 50%,var(--line))}.kpi.act b{color:var(--go)}
 .kpi.dn{border-color:color-mix(in srgb,var(--done) 50%,var(--line))}.kpi.dn b{color:var(--done)}
 .donec{font-weight:700;color:var(--done)}
+.sleepform{display:grid;grid-template-columns:120px 120px auto;gap:8px;align-items:end;justify-content:start}
+.sp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.sp-half{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--bg)}
+.sp-half.now{border-color:var(--go);box-shadow:0 0 0 1px var(--go)}
+.sp-half h3{margin:0 0 8px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.sp-half h3 .t{font:700 .95rem var(--mono);color:var(--fg);letter-spacing:0}
+.sp-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.sp-row .k{font-size:.74rem;font-weight:700;width:52px;color:var(--muted)}
+.chipd{display:inline-flex;gap:5px;align-items:center;border:1px solid var(--line);border-left:4px solid var(--lc);border-radius:999px;padding:4px 10px;background:var(--surface);font-weight:700;font-size:.85rem;cursor:pointer}
+.chipd:hover{border-color:var(--go)}
+.chipd.zz{opacity:.75}
+.sp-status{margin-top:12px;padding:10px 12px;border-radius:6px;background:color-mix(in srgb,var(--go) 12%,var(--surface));font-weight:600}
+.sp-status b{font-family:var(--mono)}
+.sp-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.zzz{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--muted);flex-basis:auto}
+.zzz.sl{background:color-mix(in srgb,var(--l-hu) 22%,var(--surface));color:var(--fg)}
+.doc.asleep{opacity:.72}
+@media (max-width:600px){.sleepform{grid-template-columns:1fr 1fr}.sleepform button{grid-column:1/-1}.sp-grid{grid-template-columns:1fr}}
 .doc-h .nexttag{font-size:.68rem;font-weight:700;color:var(--go);text-transform:uppercase;letter-spacing:.06em}
 .cases{list-style:none;margin:0;padding:0 12px;display:flex;flex-direction:column;gap:6px}
 .case{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-left:4px solid var(--go);border-radius:5px;background:var(--bg)}
@@ -193,6 +211,19 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
     <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem nedenfor.</p>
   </section>
 
+  <section class="card" id="sleepCard">
+    <div class="card-h"><h2>Soveplan</h2><span class="sum" id="sleepSum"></span></div>
+    <div class="card-b">
+      <div class="sleepform" id="sleepForm">
+        <div><label class="lbl" for="sleepFrom">Fra kl.</label><input id="sleepFrom" type="time" value="23:00"></div>
+        <div><label class="lbl" for="sleepTo">Til kl.</label><input id="sleepTo" type="time" value="08:00"></div>
+        <button class="primary" type="button" id="sleepMake">Lav soveplan</button>
+      </div>
+      <div id="sleepPlan"></div>
+      <p class="note" id="sleepNote">Halvdelen arbejder første halvdel af natten, mens den anden halvdel sover; ved halvtid kaldes de næste. Fordel først alle patienter på de hænder, der er. Tryk på et navn i planen for at flytte det til den anden halvdel.</p>
+    </div>
+  </section>
+
   <section class="card">
     <div class="card-h"><h2>Forvagter på arbejde</h2><span class="sum" id="rosterSum"></span></div>
     <div class="card-b">
@@ -227,8 +258,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='4';
+const APP_VERSION='5';
 const CHANGELOG=[
+ {v:'5',d:'01.11.2026',items:['Soveplan: vælg fra kl. (standard 23:00) og til kl., og tryk «Lav soveplan». Halvdelen er vågen første halvdel af natten, den anden halvdel sover – ved halvtid kaldes de næste. Tryk på et navn for at flytte det til den anden halvdel.','Dem med flest aktive patienter foreslås vågne først. Sovende forvagter får mærket 💤 og springes over i «Næste patient til».','Kopiér soveplan som tekst, og slet eller ryd planen igen. Ny vagt rydder planen.']},
  {v:'4',d:'01.11.2026',items:['Antal patienter er mere synligt: et stort tal på hver forvagt – grønt «ledig», blåt ved 1, orange ved 2 og rødt ved 3 eller flere aktive.','Overblik ved Forvagter: på arbejde, aktive og afsluttede som tydelige tal.']},
  {v:'3',d:'01.11.2026',items:['Tildeleren har Zone og Stue som rullemenuer (samme stuer som Fieldnotes) i stedet for et fritekstfelt – så der aldrig skal skrives CPR eller navn. Vælger du en stue, sættes zonen selv, og zonen huskes til næste patient.','Zone og stue står på patienten, i loggen og i fortryd-beskeden.']},
  {v:'2',d:'01.11.2026',items:['«Til kl.» på hver forvagt: kortet viser, hvor længe forvagten er der («Til kl. 16:00 · 1 t 20 min tilbage»), orange de sidste 30 min og rødt efter fri. Tiden kan rettes i listen.','«Næste patient til» springer forvagter over, der har fri, og tager dem med under 30 min tilbage sidst.']},
@@ -276,9 +308,65 @@ const done=id=>S.cases.filter(c=>c.doc===id&&c.end);
 const onDuty=()=>S.doctors.filter(d=>d.on);
 const lastAssigned=id=>Math.max(0,...S.cases.filter(c=>c.doc===id).map(c=>c.start));
 
+/* ---------- soveplan ---------- */
+function atAfter(hhmm,base){const [h,m]=hhmm.split(':').map(Number);const d=new Date(base);d.setHours(h,m,0,0);if(d.getTime()<=base)d.setDate(d.getDate()+1);return d.getTime()}
+function planPhase(){const P=S.sleep;if(!P) return null;const t=Date.now();return t<P.start?'before':t<P.mid?'first':t<P.end?'second':'over'}
+function sleepOf(id){const P=S.sleep,ph=planPhase();if(!P||ph==='over'||!ph) return null;
+  const inA=P.a.includes(id),inB=P.b.includes(id);if(!inA&&!inB) return null;
+  if(ph==='before') return {s:'plan',txt:inA?`Vågen ${hm(P.start)}–${hm(P.mid)}`:`Sover ${hm(P.start)}–${hm(P.mid)}`};
+  if(ph==='first') return inA?{s:'awake',txt:`Vågen til ${hm(P.mid)}`}:{s:'asleep',txt:`💤 Sover til ${hm(P.mid)}`};
+  return inB?{s:'awake',txt:`Vågen til ${hm(P.end)}`}:{s:'asleep',txt:`💤 Sover til ${hm(P.end)}`};
+}
+const isAsleep=id=>{const x=sleepOf(id);return !!x&&x.s==='asleep'};
+function makePlan(){
+  const ds=onDuty();if(ds.length<2){toast('Der skal være mindst 2 forvagter på arbejde');return}
+  const f=$('#sleepFrom').value||'23:00',t=$('#sleepTo').value||'08:00';
+  const start=atAfter(f,Date.now()-60*60000),end=atAfter(t,start),mid=start+Math.round((end-start)/2/60000)*60000;
+  // vågne først: dem med flest aktive patienter (de er i gang), derefter dem der senest fik en patient
+  const order=ds.slice().sort((x,y)=>active(y.id).length-active(x.id).length||lastAssigned(y.id)-lastAssigned(x.id));
+  const nA=Math.ceil(ds.length/2);
+  const before=JSON.stringify(S);
+  S.sleep={start,mid,end,from:f,to:t,a:order.slice(0,nA).map(d=>d.id),b:order.slice(nA).map(d=>d.id),made:Date.now()};
+  try{localStorage.setItem(KEY+'.sleepFrom',f);localStorage.setItem(KEY+'.sleepTo',t)}catch(e){}
+  save();render();toast(`Soveplan ${hm(start)}–${hm(end)}, skift kl. ${hm(mid)}`,true);undoState=before;
+}
+function planText(){const P=S.sleep;if(!P) return '';const nm=ids=>ids.map(id=>{const d=S.doctors.find(x=>x.id===id);return d?d.name+' ('+lvl(d.level)[1]+')':'?'}).join(', ')||'–';
+  return `Soveplan forvagter\n${hm(P.start)}–${hm(P.mid)}: Vågen: ${nm(P.a)}. Sover: ${nm(P.b)}.\n${hm(P.mid)}–${hm(P.end)}: Vågen: ${nm(P.b)}. Sover: ${nm(P.a)}.\nVed skift kl. ${hm(P.mid)} kaldes ${nm(P.b)}.`}
+function renderSleep(){
+  const P=S.sleep,ph=planPhase();
+  $('#sleepForm').hidden=!!P&&ph!=='over';
+  try{if(!P){const f=localStorage.getItem(KEY+'.sleepFrom'),t=localStorage.getItem(KEY+'.sleepTo');if(f&&!$('#sleepFrom').dataset.touched)$('#sleepFrom').value=f;if(t&&!$('#sleepTo').dataset.touched)$('#sleepTo').value=t}}catch(e){}
+  if(!P){$('#sleepPlan').innerHTML='';$('#sleepSum').textContent='';$('#sleepNote').hidden=false;return}
+  $('#sleepNote').hidden=ph!=='over'&&ph!==null?true:false;
+  const chips=(ids,zz)=>ids.map(id=>{const d=S.doctors.find(x=>x.id===id);return d?`<button type="button" class="chipd${zz?' zz':''}" data-swap="${id}" style="--lc:var(--l-${d.level})" title="Flyt ${esc(d.name)} til den anden halvdel">${zz?'💤 ':''}${esc(d.name)} <span class="lv" style="font-size:.6rem">${esc(lvl(d.level)[1])}</span></button>`:''}).join('')||'<span class="muted">–</span>';
+  const now=Date.now();
+  let status='';
+  if(ph==='before')status=`Starter kl. <b>${hm(P.start)}</b> (om ${dur(P.start-now)}). Fordel patienterne på alle hænder indtil da.`;
+  else if(ph==='first')status=`1. halvdel i gang · skift kl. <b>${hm(P.mid)}</b> (om ${dur(P.mid-now)}) – så kaldes ${(n=>n.length>1?n.slice(0,-1).join(', ')+' og '+n[n.length-1]:n[0]||'–')(P.b.map(id=>esc((S.doctors.find(x=>x.id===id)||{}).name||'?')))}.`;
+  else if(ph==='second')status=`2. halvdel i gang · natten slutter kl. <b>${hm(P.end)}</b> (om ${dur(P.end-now)}).`;
+  else status=`Soveplanen sluttede kl. ${hm(P.end)}.`;
+  $('#sleepSum').textContent=ph==='over'?'slut':`${hm(P.start)}–${hm(P.end)}`;
+  $('#sleepPlan').innerHTML=`<div class="sp-grid">
+    <div class="sp-half${ph==='first'?' now':''}"><h3>1. halvdel <span class="t">${hm(P.start)}–${hm(P.mid)}</span></h3>
+      <div class="sp-row"><span class="k">Vågen</span>${chips(P.a)}</div><div class="sp-row"><span class="k">Sover</span>${chips(P.b,1)}</div></div>
+    <div class="sp-half${ph==='second'?' now':''}"><h3>2. halvdel <span class="t">${hm(P.mid)}–${hm(P.end)}</span></h3>
+      <div class="sp-row"><span class="k">Vågen</span>${chips(P.b)}</div><div class="sp-row"><span class="k">Sover</span>${chips(P.a,1)}</div></div>
+  </div>
+  <div class="sp-status">${status}</div>
+  <div class="sp-acts"><button type="button" id="sleepCopy">Kopiér soveplan</button><button type="button" id="sleepDel">${ph==='over'?'Ryd soveplan':'Slet soveplan'}</button></div>`;
+}
+$('#sleepMake').addEventListener('click',makePlan);
+['sleepFrom','sleepTo'].forEach(id=>$('#'+id).addEventListener('input',e=>e.target.dataset.touched='1'));
+$('#sleepCard').addEventListener('click',async e=>{
+  const sw=e.target.closest('[data-swap]');if(sw&&S.sleep){const id=sw.dataset.swap,P=S.sleep;if(P.a.includes(id)){P.a=P.a.filter(x=>x!==id);P.b.push(id)}else{P.b=P.b.filter(x=>x!==id);P.a.push(id)}save();render();return}
+  if(e.target.id==='sleepCopy'){try{await navigator.clipboard.writeText(planText());toast('Soveplanen er kopieret')}catch(_){toast('Kopiering blev blokeret')}return}
+  if(e.target.id==='sleepDel'){const before=JSON.stringify(S);S.sleep=null;save();render();toast('Soveplanen er slettet',true);undoState=before}
+});
+
 /* Forslag: færrest aktive → længst siden sidste tildeling (aldrig tildelt først) → tilføjet først */
 function next(){
-  const ds=onDuty().filter(d=>left(d)===null||left(d)>0);if(!ds.length) return null;
+  let ds=onDuty().filter(d=>left(d)===null||left(d)>0);if(!ds.length) return null;
+  const aw=ds.filter(d=>!isAsleep(d.id));if(aw.length)ds=aw;
   const late=d=>{const l=left(d);return l!==null&&l<=SOON_MIN*60000?1:0};
   return ds.slice().sort((a,b)=>late(a)-late(b)||active(a.id).length-active(b.id).length||lastAssigned(a.id)-lastAssigned(b.id)||a.added-b.added)[0];
 }
@@ -356,7 +444,7 @@ $('#newShift').addEventListener('click',()=>{
   const b=$('#newShift');
   if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='Ja, ny vagt';$('#cancelShift').hidden=false;shiftT=setTimeout(disarm,6000);return}
   disarm();const before=JSON.stringify(S);
-  S.cases=[];S.doctors.forEach(d=>d.on=false);save();render();toast('Ny vagt – tilføj eller genaktivér forvagterne',true);undoState=before;
+  S.cases=[];S.sleep=null;S.doctors.forEach(d=>d.on=false);save();render();toast('Ny vagt – tilføj eller genaktivér forvagterne',true);undoState=before;
 });
 $('#cancelShift').addEventListener('click',disarm);
 
@@ -380,6 +468,7 @@ $('#fileIn').addEventListener('change',async e=>{
 
 /* ---------- visning ---------- */
 function render(){
+  renderSleep();
   const now=Date.now(),ds=onDuty(),n=next();
   // står for skud
   const shot=$('#shot');shot.classList.toggle('empty',!n);
@@ -394,8 +483,9 @@ function render(){
     const act=active(d.id).sort((a,b)=>a.start-b.start),dn=done(d.id),la=lastAssigned(d.id);
     const avg=dn.length?dur(dn.reduce((s,c)=>s+(c.end-c.start),0)/dn.length):'–';
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
-    return `<article class="doc${n&&n.id===d.id?' next':''}" style="--lc:var(--l-${d.level})">
-      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}<span class="load l${Math.min(act.length,3)}" title="${act.length} aktive patienter"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${esc(untilTxt(d))}</span>`:''}</div>
+    const zz=sleepOf(d.id);
+    return `<article class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
+      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${Math.min(act.length,3)}" title="${act.length} aktive patienter"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${esc(untilTxt(d))}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${esc(caseTxt(c)||'Patient')}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}</span>
