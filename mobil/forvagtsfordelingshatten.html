@@ -85,8 +85,6 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .shot .assign .zs{flex:1 1 130px;min-width:0}
 .shot .assign .zs select{width:100%}
 .shot .assign .rh{font-size:.72rem;color:var(--go);font-weight:600;min-height:1em}
-.shot .assign button{align-self:flex-start;margin-top:18px}
-.shot .assign button{flex:none;font-size:1rem;padding:10px 18px}
 .shot.empty{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
 
 /* Forvagter */
@@ -160,8 +158,8 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .case.t-t{background:color-mix(in srgb,var(--t-t) 11%,var(--bg))}
 .shot .assign .zs.pb{flex:1 1 100%}
 .shot .assign .zs.ty{flex:1 1 200px}
-.shot .assign .zs.note{flex:2 1 220px}
-.shot .assign .zs.note input{width:100%}
+
+
 .cnote{display:block;font-weight:500;font-size:.85rem;color:var(--muted)}
 .pbseg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .pbseg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:6px;background:var(--surface);color:var(--fg);font-size:.85rem}
@@ -217,13 +215,34 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
 @media (max-width:600px){
   .addrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-  .shot .assign button{margin-top:0;flex:1 1 100%}
   .addrow>div:first-child{grid-column:1/-1}
   .addrow button{grid-column:1/-1}
   .log li{grid-template-columns:78px minmax(0,1fr) auto;padding:7px 10px}
   input,select{font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---------- tildeler: afstemt gitter, samme højde på alle felter ---------- */
+.shot .assign{display:grid!important;gap:10px 10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr) auto;
+  grid-template-areas:"zone stue pb pb" "ty note note btn";align-items:start}
+.shot .assign .zs{flex:none!important;min-width:0;display:flex;flex-direction:column}
+.shot .assign .a-zone{grid-area:zone}.shot .assign .a-stue{grid-area:stue}.shot .assign .a-pb{grid-area:pb}
+.shot .assign .a-ty{grid-area:ty}.shot .assign .a-note{grid-area:note}.shot .assign .a-btn{grid-area:btn}
+.shot .assign select,.shot .assign input,.shot .assign .tyseg,.shot .assign .pbseg button,.shot .assign #assignNext{height:40px;box-sizing:border-box}
+.shot .assign select,.shot .assign input{width:100%;padding-block:0}
+.shot .assign .lbl{display:block;height:16px;line-height:16px;margin:0 0 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shot .assign #assignNext{flex:none}
+.shot .assign .rh{display:inline;font-size:.68rem;color:var(--go);text-transform:none;letter-spacing:0;margin-left:4px;min-height:0}
+.shot .assign #assignNext{margin:0!important;padding:0 18px;font-size:.95rem;white-space:nowrap;align-self:stretch;width:100%}
+.pbseg{gap:4px}
+.pbseg button{flex-direction:row!important;justify-content:center;gap:4px!important;padding:0 2px!important;border-top-width:1px!important;border-bottom:3px solid var(--pc)!important}
+.pbseg button .em{font-size:1rem!important}
+.pbseg button b{font-size:.85rem!important}
+.tyseg button{padding:0 6px!important;font-size:.82rem!important;height:100%}
+@media (max-width:700px){
+  .shot .assign{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"zone stue" "pb pb" "ty ty" "note note" "btn btn"}
+  .shot .assign .a-btn .lbl{display:none}
+  .shot .assign #assignNext{height:44px}
+}
 </style>
 </head>
 <body>
@@ -237,12 +256,12 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
     <span class="hat" aria-hidden="true">🎩</span>
     <div><div class="why" id="shotLabel">Næste patient til</div><div class="who" id="shotWho">–</div><div class="why" id="shotWhy"></div></div>
     <div class="assign">
-      <div class="zs"><label class="lbl" for="caseZone">Zone</label><select id="caseZone"></select></div>
-      <div class="zs"><label class="lbl" for="caseRoom">Stue</label><select id="caseRoom"></select><div id="roomHint" class="rh"></div></div>
-      <div class="zs pb"><span class="lbl">Problematik</span><div class="pbseg" id="pbSeg" role="group" aria-label="Problematik A–E"></div></div>
-      <div class="zs ty"><span class="lbl">Tyngde</span><div class="tyseg" id="tySeg" role="group" aria-label="Estimeret tyngde"><button type="button" data-ty="l">Let</button><button type="button" data-ty="m" aria-pressed="true">Middel</button><button type="button" data-ty="t">Tung</button></div></div>
-      <div class="zs note"><label class="lbl" for="caseNote">Note</label><input id="caseNote" placeholder="Kort note – ingen CPR eller navn" autocomplete="off" maxlength="60"></div>
-      <button class="primary" id="assignNext" type="button">Tildel patient</button>
+      <div class="zs a-zone"><label class="lbl" for="caseZone">Zone</label><select id="caseZone"></select></div>
+      <div class="zs a-stue"><label class="lbl" for="caseRoom">Stue <span id="roomHint" class="rh"></span></label><select id="caseRoom"></select></div>
+      <div class="zs pb a-pb"><span class="lbl">Problematik</span><div class="pbseg" id="pbSeg" role="group" aria-label="Problematik A–E"></div></div>
+      <div class="zs ty a-ty"><span class="lbl">Tyngde</span><div class="tyseg" id="tySeg" role="group" aria-label="Estimeret tyngde"><button type="button" data-ty="l">Let</button><button type="button" data-ty="m" aria-pressed="true">Middel</button><button type="button" data-ty="t">Tung</button></div></div>
+      <div class="zs a-note"><label class="lbl" for="caseNote">Note</label><input id="caseNote" placeholder="Kort note – ingen CPR eller navn" autocomplete="off" maxlength="60"></div>
+      <div class="zs a-btn"><span class="lbl">&nbsp;</span><button class="primary" id="assignNext" type="button">Tildel patient</button></div>
     </div>
   </section>
 
