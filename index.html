@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Akut-Flow</title>
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b232b">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Akut-Flow">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+<!--/PWA-->
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bar:#2c3844; --bar-2:#3b4855; --bar-fg:#ffffff; --bar-muted:#a7b7c7;
+  --bg:#eceff2; --surface:#ffffff; --fg:#1e2a35; --muted:#66737f; --line:#d2d8de;
+  --accent:#41505f; --accent-soft:#e2e7ec; --go:#2f6f8f; --hit:#c8462e;
+  --warn:#a35a00; --warn-soft:#fbefdd; --done:#2e8a6b; --done-soft:#e3f2ec;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c;
+  --warn:#f0a85a; --warn-soft:#3b2d1a; --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c;
+  --warn:#f0a85a; --warn-soft:#3b2d1a; --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--sans);font-size:15px;line-height:1.45;background:var(--bg);color:var(--fg);min-height:100vh}
+.topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+.topbar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.verbtn{font-family:var(--mono);font-size:.74rem;background:transparent;color:var(--bar-muted);border:1px solid var(--bar-muted);border-radius:999px;padding:2px 9px;cursor:pointer;position:relative}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+.topbtns{margin-left:auto;display:flex;gap:8px}
+.topbtns button{font:600 .82rem var(--sans);padding:6px 12px;background:transparent;color:var(--bar-fg);border:1px solid var(--bar-muted);border-radius:5px;cursor:pointer}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.tile{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--go);border-radius:6px;padding:16px;min-height:150px;transition:border-color .15s}
+.tile:hover{border-color:var(--accent);border-top-color:var(--go)}
+.tile .ic{font-size:1.6rem;line-height:1}
+.tile h2{margin:4px 0 0;font-size:.95rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.tile p{margin:0;color:var(--muted);font-size:.88rem}
+.tile .go{margin-top:auto;font-weight:700;color:var(--go);font-size:.85rem}
+.tile.off{border-top-color:var(--line);opacity:.7;cursor:default}
+.tile.off .go{color:var(--warn)}
+.t-j{border-top-color:#2e8a6b}.t-f{border-top-color:#b98316}.t-n{border-top-color:#6f5bab}
+.card{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card h3{margin:0;padding:9px 14px;background:var(--bar-2);color:#fff;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.card .b{padding:12px 14px;font-size:.9rem}
+.card .b p{margin:0 0 8px}.card .b p:last-child{margin:0}
+.btn{font:600 .9rem var(--sans);padding:8px 14px;border-radius:5px;border:1px solid var(--line);background:var(--bar);color:#fff;cursor:pointer}
+.muted{color:var(--muted)}
+dialog{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+.dh h2{margin:0;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+.dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer}
+.db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <h1>Akut-Flow</h1><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button>
+  <div class="topbtns"><button id="installBtn" hidden>⇩ Installér</button><button id="themeToggle"></button></div>
+</div></header>
+<main>
+  <div class="tiles">
+    <a class="tile t-j" href="journalflow.html"><span class="ic">📝</span><h2>Journalflow</h2><p>Journalkladde som klikjournalen med fraser, normalfund og planer. Send kladden til din mail.</p><span class="go">Åbn ▸</span></a>
+    <a class="tile t-f" href="fordelingshatten.html"><span class="ic">🎩</span><h2>Fordelingshatten</h2><p>Optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
+    <div class="tile t-n off" aria-disabled="true"><span class="ic">🗒️</span><h2>Noteflow</h2><p>Hurtige vagtnoter med zone, stue og prioritet.</p><span class="go">Kommer i næste version</span></div>
+  </div>
+  <section class="card"><h3>Installér på telefonen</h3><div class="b">
+    <p><b>iPhone (Safari):</b> tryk Del <span class="muted">(firkant med pil)</span> → <b>Føj til hjemmeskærm</b>.</p>
+    <p><b>Android (Chrome):</b> tryk <b>⇩ Installér</b> øverst, eller menuen ⋮ → <b>Installer app</b>.</p>
+    <p class="muted">Appen virker også uden net, når den har været åbnet én gang. Alt hvad du skriver, gemmes kun på denne enhed.</p>
+  </div></section>
+</main>
+<dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
+<script>
+const APP_VERSION='1';
+const CHANGELOG=[
+ {v:'1',d:'01.11.2026',items:['Akut-Flow samler Journalflow og Fordelingshatten i én app, der kan installeres på telefonen og virker offline.','Journalflow bygger på Pasteplaner v34 og kan sende kladden til en mailadresse, du selv skriver ind i appen.','Noteflow kommer med i næste version.']}
+];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function paintTheme(){const d=document.documentElement.dataset.theme!=='light';$('#themeToggle').textContent=d?'☀ Lys':'☾ Mørk'}
+$('#themeToggle').addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}paintTheme()});
+paintTheme();
+const vb=$('#verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;
+let seen='';try{seen=localStorage.getItem('akutflow.seenVersion')||''}catch(e){}
+if(seen!==APP_VERSION)vb.classList.add('new');
+vb.addEventListener('click',()=>{$('#verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver"><b>Version ${esc(c.v)}</b><span class="d">${esc(c.d)}</span>${c.v===APP_VERSION?'<span class="cur">AKTUEL</span>':''}<ul>${c.items.map(i=>'<li>'+esc(i)+'</li>').join('')}</ul></div>`).join('');$('#verDlg').showModal();vb.classList.remove('new');try{localStorage.setItem('akutflow.seenVersion',APP_VERSION)}catch(e){}});
+$('#verClose').addEventListener('click',()=>$('#verDlg').close());
+let deferred=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;$('#installBtn').hidden=false});
+$('#installBtn').addEventListener('click',async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice.catch(()=>{});deferred=null;$('#installBtn').hidden=true});
+</script>
+</body>
+</html>
