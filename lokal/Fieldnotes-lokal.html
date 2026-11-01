@@ -130,6 +130,15 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 @media (max-width:760px){input,select,textarea{font-size:16px}.topbtns{margin-left:0}}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 </style>
+<script>
+/* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
+async function pickSave(blob,name,id){
+  if(typeof window.showSaveFilePicker!=='function') return null;
+  try{const ext='.'+name.split('.').pop();const h=await window.showSaveFilePicker({id:id||'akutflow',suggestedName:name,types:[{description:ext.slice(1).toUpperCase()+'-fil',accept:{[blob.type||'application/octet-stream']:[ext]}}]});
+    const w=await h.createWritable();await w.write(blob);await w.close();return true}
+  catch(e){if(e&&e.name==='AbortError')return false;return null}
+}
+</script>
 </head>
 <body>
 <div class="topbar"><div class="topbar-in"><h1>Fieldnotes</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
@@ -273,9 +282,10 @@ async function initFile(){
 }
 
 /* ---------- eksport / import / kopi ---------- */
-$('btnExport').onclick=()=>{
+$('btnExport').onclick=async()=>{
   const d=new Date();
   const blob=new Blob([JSON.stringify({version:2,saved:d.toISOString(),notes},null,2)],{type:'application/json'});
+  const pk=await pickSave(blob,`fieldnotes-${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}.json`,'fieldnotes');if(pk!==null)return;
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=`fieldnotes-${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}.json`;
   a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
@@ -428,7 +438,7 @@ $('btnClearDone').onclick=()=>{
 /* ---------- versionshistorik ---------- */
 const APP_VERSION='2';
 const CHANGELOG=[
- {v:'2',d:'01.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.']},
+ {v:'2',d:'01.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
  {v:'1',d:'31.10.2026',items:['Noter med patient, zone og stue (rullemenuer), CPR/tlf., afdeling og 5 prioriteter.','Færdig-markering, filtre, søgning, Kopiér overlevering, Skjul CPR og datafil (fieldnotes.json). Henter noter fra Vagtnoter første gang.']}
 ];
 (function(){const vb=$('verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;let seen='';try{seen=localStorage.getItem('fieldnotes.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');

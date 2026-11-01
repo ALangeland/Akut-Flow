@@ -175,7 +175,17 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
 .ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
 .cur{font-size:.68rem;font-weight:700;background:#e3f2ec;color:#2e8a6b;border-radius:4px;padding:1px 6px;margin-left:6px}
+.mini.skipall{grid-column:1/-1}
 </style>
+<script>
+/* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
+async function pickSave(blob,name,id){
+  if(typeof window.showSaveFilePicker!=='function') return null;
+  try{const ext='.'+name.split('.').pop();const h=await window.showSaveFilePicker({id:id||'akutflow',suggestedName:name,types:[{description:ext.slice(1).toUpperCase()+'-fil',accept:{[blob.type||'application/octet-stream']:[ext]}}]});
+    const w=await h.createWritable();await w.write(blob);await w.close();return true}
+  catch(e){if(e&&e.name==='AbortError')return false;return null}
+}
+</script>
 </head>
 <body>
 
@@ -264,7 +274,8 @@ $('zones').innerHTML=ZONES.map(([z,zn])=>`
       <div class="groups">
       <div class="grp"><span class="grp-h">Akut</span><div class="fields">${SPEC.map(([k,n])=>`<div class="field sp" style="${col(k)}"><label for="in-${z}-${k}">${n}</label>${stepper(z,k,'Akut-'+n+', '+zn)}</div>`).join('')}</div></div>
       <div class="grp"><span class="grp-h">Til fordeling</span><div class="fields two">${AKUT.map(([k,n])=>`<div class="field ak"><label for="in-${z}-${k}">${k==='amb'?'Amb. vurd.':n}</label>${stepper(z,k,n+', '+zn,true)}
-          <div class="mini"><span>heraf ikke visit.</span>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></div>`).join('')}
+          <div hidden>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></div>`).join('')}
+          <div class="mini skipall"><span>heraf ikke visit.</span>${stepper(z,'skip','Ikke visiteres i alt, '+zn)}</div>
       </div></div>
       </div>
     </div>
@@ -284,6 +295,7 @@ function applyState(d,isExample){
   ZONES.forEach(([z])=>FIELDS.forEach(k=>inp(z,k).value=(d[z]&&d[z][k])??''));
   if(Array.isArray(d.rnd)&&d.rnd.length===SPEC.length) rnd=d.rnd.slice();
   log=Array.isArray(d.log)?d.log.slice():[];
+  ZONES.forEach(([z])=>{const s=val(z,'akutI')+val(z,'ambI');inp(z,'skip').value=s||''});
   $('exampleNote').hidden=!isExample;
 }
 function getState(){
@@ -501,8 +513,9 @@ async function initFile(){
 }
 $('openFile').addEventListener('click',openFile);
 $('newFile').addEventListener('click',newFile);
-$('dlFile').addEventListener('click',()=>{
-  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([toFile()],{type:'application/json'}));
+$('dlFile').addEventListener('click',async()=>{
+  try{const pk=await pickSave(new Blob([toFile()],{type:'application/json'}),stampName(),'fordelingshatten');if(pk===false)return;if(pk){status('ok','Fil gemt','Indlæs den næste gang.');return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([toFile()],{type:'application/json'}));
     a.download=stampName();document.body.appendChild(a);a.click();a.remove();
     status('ok','Fil hentet','Gem filen i din mappe og indlæs den næste gang.');}catch(e){}
 });
@@ -514,7 +527,8 @@ $('upFile').addEventListener('change',async e=>{
 });
 
 /* ---------- Knapper og felter ---------- */
-function changed(){snapshot=null;$('undo').hidden=true;save();calc()}
+function syncSkip(){ZONES.forEach(([z])=>{const s=val(z,'skip'),a=Math.min(s,val(z,'akut')),b=Math.min(s-a,val(z,'amb'));inp(z,'akutI').value=a||'';inp(z,'ambI').value=b||'';if(a+b<s)inp(z,'skip').value=(a+b)||''})}
+function changed(){syncSkip();snapshot=null;$('undo').hidden=true;save();calc()}
 document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('input',changed));
 $('zones').addEventListener('click',e=>{
   const b=e.target.closest('button[data-step]'); if(!b) return;
@@ -562,7 +576,7 @@ load(); calc(); initFile();
 (function(){
 const APP_VERSION='2';
 const CHANGELOG=[
- {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
+ {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
  {v:'1',d:'31.10.2026',items:['Optælling pr. speciale i ASA-zonerne 7-8, 9-10 og 11-12, fordeling af akut medicinske (lige antal, samme zone, lodtrækning), "står for skud", log og regnskabsfil.']}
 ];
 const $$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

@@ -1829,11 +1829,19 @@ async function fsNew(){
     await useHandle(h,{write:true});toast('Gemmer nu i '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Kunne ikke oprette filen.';renderSide()}}
 }
+// Gem: vælg selv mappe og filnavn (Edge/Chrome på PC) – ellers almindelig hentning til Overførsler
+async function saveBlobAs(blob,name,id){
+  if(typeof window.showSaveFilePicker==='function'){
+    try{const h=await window.showSaveFilePicker({id:id||'ghostwriter',suggestedName:name,types:[{description:'Ghostwriter',accept:{[blob.type||'application/json']:['.'+name.split('.').pop()]}}]});
+      const w=await h.createWritable();await w.write(blob);await w.close();return {ok:true,name:h.name}}
+    catch(e){if(e&&e.name==='AbortError')return {ok:false,cancel:true}}
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+  return {ok:true,name,dl:true};
+}
 function exportJson(){
   const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  a.download='pasteplaner-'+new Date().toISOString().slice(0,10)+'.json';
-  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+  saveBlobAs(b,'ghostwriter-planer-'+new Date().toISOString().slice(0,10)+'.json','ghostwriter-gem');
 }
 async function importFiles(files){
   let added=0,merged=0,bad=0;
@@ -3179,8 +3187,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='37';
+const APP_VERSION='38';
 const CHANGELOG=[
+ {v:'38',d:'01.11.2026',items:['💾 Gem (og Eksportér mine ændringer) spørger nu, hvor filen skal gemmes, og husker mappen til næste gang. Gælder i Edge og Chrome på PC – ellers havner filen i Overførsler som før.']},
  {v:'37',d:'01.11.2026',items:['📎 Send kladden sender kladden som vedhæftet fil via telefonens del-menu (vælg Mail). Modtageradressen kopieres, så den kan sættes ind i Til. ✉ Send som tekst findes stadig under ✉ Send / mail.','Webudgaven har også Send-knapperne.','Lokal: træk filen fra mailen ind i Ghostwriter, eller brug 📂 Indlæs fil.']},
  {v:'36',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter. Filerne hedder ghostwriter.html og Ghostwriter-lokal.html. Kladder sendt på mail fra den gamle udgave kan stadig indlæses.']},
  {v:'35',d:'01.11.2026',items:['Pasteplaner hedder nu Journalflow og findes i tre udgaver, der hentes fra GitHub (ALangeland/Akut-Flow): lokal fil til PC, webudgave i browseren og mobiludgave, der kan installeres på telefonen.','Mobil: ✉ Send til mail sender hele kladden til den adresse, du skriver under ✉ Mail (gemmes kun på telefonen). På telefonen er kopiér-knapperne skjult.','Lokal: 📥 Indlæs fra mail – indsæt mailen, og kladden genopstår felt for felt (også A-gas, værdier, valg og NIHSS).','Mobil og web har ⌂-knap til Akut-Flow-startsiden.']},
@@ -3252,22 +3261,18 @@ function exportChanges(){
   const out={app:'pasteplaner-aendringer',appVersion:APP_VERSION,seedRev:SEED_REV,exported:new Date().toISOString(),
     note:'Egne ændringer til integration. Indeholder ikke kladden (patientdata) eller brugsstatistik.',...c};
   const b=new Blob([JSON.stringify(out,null,1)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='pasteplaner-aendringer-v'+APP_VERSION+'-'+new Date().toISOString().slice(0,10)+'.json';
-  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-  toast('Ændringsfil gemt – vedhæft den i chatten med Claude');
+  saveBlobAs(b,'ghostwriter-aendringer-v'+APP_VERSION+'-'+new Date().toISOString().slice(0,10)+'.json','ghostwriter-aendringer').then(r=>{if(r.ok)toast('Ændringsfil gemt: '+r.name+' – vedhæft den i chatten med Claude')});
 }
 $('#chgBtn').addEventListener('click',exportChanges);
 
 /* ---------- flyt mellem computere: eksport/indlæs alt ---------- */
 const SETTING_KEYS=['pasteplaner.nfMode','pasteplaner.klPick','pasteplaner.insOpen','pasteplaner.klRoute','pasteplaner.nfLabels','pasteplaner.klType','alb-theme'];
-function exportAll(){
+async function exportAll(){
   const settings={};for(const k of SETTING_KEYS){try{const v=localStorage.getItem(k);if(v!==null)settings[k]=v}catch(e){}}
   const out={...S,app:'pasteplaner',appVersion:APP_VERSION,exported:new Date().toISOString(),settings,note:'Alle planer, normalfund og indstillinger. Indeholder ikke kladden (patientdata).'};
   const b=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);
-  const d=new Date();a.download=`pasteplaner-alt-${d.toISOString().slice(0,10)}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;
-  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
-  toast('Gemt: '+S.plans.length+' planer + normalfund og indstillinger – filen ligger i Overførsler');
+  const d=new Date();const r=await saveBlobAs(b,`ghostwriter-alt-${d.toISOString().slice(0,10)}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`,'ghostwriter-gem');
+  if(r.ok)toast('Gemt: '+S.plans.length+' planer + normalfund og indstillinger – '+(r.dl?'filen ligger i Overførsler':r.name));
 }
 async function importAll(file){
   let d;try{d=JSON.parse(await file.text())}catch(e){toast('Filen kunne ikke læses');return}
