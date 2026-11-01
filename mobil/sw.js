@@ -1,6 +1,6 @@
 // Akut-Flow service worker: appen virker offline. Sider hentes fra nettet først (så opdateringer kommer med det samme)
 // og falder tilbage på den gemte kopi uden net. Ingen brugerdata går gennem service workeren.
-const CACHE = 'akut-flow-v1';
+const CACHE = 'akut-flow-v2';
 const CORE = [
   './', './index.html', './journalflow.html', './fordelingshatten.html',
   './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png',

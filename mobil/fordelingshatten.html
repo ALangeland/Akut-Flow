@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fordelingshatten</title>
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b232b">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fordelingshatten">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+<!--/PWA-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: Cetrea-agtig mørk topbjælke, regnskabsfil, "står for skud", én sektion pr. ASA-zone, status, log */
+:root{
+  --bar:#2c3844; --bar-2:#3b4855; --bar-fg:#ffffff; --bar-muted:#a7b7c7;
+  --bg:#eceff2; --surface:#ffffff; --fg:#1e2a35; --muted:#66737f; --line:#d2d8de;
+  --accent:#41505f; --accent-soft:#e2e7ec; --go:#2f6f8f; --hit:#c8462e;
+  --c-inf:#2e8a6b; --c-endo:#b98316; --c-gas:#b4532c; --c-nyre:#6f5bab; --c-lunge:#2f75b3; --warn:#a35a00; --warn-soft:#fbefdd;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bar:#1b232b; --bar-2:#28323c; --bar-fg:#ffffff; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --c-inf:#5cc79f; --c-endo:#e8b54a; --c-gas:#ec8a5f; --c-nyre:#a894e6; --c-lunge:#6eb0ec; --warn:#f0a85a; --warn-soft:#3b2d1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bar:#1b232b; --bar-2:#28323c; --bar-fg:#ffffff; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --c-inf:#5cc79f; --c-endo:#e8b54a; --c-gas:#ec8a5f; --c-nyre:#a894e6; --c-lunge:#6eb0ec; --warn:#f0a85a; --warn-soft:#3b2d1a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
+.topbar{background:var(--bar);color:var(--bar-fg);padding-block:14px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topbar-in{max-width:660px;margin:0 auto;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.page{padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.intro{margin:0;color:var(--muted);font-size:.9rem;max-width:64ch}
+h2{font-size:.85rem;font-weight:700;margin:0;letter-spacing:.06em;text-transform:uppercase}
+.label{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px}
+
+/* Fordelingshatten: smal, klæber øverst */
+.shot{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr);
+  gap:0 10px;align-items:center;padding:8px 12px;background:var(--bar);color:var(--bar-fg);border-radius:6px;
+  box-shadow:0 2px 8px rgb(0 0 0 / .18)}
+.hat{grid-row:1/3;font-size:1.7rem;line-height:1;display:inline-block;transform-origin:50% 90%}
+.shot.spin .hat{animation:hat 1.5s ease-in-out}
+@keyframes hat{0%,100%{transform:rotate(0)}15%{transform:rotate(-14deg) translateY(-3px)}30%{transform:rotate(12deg)}45%{transform:rotate(-10deg) translateY(-2px)}60%{transform:rotate(8deg)}75%{transform:rotate(-4deg)}}
+.shot .top{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}
+.shot .label{color:var(--bar-muted);white-space:nowrap;font-size:1rem;font-weight:600;text-transform:none;letter-spacing:0;line-height:1.5rem}
+.reel{height:1.5rem;overflow:hidden;position:relative}
+.reel-in{display:flex;flex-direction:column}
+.reel-in>span{height:1.5rem;line-height:1.5rem;font-size:1rem;font-weight:800;white-space:nowrap}
+.shot .why{color:var(--bar-muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shot.assign{background:var(--go)}
+.shot.assign .label,.shot.assign .why{color:var(--bar-fg);opacity:.88}
+
+/* Zoner */
+.zone{overflow:hidden}
+.zone-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;
+  background:var(--bar-2);color:var(--bar-fg);padding:9px 14px}
+.zone-head .sum{font:500 .8rem var(--mono);color:var(--bar-muted)}
+.zone-body{padding:14px;display:flex;flex-direction:column;gap:12px}
+.groups{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,2fr);gap:10px}
+.grp{display:flex;flex-direction:column;gap:6px;min-width:0;border-radius:6px;padding:8px;background:var(--accent-soft)}
+.grp-h{font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;align-items:start}
+.fields.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.field .step{background:var(--surface)}
+.field.sp label{color:var(--c);}
+.field.sp .step{border-top:3px solid var(--c)}
+.dot{display:inline-block;width:.6em;height:.6em;border-radius:50%;background:var(--c);margin-right:.4em;vertical-align:.05em}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:.76rem;color:var(--muted);font-weight:700;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step{display:grid;grid-template-columns:24px minmax(0,1fr) 24px;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--bg)}
+.step button{border:0;border-radius:0;padding:0;background:var(--accent-soft);color:var(--fg);font:700 1.05rem var(--sans);cursor:pointer;min-height:38px}
+.step button:hover{background:var(--line)}
+.step button:active{background:var(--accent);color:var(--surface)}
+.step input{border:0;border-radius:0;background:transparent;min-width:0}
+.step.go{border-color:var(--go)}
+.field.ak label{color:var(--go)}
+.mini{display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.mini span{font-size:.68rem;color:var(--muted);text-align:center;font-weight:600}
+.mini .step{grid-template-columns:22px minmax(0,1fr) 22px}
+.mini .step button{min-height:26px;font-size:.9rem}
+.mini input[type=number]{font-size:.9rem;padding:3px 0}
+.akut{display:grid;grid-template-columns:minmax(0,1fr) 112px 112px;gap:6px 8px;align-items:center;
+  background:var(--accent-soft);border-radius:6px;padding:10px 12px}
+.akut .h{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.2}
+.akut .h:first-child{text-align:left;color:var(--fg)}
+.akut .rl{font-size:.88rem;font-weight:600}
+.akut .step{background:var(--surface)}
+input[type=number]{width:100%;box-sizing:border-box;font:600 1.1rem var(--mono);text-align:center;
+  padding:6px 0;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);
+  font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input:focus-visible{outline:2px solid var(--go);outline-offset:-2px}
+.zones{display:flex;flex-direction:column;gap:14px}
+
+/* Status */
+.board{overflow:hidden}
+.row{display:grid;grid-template-columns:1fr 54px 54px 54px minmax(0,1.6fr);align-items:center;gap:8px;padding:9px 14px;border-top:1px solid var(--line)}
+.row.head{border-top:0;padding-block:8px;background:var(--accent-soft)}
+.row.head span{text-align:center}.row.head span:first-child,.row.head span:last-child{text-align:left}
+.name{font-weight:600}
+.num{font:600 1.05rem var(--mono);text-align:center;font-variant-numeric:tabular-nums}
+.add{color:var(--go)}
+.add.zero,.from.zero{color:var(--muted);font-weight:500}
+.from{font-size:.82rem}
+.result{border-radius:6px;padding:12px 16px;background:var(--accent-soft);display:flex;flex-direction:column;gap:3px}
+.result.warn{background:var(--warn-soft)}
+.result strong{font-size:1rem}
+.result.warn strong{color:var(--warn)}
+.result span{color:var(--muted);font-size:.88rem}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+button,.btnlike{font:600 .9rem var(--sans);padding:8px 14px;border-radius:5px;border:1px solid var(--line);
+  background:var(--surface);color:var(--fg);cursor:pointer}
+button:hover,.btnlike:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+button.primary{background:var(--bar);border-color:var(--bar);color:var(--bar-fg)}
+button.primary:disabled{opacity:.45;cursor:default}
+button.danger{border-color:var(--warn);color:var(--warn)}
+.example{font-size:.82rem;color:var(--warn);margin:0}
+.hint{font-size:.85rem;color:var(--muted);margin:0;max-width:64ch}
+
+/* Log */
+.log{padding:4px 0}
+.log ol{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:7px 14px;border-top:1px solid var(--line);font-size:.88rem}
+.log li:first-child{border-top:0}
+.log time{font:500 .82rem var(--mono);color:var(--muted);padding-top:1px}
+.log b{font-weight:700}
+.log .empty{padding:10px 14px;color:var(--muted);font-size:.88rem;margin:0}
+.log .more{margin:6px 14px 8px;font-size:.82rem;padding:5px 10px}
+.loghead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.loghead span{font:500 .8rem var(--mono);color:var(--muted)}
+
+/* Regnskabsfil */
+.filebar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);border-left-width:4px}
+.filebar.ok{border-left-color:var(--go)}
+.filebar.saving{border-left-color:var(--muted)}
+.filebar.idle,.filebar.err{border-left-color:var(--warn)}
+.filetext{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 240px}
+.filetext strong{font-size:.92rem;overflow-wrap:anywhere}
+.filetext span{font-size:.82rem;color:var(--muted)}
+.filebar.err strong{color:var(--warn)}
+.filebtns{display:flex;gap:8px;flex-wrap:wrap}
+.filebtns button,.filebtns .btnlike{font-size:.85rem;padding:6px 11px;background:var(--bg)}
+.filebtns button.primary{background:var(--bar);color:var(--bar-fg);border-color:var(--bar)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+@media (max-width:540px){
+  .groups{grid-template-columns:1fr}
+  .fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .akut{grid-template-columns:minmax(0,1fr) 100px 100px;padding-inline:8px}
+  .row{grid-template-columns:1fr 44px 44px 44px;padding-inline:10px}
+  .row .from{grid-column:1/-1;margin-top:-4px}
+  .row.head span:last-child{display:none}
+}
+.topbar-in{align-items:center}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
+.topbtns{margin-left:auto;display:flex;gap:8px}
+.topbtns button{font-size:.82rem;padding:6px 12px;background:transparent;color:var(--bar-fg);border-color:var(--bar-muted)}
+.topbtns button:hover{border-color:var(--bar-fg)}
+.topbtns button[data-armed="1"]{background:var(--hit);border-color:var(--hit)}
+@media (prefers-reduced-motion:reduce){.shot.spin .hat{animation:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-in"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>ASA-Fordelingshatten</h1><span class="sub">Alb Akut- og Traumecenter</span>
+  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
+
+<div class="page"><div class="wrap">
+  <p class="intro">Tæl hver ASA-zone for sig. Akut medicin og ambulant vurdering tælles ligesom specialerne og fordeles som udgangspunkt. Skal nogle af dem ikke visiteres, tæller du dem under «ikke visit.», så bliver de på akut medicin. Er flere specialer lige, går patienten helst til det speciale der allerede har patienter i samme zone, og ellers trækkes der lod.</p>
+
+  <div class="shot" id="shot" aria-live="polite">
+    <span class="hat" aria-hidden="true">🎩</span>
+    <div class="top"><span class="label" id="shotLabel">Næste til</span>
+      <div class="reel"><div class="reel-in" id="reel"><span id="shotName"></span></div></div></div>
+    <span class="why" id="shotWhy"></span>
+  </div>
+
+  <div class="filebar idle" id="filebar" aria-live="polite">
+    <div class="filetext"><strong id="fileMain">Ingen regnskabsfil valgt</strong><span id="fileSub"></span></div>
+    <div class="filebtns" id="fsBtns">
+      <button type="button" id="reconnect" class="primary" hidden>Fortsæt</button>
+      <button type="button" id="openFile">Åbn regnskabsfil</button>
+      <button type="button" id="newFile">Ny regnskabsfil</button>
+    </div>
+    <div class="filebtns" id="dlBtns" hidden>
+      <button type="button" id="dlFile">Hent fil</button>
+      <label class="btnlike" for="upFile">Indlæs fil</label>
+      <input type="file" id="upFile" accept=".json,application/json" class="vh">
+    </div>
+  </div>
+
+  <p class="example" id="exampleNote">Felterne er udfyldt med eksempeltal. Tryk «Nulstil · ny vagt» øverst for at starte forfra.</p>
+
+  <div class="zones" id="zones"></div>
+
+  <h2>Samlet status og fordeling</h2>
+
+  <div class="card board" role="table" aria-label="Samlet status og fordeling">
+    <div class="row head" role="row">
+      <span class="label">Akut</span><span class="label">Nu</span><span class="label">+ Akut</span><span class="label">I alt</span><span class="label">Får disse akutte</span>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div class="result" id="result" aria-live="polite"></div>
+
+  <div class="actions">
+    <button id="commit" type="button" class="primary">Fordeling udført i Cetrea</button>
+    <button id="undo" type="button" hidden>Fortryd</button>
+  </div>
+  <p class="hint">Når du har fordelt patienterne i Cetrea, tryk «Fordeling udført». De akutte der skal visiteres flyttes over til deres speciale i zonen og skrives i loggen. Kommer der en ny, tryk + ved Akut medicin i den zone den ligger i.</p>
+
+  <div class="loghead"><h2>Log over fordelinger</h2><span id="logCount"></span></div>
+  <div class="card log"><ol id="log"></ol><p class="empty" id="logEmpty">Ingen fordelinger endnu i denne vagt.</p>
+    <button type="button" class="more" id="logMore" hidden></button></div>
+
+
+</div></div>
+
+<script>
+const SPEC=[["inf","Inf"],["endo","Endo"],["gas","Gas"],["nyre","Nyre"],["lunge","Lunge"]];
+const col=k=>`--c:var(--c-${k})`;
+const fullName=i=>"Akut-"+SPEC[i][1];
+// [nøgle, gruppe, visiteres?, kort tekst]
+const AKUT=[["akut","Akut medicin","akut"],["amb","Ambulant vurdering","amb."]];
+const FIELDS=[...SPEC.map(s=>s[0]),'akut','akutI','amb','ambI'];
+const ZONES=[["z78","ASA Zone 7-8"],["z910","ASA Zone 9-10"],["z1112","ASA Zone 11-12"]];
+const EX={z78:{inf:2,endo:2,gas:2,nyre:2,lunge:3,akut:3,akutI:1,amb:1,ambI:1},
+          z910:{inf:3,endo:2,gas:1,nyre:2,lunge:3,akut:2,akutI:0,amb:1,ambI:0},
+          z1112:{inf:2,endo:2,gas:2,nyre:2,lunge:2,akut:1,akutI:0,amb:2,ambI:1}};
+const KEY='cetrea-fordeling-v7';
+const $=id=>document.getElementById(id);
+const sName=k=>SPEC.find(s=>s[0]===k)[1];
+const zName=z=>ZONES.find(x=>x[0]===z)[1];
+const avail=(z,t)=>Math.max(0,val(z,t)-val(z,t+'I'));
+const stays=(z,t)=>Math.min(val(z,t),val(z,t+'I'));
+
+const stepper=(z,k,lab,go)=>`<div class="step${go?' go':''}">
+  <button type="button" data-step="-1" data-for="in-${z}-${k}" aria-label="Fjern én, ${lab}">−</button>
+  <input type="number" id="in-${z}-${k}" min="0" inputmode="numeric" aria-label="${lab}">
+  <button type="button" data-step="1" data-for="in-${z}-${k}" aria-label="Tilføj én, ${lab}">+</button></div>`;
+$('zones').innerHTML=ZONES.map(([z,zn])=>`
+  <section class="card zone" aria-label="${zn}">
+    <div class="zone-head"><h2>${zn}</h2><span class="sum" id="sum-${z}"></span></div>
+    <div class="zone-body">
+      <div class="groups">
+      <div class="grp"><span class="grp-h">Akut</span><div class="fields">${SPEC.map(([k,n])=>`<div class="field sp" style="${col(k)}"><label for="in-${z}-${k}">${n}</label>${stepper(z,k,'Akut-'+n+', '+zn)}</div>`).join('')}</div></div>
+      <div class="grp"><span class="grp-h">Til fordeling</span><div class="fields two">${AKUT.map(([k,n])=>`<div class="field ak"><label for="in-${z}-${k}">${k==='amb'?'Amb. vurd.':n}</label>${stepper(z,k,n+', '+zn,true)}
+          <div class="mini"><span>heraf ikke visit.</span>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></div>`).join('')}
+      </div></div>
+      </div>
+    </div>
+  </section>`).join('');
+$('rows').innerHTML=SPEC.map(([k,n])=>`<div class="row" role="row">
+  <span class="name" style="${col(k)}"><span class="dot"></span>${n}</span>
+  <span class="num" id="cur-${k}"></span><span class="num add" id="add-${k}"></span>
+  <span class="num" id="tot-${k}"></span><span class="from" id="from-${k}"></span></div>`).join('');
+
+const inp=(z,k)=>$(`in-${z}-${k}`);
+const val=(z,k)=>Math.max(0,parseInt(inp(z,k).value,10)||0);
+let assign=[], snapshot=null, rnd=shuffle(), log=[], logAll=false, lastShot=null;
+
+function shuffle(){const a=SPEC.map((_,i)=>i);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function applyState(d,isExample){
+  ZONES.forEach(([z])=>FIELDS.forEach(k=>inp(z,k).value=(d[z]&&d[z][k])??''));
+  if(Array.isArray(d.rnd)&&d.rnd.length===SPEC.length) rnd=d.rnd.slice();
+  log=Array.isArray(d.log)?d.log.slice():[];
+  $('exampleNote').hidden=!isExample;
+}
+function getState(){
+  const d={rnd:rnd.slice(),log:log.slice()}; ZONES.forEach(([z])=>{d[z]={};FIELDS.forEach(k=>d[z][k]=inp(z,k).value)});
+  return d;
+}
+function load(){let s=null;try{s=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+  if(!s){try{const o=JSON.parse(localStorage.getItem('cetrea-fordeling-v6'));if(o){s=o;ZONES.forEach(([z])=>{const q=o[z]||{},n=k=>parseInt(q[k],10)||0,t=v=>v?String(v):'';
+    s[z]={...q,akut:t(n('nyV')+n('nyI')),akutI:t(n('nyI')),amb:t(n('ambV')+n('ambI')),ambI:t(n('ambI'))}})}}catch(e){}}
+  applyState(s||EX,!s)}
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(getState()))}catch(e){}
+  $('exampleNote').hidden=true; scheduleFileWrite();
+}
+
+/* Fordeling: lige antal først, derefter samme zone, derefter lodtrækning */
+function distribute(){
+  const rank=[]; rnd.forEach((s,i)=>rank[s]=i);
+  const cur=SPEC.map(([k])=>ZONES.reduce((a,[z])=>a+val(z,k),0)), add=cur.map(()=>0);
+  const zc=SPEC.map(([k])=>ZONES.map(([z])=>val(z,k)));
+  const pool=[]; AKUT.forEach(([t])=>ZONES.forEach(([z],zi)=>pool.push({z,zi,t,left:avail(z,t)})));
+  const total=pool.reduce((a,p)=>a+p.left,0), out=[];
+  for(let n=0;n<total;n++){
+    const tots=cur.map((c,i)=>c+add[i]), mn=Math.min(...tots);
+    const cand=SPEC.map((_,i)=>i).filter(i=>tots[i]===mn);
+    let best=null;
+    cand.forEach(c=>pool.forEach((p,pi)=>{ if(!p.left) return;
+      const sc=zc[c][p.zi];
+      if(!best||sc>best.sc||(sc===best.sc&&(rank[c]<rank[best.c]||(rank[c]===rank[best.c]&&pi<best.pi)))) best={c,pi,sc};
+    }));
+    const p=pool[best.pi]; p.left--; add[best.c]++; zc[best.c][p.zi]++;
+    out.push({k:SPEC[best.c][0],z:p.z,t:p.t,same:best.sc>0});
+  }
+  const tots=cur.map((c,i)=>c+add[i]), mn=Math.min(...tots);
+  const next=SPEC.map((_,i)=>i).filter(i=>tots[i]===mn).sort((a,b)=>rank[a]-rank[b])[0];
+  return {cur,add,tots,out,total,next};
+}
+
+function calc(){
+  ZONES.forEach(([z])=>{
+    const s=SPEC.reduce((a,[k])=>a+val(z,k),0), v=avail(z,'akut')+avail(z,'amb'), ik=stays(z,'akut')+stays(z,'amb');
+    $('sum-'+z).textContent=`${s} fordelt · ${v} til fordeling · ${ik} bliver`;
+  });
+  const {cur,add,tots,out,total,next}=distribute(); assign=out;
+  SPEC.forEach(([k],i)=>{
+    $('cur-'+k).textContent=cur[i];
+    const a=$('add-'+k); a.textContent=add[i]?'+'+add[i]:'0'; a.classList.toggle('zero',!add[i]);
+    $('tot-'+k).textContent=tots[i];
+    const parts={}; out.filter(o=>o.k===k).forEach(o=>{const l=`${AKUT.find(a=>a[0]===o.t)[2]} i ${zName(o.z).replace('ASA Zone','zone')}`;parts[l]=(parts[l]||0)+1});
+    const f=$('from-'+k), e=Object.entries(parts);
+    f.textContent=e.length?e.map(([l,n])=>`${n} ${l}`).join(', '):'Ingen'; f.classList.toggle('zero',!e.length);
+  });
+  const stay=ZONES.reduce((a,[z])=>a+stays(z,'akut')+stays(z,'amb'),0);
+  const stayTxt=stay?` ${stay} bliver på akut medicin.`:'';
+  const mx=Math.max(...tots), mn=Math.min(...tots), sum=tots.reduce((a,b)=>a+b,0), r=$('result');
+  if(mx-mn<=1){
+    r.className='result'; const rest=sum%5, base=Math.floor(sum/5);
+    r.innerHTML=`<strong>${mx===mn?`Alle specialer har ${mx} patienter`:`${base} patienter pr. speciale, ${rest} ${rest===1?'speciale har':'specialer har'} én ekstra`}</strong><span>${sum} patienter i alt efter fordeling af ${total} der skal visiteres.${stayTxt}</span>`;
+  }else{
+    const need=tots.reduce((s,t)=>s+(mx-t),0); r.className='result warn';
+    r.innerHTML=`<strong>Ikke nok akutte til at udligne</strong><span>Der mangler ${need} patient${need===1?'':'er'} for at alle når op på ${mx}.${stayTxt}</span>`;
+  }
+  // Står for skud
+  let who, label, why, mode;
+  if(total>0){
+    who=out[0].k; mode='assign';
+    label='Næste patient til:';
+    if(total===1){const o=out[0];why=`${o.t==='akut'?'Akut medicin':'Ambulant vurdering'} i ${zName(o.z)}`}else{const c={};out.forEach(o=>c[o.k]=(c[o.k]||0)+1);why='Anbefalet fordeling: '+Object.entries(c).map(([k,n])=>`${sName(k)} ${n}`).join(' · ')}
+  }else{
+    who=SPEC[next][0]; mode='shot'; label='Næste patient til:';
+    const tied=tots.filter(t=>t===tots[next]).length;
+    why=tied>1?`Står for skud · lod trukket blandt ${tied} med ${tots[next]} patienter`:`Står for skud · færrest patienter (${tots[next]})`;
+  }
+  showShot(who,label,why,mode);
+  $('commit').disabled=!total;
+  renderLog();
+}
+
+function showShot(who,label,why,mode){
+  const el=$('shot'); el.classList.toggle('assign',mode==='assign');
+  $('shotLabel').textContent=label; $('shotWhy').textContent=why;
+  const reel=$('reel'), name=`<span class="dot" style="${col(who)}"></span>${sName(who)}`;
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(lastShot===null||lastShot===who||reduce){
+    reel.style.transition='none'; reel.style.transform='none'; reel.innerHTML=`<span>${name}</span>`; lastShot=who; return;
+  }
+  lastShot=who;
+  const seq=[]; for(let r=0;r<3;r++) shuffle().forEach(i=>seq.push(`<span class="dot" style="${col(SPEC[i][0])}"></span>${SPEC[i][1]}`)); seq.push(name);
+  reel.style.transition='none'; reel.style.transform='translateY(0)';
+  reel.innerHTML=seq.map(s=>`<span>${s}</span>`).join('');
+  el.classList.remove('spin'); void el.offsetWidth; el.classList.add('spin');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const h=reel.firstElementChild.getBoundingClientRect().height||24;
+    reel.style.transition='transform 1.5s cubic-bezier(.15,.75,.2,1)';
+    reel.style.transform=`translateY(-${h*(seq.length-1)}px)`;
+  }));
+  clearTimeout(showShot.t); showShot.t=setTimeout(()=>{reel.style.transition='none';reel.style.transform='none';reel.innerHTML=`<span>${name}</span>`},1600);
+}
+
+function hm(iso){try{return new Date(iso).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+function renderLog(){
+  const items=log.slice().reverse(), shown=logAll?items:items.slice(0,8);
+  $('log').innerHTML=shown.map(e=>`<li><time datetime="${e.tid}">${hm(e.tid)}</time><span>${(()=>{const sp=SPEC.find(x=>x[1]===String(e.speciale).replace('Akut-',''));return sp?`<span class="dot" style="${col(sp[0])}"></span>`:''})()}<b>${e.speciale}</b> fik ${/ambulant/i.test(e.type)?'en ambulant vurdering':'en akut medicinsk'} fra ${e.zone}</span></li>`).join('');
+  $('logEmpty').hidden=log.length>0;
+  $('logCount').textContent=log.length?`${log.length} i alt`:'';
+  const m=$('logMore'); m.hidden=items.length<=8; m.textContent=logAll?'Vis færre':`Vis alle ${items.length}`;
+}
+$('logMore').addEventListener('click',()=>{logAll=!logAll;renderLog()});
+
+/* ---------- Regnskabsfil (JSON i egen mappe) ---------- */
+const FS=typeof window.showOpenFilePicker==='function';
+let fileHandle=null, writeTimer=null;
+const FNAME={akut:"Akut medicin",akutI:"Akut medicin - skal ikke visiteres",amb:"Ambulant vurdering",ambI:"Ambulant vurdering - skal ikke visiteres"};
+SPEC.forEach(([k,n])=>FNAME[k]='Akut-'+n);
+function toFile(){
+  const s=getState(), out={app:"ASA-fordeling",version:4,gemt:new Date().toISOString(),lodtraekning:s.rnd.map(fullName),zoner:{},log:s.log};
+  ZONES.forEach(([z,zn])=>{out.zoner[zn]={};FIELDS.forEach(k=>out.zoner[zn][FNAME[k]]=parseInt(s[z][k],10)||0)});
+  return JSON.stringify(out,null,2);
+}
+function fromFile(text){
+  const j=JSON.parse(text);
+  if(!j||j.app!=="ASA-fordeling"||!j.zoner) throw new Error('format');
+  const d={log:Array.isArray(j.log)?j.log:[]};
+  const order=j.lodtraekning||j.tilfaeldigRaekkefoelge;
+  if(Array.isArray(order)){const r=order.map(n=>SPEC.findIndex(s=>s[1]===String(n).replace('Akut-','')));if(r.length===SPEC.length&&r.every(i=>i>=0))d.rnd=r}
+  ZONES.forEach(([z,zn])=>{
+    const src=j.zoner[zn]||j.zoner[zn.replace('Zone ','')]||{}; d[z]={};
+    FIELDS.forEach(k=>{const v=src[FNAME[k]]??src[FNAME[k].replace('Akut-','')];d[z][k]=v?String(v):''});
+    const g=n=>parseInt(src[n],10)||0, str=n=>n?String(n):'';
+    if((j.version||1)===3||(j.version||1)===2){
+      d[z].akut=str(g("Nye uvisiterede - skal visiteres")+g("Nye uvisiterede - skal ikke visiteres"));
+      d[z].akutI=str(g("Nye uvisiterede - skal ikke visiteres"));
+      d[z].amb=str(g("Ambulant vurdering - skal visiteres")+g("Ambulant vurdering - skal ikke visiteres"));
+      d[z].ambI=str(g("Ambulant vurdering - skal ikke visiteres"));
+    }else if((j.version||1)<2){
+      d[z].akut=str(g("Nye uvisiterede")+g("Til visitering")+g("Forbliver akut med."));
+      d[z].akutI=str(g("Forbliver akut med.")); d[z].amb=str(g("Amb. vurdering")); d[z].ambI=d[z].amb;
+    }
+  });
+  return {d,gemt:j.gemt};
+}
+const tid=iso=>{try{return new Date(iso).toLocaleString('da-DK',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}};
+const p2=n=>String(n).padStart(2,'0');
+const stampName=()=>{const d=new Date();return `asa-regnskab_${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}_kl${p2(d.getHours())}-${p2(d.getMinutes())}.json`};
+function status(cls,main,sub){$('filebar').className='filebar '+cls;$('fileMain').textContent=main;$('fileSub').textContent=sub||''}
+function scheduleFileWrite(){
+  if(!fileHandle) return;
+  status('saving',`Regnskab: ${fileHandle.name}`,'Gemmer …');
+  clearTimeout(writeTimer); writeTimer=setTimeout(writeFile,400);
+}
+async function writeFile(){
+  try{const w=await fileHandle.createWritable();await w.write(toFile());await w.close();
+    status('ok',`Regnskab: ${fileHandle.name}`,'Gemt '+tid(new Date().toISOString()));}
+  catch(e){status('err',`Kunne ikke gemme i ${fileHandle.name}`,'Tryk «Åbn regnskabsfil» og vælg filen igen.')}
+}
+function idb(mode,fn){return new Promise((res,rej)=>{try{const r=indexedDB.open('asa-fordeling',1);
+  r.onupgradeneeded=()=>r.result.createObjectStore('h');
+  r.onsuccess=()=>{const tx=r.result.transaction('h',mode),st=tx.objectStore('h'),q=fn(st);
+    tx.oncomplete=()=>res(q&&q.result);tx.onerror=()=>rej(tx.error)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})}
+const rememberHandle=h=>idb('readwrite',st=>st.put(h,'fil')).catch(()=>{});
+const recallHandle=()=>idb('readonly',st=>st.get('fil')).catch(()=>null);
+async function useHandle(h,readIt){
+  fileHandle=h; rememberHandle(h);
+  if(readIt){
+    const text=await (await h.getFile()).text();
+    if(text.trim()){
+      try{const {d,gemt}=fromFile(text); applyState(d,false); snapshot=null; $('undo').hidden=true; calc();
+        try{localStorage.setItem(KEY,JSON.stringify(getState()))}catch(e){}
+        status('ok',`Regnskab: ${h.name}`,'Indlæst · sidst gemt '+tid(gemt)); return;
+      }catch(e){status('err',`${h.name} er ikke en regnskabsfil`,'Vælg en anden fil eller opret en ny.'); fileHandle=null; return}
+    }
+  }
+  await writeFile();
+}
+const TYPES=[{description:'ASA regnskab',accept:{'application/json':['.json']}}];
+async function openFile(){
+  try{const [h]=await window.showOpenFilePicker({types:TYPES});await useHandle(h,true)}
+  catch(e){if(e.name!=='AbortError')status('err','Filen kunne ikke åbnes',e.message)}
+}
+async function newFile(){
+  if(!FS) return false;
+  try{const h=await window.showSaveFilePicker({suggestedName:stampName(),types:TYPES});await useHandle(h,false);return true}
+  catch(e){if(e.name!=='AbortError')status('err','Filen kunne ikke oprettes',e.message);return false}
+}
+async function initFile(){
+  if(!FS){
+    $('fsBtns').hidden=true; $('dlBtns').hidden=false;
+    status('idle','Ingen regnskabsfil','Denne browser kan ikke gemme direkte i en mappe. Brug «Hent fil» og «Indlæs fil», eller åbn siden i Edge eller Chrome.');
+    return;
+  }
+  status('idle','Ingen regnskabsfil valgt','Åbn din regnskabsfil, eller opret en ny i din egen mappe.');
+  const h=await recallHandle(); if(!h) return;
+  try{if(await h.queryPermission({mode:'readwrite'})==='granted'){await useHandle(h,true);return}}catch(e){}
+  const b=$('reconnect'); b.hidden=false; b.textContent=`Fortsæt med ${h.name}`;
+  status('idle',`Sidst brugt: ${h.name}`,'Tryk «Fortsæt» for at give siden lov til at læse og gemme i filen igen.');
+  b.onclick=async()=>{try{if(await h.requestPermission({mode:'readwrite'})==='granted'){b.hidden=true;await useHandle(h,true)}}
+    catch(e){status('err','Filen kunne ikke åbnes','Tryk «Åbn regnskabsfil» og vælg den.')}};
+}
+$('openFile').addEventListener('click',openFile);
+$('newFile').addEventListener('click',newFile);
+$('dlFile').addEventListener('click',()=>{
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([toFile()],{type:'application/json'}));
+    a.download=stampName();document.body.appendChild(a);a.click();a.remove();
+    status('ok','Fil hentet','Gem filen i din mappe og indlæs den næste gang.');}catch(e){}
+});
+$('upFile').addEventListener('change',async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{const {d,gemt}=fromFile(await f.text()); applyState(d,false); save(); calc(); status('ok',`Indlæst: ${f.name}`,'Sidst gemt '+tid(gemt))}
+  catch(err){status('err',`${f.name} er ikke en regnskabsfil`,'Vælg en asa-regnskab-fil.')}
+  e.target.value='';
+});
+
+/* ---------- Knapper og felter ---------- */
+function changed(){snapshot=null;$('undo').hidden=true;save();calc()}
+document.querySelectorAll('input[type=number]').forEach(i=>i.addEventListener('input',changed));
+$('zones').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-step]'); if(!b) return;
+  const i=$(b.dataset.for), v=Math.max(0,(parseInt(i.value,10)||0)+parseInt(b.dataset.step,10));
+  i.value=v||''; changed();
+});
+$('commit').addEventListener('click',()=>{
+  if(!assign.length) return;
+  snapshot=getState(); const now=new Date().toISOString();
+  assign.forEach(a=>{
+    inp(a.z,a.k).value=val(a.z,a.k)+1; inp(a.z,a.t).value=Math.max(0,val(a.z,a.t)-1)||'';
+    if(val(a.z,a.t+'I')>val(a.z,a.t)) inp(a.z,a.t+'I').value=val(a.z,a.t)||'';
+    log.push({tid:now,speciale:'Akut-'+sName(a.k),zone:zName(a.z),type:AKUT.find(x=>x[0]===a.t)[1]});
+  });
+  rnd=shuffle(); // ny lodtrækning til næste runde
+  $('undo').hidden=false; save(); calc();
+});
+$('undo').addEventListener('click',()=>{
+  if(!snapshot) return; applyState(snapshot,false); snapshot=null; $('undo').hidden=true; save(); calc();
+});
+let shiftTimer=null;
+function disarm(){clearTimeout(shiftTimer);$('newShift').textContent='Nulstil · ny vagt';$('newShift').dataset.armed='';$('cancelShift').hidden=true}
+$('cancelShift').addEventListener('click',disarm);
+$('newShift').addEventListener('click',async()=>{
+  const b=$('newShift');
+  if(!b.dataset.armed){
+    b.dataset.armed='1'; b.textContent='Ja, nulstil'; $('cancelShift').hidden=false;
+    shiftTimer=setTimeout(disarm,6000); return;
+  }
+  disarm();
+  snapshot=null; $('undo').hidden=true;
+  document.querySelectorAll('input[type=number]').forEach(i=>i.value='');
+  log=[]; logAll=false; rnd=shuffle();
+  try{localStorage.setItem(KEY,JSON.stringify(getState()))}catch(e){}
+  $('exampleNote').hidden=true; calc();
+  if(FS){ fileHandle=null; status('idle','Ny vagt startet','Vælg hvor den nye regnskabsfil skal gemmes.');
+    if(!(await newFile())) status('idle','Ny vagt startet uden regnskabsfil','Tryk «Ny regnskabsfil» for at gemme vagten i en fil.'); }
+  inp('z78','inf').focus();
+});
+load(); calc(); initFile();
+</script>
+</body>
+</html>

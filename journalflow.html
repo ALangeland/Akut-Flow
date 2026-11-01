@@ -4,17 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Journalflow</title>
-<!--PWA-->
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#1b232b">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Journalflow">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
-<!--/PWA-->
 <script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -205,22 +194,7 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .altmenu button:hover{background:var(--accent-soft)}
 .altmenu .n{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:1em}
 .altmenu .ah{font-size:.68rem;color:var(--muted);padding:2px 10px 0}
-.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}
-.btn.jfmail{background:var(--go);border-color:var(--go);color:#fff}:root[data-theme="dark"] .btn.jfmail{color:#10202b}
-.jfbar{display:none}
-@media (max-width:720px){
-  .jfbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;gap:6px;padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--bar);border-top:1px solid var(--line)}
-  .jfbar button{flex:1;font:700 .85rem var(--sans);padding:10px 4px;border-radius:6px;border:1px solid var(--bar-muted);background:transparent;color:#fff}
-  .jfbar button.m{background:var(--go);border-color:var(--go)}
-  body{padding-bottom:70px}
-  .topbtns #newBtn{display:none}
-}
-@media (max-width:720px),(pointer:coarse){
-  [data-kl="first"],[data-kl="copyall"],.klbtns .klc,[data-klxc],[data-klxfirst],.xfer .xh .sum{display:none!important}
-  .xrow{grid-template-columns:minmax(0,1fr)!important}
-  .btn.jfmail{font-size:1rem;padding:10px 18px}
-}
-#mailDlg input{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);margin:6px 0 10px}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 .klwrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
 .kright{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 24px)}
 .klins{display:flex;flex-direction:column;min-height:0;flex:1}
@@ -428,11 +402,10 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 </head>
 <body>
 <header class="topbar"><div class="topbar-in">
-  <div class="brand"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Journalflow</h1><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
+  <div class="brand"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Journalflow</h1><span class="edtag">WEB</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
   <div class="topbtns">
     <input type="file" id="ipFile" accept=".json,application/json" hidden>
     <button id="backBtn" class="solid" title="Tilbage til kladden (Alt+8)">← Kladde</button>
-    <button id="mailCfgBtn" title="Mailadresse kladden sendes til">✉ Mail</button>
     <button id="archBtn" class="solid" title="Åbn arkivet og redigér planer">📚 Arkiv – redigér planer</button>
     <button id="newBtn" title="Ny plan (N)">+ Ny plan</button>
     <button id="themeToggle"></button>
@@ -1677,14 +1650,6 @@ D: Vågen og alderssvarende reagerende. Normal tonus. Fontanelle i niveau (spæd
 E: Ingen udslæt eller petekkier. Abdomen blød og uøm.`;
 
 </script>
-<div class="jfbar" id="jfbar"><button data-jfgo="fraser">Fraser</button><button data-jfgo="xfer">Gennemse</button><button class="m" data-jfmail="1">✉ Mail</button></div>
-<dialog id="mailDlg"><div class="dlg-h" style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><b style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase">Send kladden til mail</b><button id="mailX" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer" aria-label="Luk">✕</button></div>
-<div style="padding:14px 16px;max-width:440px">
-<label style="font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)" for="mailTo">Modtager</label>
-<input id="mailTo" type="email" inputmode="email" autocomplete="email" placeholder="navn@rn.dk">
-<p class="note" style="margin:0 0 12px">Adressen gemmes kun på denne enhed. Kladden sendes gennem telefonens egen mail-app.</p>
-<div class="actions"><button class="btn primary" id="mailSave">Gem</button><button class="btn jfmail" id="mailSend">Gem og send nu</button><span class="spacer"></span><button class="btn sm" id="jfShare" hidden>↗ Del i anden app</button></div>
-</div></dialog>
 <script>
 (function(){
 'use strict';
@@ -1821,12 +1786,12 @@ async function fsContinue(){
   }catch(e){fileMsg='Kunne ikke åbne filen.';renderSide()}
 }
 async function fsOpen(){
-  try{const [h]=await showOpenFilePicker({types:[{description:'Pasteplaner',accept:{'application/json':['.json']}}]});
+  try{const [h]=await showOpenFilePicker({types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
     await useHandle(h);toast('Åbnede '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Filen kunne ikke læses som pasteplaner.';renderSide()}}
 }
 async function fsNew(){
-  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Pasteplaner',accept:{'application/json':['.json']}}]});
+  try{const h=await showSaveFilePicker({suggestedName:'pasteplaner.json',types:[{description:'Journalflow',accept:{'application/json':['.json']}}]});
     await useHandle(h,{write:true});toast('Gemmer nu i '+h.name)}
   catch(e){if(e&&e.name!=='AbortError'){fileMsg='Kunne ikke oprette filen.';renderSide()}}
 }
@@ -2304,7 +2269,6 @@ function renderKLDraft(){
     <div class="actions" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
       <button class="btn sm" data-kl="copyall">Kopiér hele kladden</button>
-      <button class="btn sm jfmail" data-jfmail="1" title="Send hele kladden til din mail">✉ Send til mail</button>
       <span class="spacer"></span>
       <button class="btn sm danger" data-kl="clear">Ny kladde</button>
     </div>
@@ -2354,7 +2318,7 @@ function renderXfer(){
     const chs=chSummary(sec);if(chs.length)rows+=`<div class="xrow ch"><div class="xl">${esc(sec.s)}</div><div class="xv">Vælg i journalen: ${esc(chs.join(' · '))}</div><span></span></div>`;
   }
   const done=[...klDone].filter(k=>(KL[k]||'').trim()).length;
-  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button><button class="btn sm jfmail" data-jfmail="1">✉ Send til mail</button>':''}</div>${rows}`;
+  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button>':''}</div>${rows}`;
 }
 function renderKLIns(){
   const box=$('#klins');if(!box) return;
@@ -3180,18 +3144,52 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='1';
+const APP_VERSION='35';
 const CHANGELOG=[
- {v:'1',d:'01.11.2026',items:['Journalflow: Pasteplaner v34 som app i Akut-Flow – kan installeres på telefonen og virker offline.','✉ Send til mail: hele kladden sendes via telefonens mail-app til den adresse, du skriver under ✉ Mail (gemmes kun på enheden).','↗ Del: send kladden til en anden app via telefonens del-menu.','På telefonen sendes hele kladden – kopiér-knapperne er skjult. Bundbjælke med Fraser, Gennemse og Mail.']}
+ {v:'35',d:'01.11.2026',items:['Pasteplaner hedder nu Journalflow og findes i tre udgaver, der hentes fra GitHub (ALangeland/Akut-Flow): lokal fil til PC, webudgave i browseren og mobiludgave, der kan installeres på telefonen.','Mobil: ✉ Send til mail sender hele kladden til den adresse, du skriver under ✉ Mail (gemmes kun på telefonen). På telefonen er kopiér-knapperne skjult.','Lokal: 📥 Indlæs fra mail – indsæt mailen, og kladden genopstår felt for felt (også A-gas, værdier, valg og NIHSS).','Mobil og web har ⌂-knap til Akut-Flow-startsiden.']},
+ {v:'34',d:'01.11.2026',items:['Instruks-mærkater på fraserne: ✓ instruks (tjekket, kilde i tooltip), ⚠ instruks udløbet / over 3 år, afventer instruks og ikke tjekket.','Pneumoni opdateret efter PRI Samfundserhvervet pneumoni hos voksne (godk. 17.06.2025): CURB-65 med gradering, behandling for let, moderat og svær, særlige grupper, steroid og opfølgning.','Ny frase: Meningitis – akut bakteriel (voksne) efter PRI (godk. 17.12.2025) og præhospital instruks.','Klik på et valg som "akut/kronisk", "let/moderat/svær" eller ">/<" åbner en lille menu – vælg med mus eller tal-tast.','"Klar til overførsel!" nederst i kladden: alle udfyldte felter i journalrækkefølge med Kopiér-knap og Enter = næste.','Journalnotat (stuegang) starter altid med "…. indlæggelsesdøgn." og Plan med "Forventes indlagt >/< 48 timer." (holdes nederst i planen).','Voksen/Barn-vælger for normalfund (standard voksen) – eget sæt normalfund til børn.','Objektiv undersøgelse: de sjældne felter (fx Mammae, Otoskopi, Ører, Genitalia externa) ligger i en fold-ud "Tilvalgsfelter". Udfyldte felter vises altid.','A-gas-pile ↑/↓ blev til ¿ i journalen – nu skrives (høj)/(lav), og tegn som ≥, ≤ og → omskrives ved kopiering.']},
+ {v:'33',d:'01.11.2026',items:['💾 Gem og 📂 Indlæs er flyttet fra topbjælken ned over Fraser (og øverst i arkivets højre kolonne) som store, farvede knapper. "Eksportér" hedder nu Gem.']},
+ {v:'32',d:'01.11.2026',items:['Klik direkte på … i et felt: det markeres, så det du skriver erstatter det. Udfyldningsboksen under feltet er fjernet.']},
+ {v:'31',d:'01.11.2026',items:['Udfyld i teksten: når du står i et felt med …, vises de linjer med små skrivefelter præcis der, hvor … står. Enter/Tab går videre; teksten opdateres med det samme.']},
+ {v:'30',d:'01.11.2026',items:['{felter} er fjernet fra alle fraser: valgmuligheder står som almindelig tekst (fx akut/kronisk), værdier og fund som …, alder/køn som "…-årig mand/kvinde". Værdilinjer udelades (Værdier-kassen laver dem), og NIHSS er én linje, som NIHSS-knappen udfylder.','Udfyldningslinjen og orange markering i kladden er fjernet.','"Kendte sygdomme" hedder nu Sygdomshistorik og står øverst – over Årsag til henvendelsen.']},
+ {v:'29',d:'01.11.2026',items:['Allergi placeres i Dispositioner › Supplerende (fraser og normalfund) i stedet for Medicinanamnese.']},
+ {v:'28',d:'01.11.2026',items:['Sproglig gennemgang af alle fraser og normalfund: forkortelser skrevet ud (p.o./i.v./s.c. → peroralt/intravenøst/subkutant, PN → efter behov, EGO → engangsordination, D+R → dyrkning og resistens, Pt. → Patienten, BS → blodsukker, KR → kapillærrespons, mhp./pga./dd. m.fl.) og formuleringer strammet.','Udfyldning af {felter} sker nu i det felt, du arbejder i: små indtastningsfelter vises lige under feltet. Kassen øverst er fjernet.']},
+ {v:'27',d:'01.11.2026',items:['"Udfyld felter" øverst i kladden: ét indtastningsfelt pr. {felt} i kladden (fx alder, køn, kendte sygdomme) – udfyldes alle steder på én gang.','Pneumoni, apopleksi og sprængningskur: resumé ("{alder}-årig …") flyttet fra Aktuelt til Konklusion; tidligere helbred til Kendte sygdomme.']},
+ {v:'26',d:'01.11.2026',items:['⇩ Eksportér og ⇧ Indlæs i topbjælken: flyt alle planer, normalfund og indstillinger mellem computere i én fil (kladden/patientdata medtages ikke).','Eksportfilen er læsbar JSON, der kan renskrives (fx af Claude) og indlæses igen.','Sprængningskur er parkeret; Akut gastroenteritis er flyttet til C.']},
+ {v:'25',d:'01.11.2026',items:['Journaloptagelsen følger nu klik-konceptet fuldt ud: nye segmenter Patientens netværk, Boligmæssige forhold og Uddannelses- og erhvervsanamnese (sammenfoldet).','Valgmuligheder som knapper: Øvrige organsystemer (systematisk adspurgt), Alkohol (forbrugsniveau), Rygning (status + tobakstype), Misbrug (intet misbrug), netværk, pårørende orienteret, boligtype og EKG-vurdering; EKG foretaget den.','Valgene medtages i "Kopiér hele kladden" og vises som påmindelse ved kopiering felt for felt.','Fraser: Normalfund er første og forvalgte fane, Planer nr. 2.','Parakliniske undersøgelser: knapper + A-gas · + Biokemi · + Rtg. thorax · + CT-… · + UL-… · + U-stix · + Mikrobiologi indsætter en blok med punkt; A-gas-felterne vises først ved klik.']},
+ {v:'24',d:'01.11.2026',items:['NIHSS-skema med knapper (rettet og testet).','A-gas-kasse i Parakliniske undersøgelser: pH, pCO2, pO2, sO2, HCO3, BE, laktat, K, Na, glukose og ilt → færdig A-gas-blok med ↑/↓ og kort tolkning ved afvigende pH; erstatter frasens {a-gas}.','Nyt normalfund: A-gas – normal syre-base-status.','DC-konvertering, CT-KAG præmedicinering, Holter og lungefunktionsundersøgelse er flyttet til den sammenfoldede mappe Parkeret i Fraser.','Hypokalkæmi og stuegang vægtkontrol: biokemi står i Paraklinik som "Biokemi:" med én værdi pr. punkt; gradering på egen linje.']},
+ {v:'23',d:'01.11.2026',items:['F2-spring mellem {felter} og bjælken "Næste {felt}" er fjernet; markøren springer ikke længere automatisk ind i felter ved indsættelse. Felter med {…} er fortsat markeret orange.','Rettet: "Resten = 0" og "Nulstil" i NIHSS-skemaet.']},
+ {v:'22',d:'01.11.2026',items:['NIHSS-skema med knapper: knappen NIHSS ved Neurologisk åbner alle 15 punkter med score-knapper, live total, "Resten = 0" og UN.','Indsæt skriver et færdigt skema (med tidspunkt og total) i Neurologisk og erstatter apopleksi-frasens tomme NIHSS-linjer; evt. kun afvigende punkter.']},
+ {v:'21',d:'01.11.2026',items:['Ny kladdetype: Journalnotat (stuegang) bygget som klik-notatet: fritekstfelt øverst, Objektiv undersøgelse standard, EKG, Paraklinik, Konklusion og Plan.','Skift mellem Journaloptagelse og Journalnotat øverst i kladden – hver har sin egen kladde.','Dele af en frase uden tilsvarende felt i notatet (fx årsag, aktuelt, medicin) samles i fritekstfeltet øverst.','Værdi-felterne (SAT, ilt, RF, BT, P, T, GCS) står nu i Objektiv undersøgelse › Vurdering af vitale værdier.']},
+ {v:'20',d:'01.11.2026',items:['Nyt sammenfoldet segment i kladden: Procedure (Indikation, Information og samtykke, Procedure, Komplikationer). Procedurenotater (pleuracentese, lumbalpunktur, DC-konvertering) fordeles hertil – kun ordinationer går i Plan.','Fraser med kun PLAN-overskrift (fx hypokaliæmi, hypokalkæmi, CT-KAG) fordeles nu: tekst før PLAN → Konklusion/Årsag, ordinationer → Plan.','Holter og LFU går i Parakliniske undersøgelser; AK-behandling i Medicinanamnese; Ekko og kontrol-EKG genkendes.','Værdier-kassen udfylder først {felter} i resten af kladden, når feltet forlades, og erstatter frasens værdilinje.','Parakliniske undersøgelser formateres som "Biokemi:" / "- …" med tom linje imellem.','Frasens titel går til Årsag til henvendelsen (ingen dobbelt-titel i Konklusion); ukendte overskrifter går til sektionens standardfelt.','Pædiatri og neonatologi er en sammenfoldet mappe i Fraser.']},
+ {v:'19',d:'01.11.2026',items:['Værdier-kasse øverst i kladden: SAT, ilt, RF, BT, P, T, GCS udfyldes ét sted og skrives som én linje i Vurdering af vitale værdier – samme {felter} udfyldes i resten af kladden.','F2/"Næste {felt}" bruger ikke længere dobbelt tastetryk.']},
+ {v:'18',d:'01.11.2026',items:['Indsæt-panelet hedder nu Fraser.','Nyt segment i kladden: Kendte sygdomme (efter Årsag). Kendte sygdomme og tidligere indlæggelser i fraser fordeles hertil i stedet for Aktuelt.','Nyt normalfund: Kendte sygdomme – Tidligere rask.','Bjælke øverst i kladden viser antal {felter}, der mangler, med knappen "Næste {felt}". F2 hopper nu videre til næste kasse.']},
+ {v:'17',d:'01.11.2026',items:['Fritekst/notat-feltet i kladden er fjernet. ABCDE fordeles nu til Objektiv › Almen tilstand; eksisterende fritekst flyttes til Aktuelt.']},
+ {v:'16',d:'01.11.2026',items:['✎ pen i kladden ved hvert felt: rediger eller opret feltets standardnormalfund direkte fra kladden.','✎ ved planer og normalfund i Indsæt-panelet åbner et redigeringsvindue oven på kladden (ingen skift til arkivet).','Rettelser kommer med i "Eksportér mine ændringer".','"N i valgte tomme felter": flueben ved hvert felt styrer, hvilke felter der fyldes med normalfund. Sjældnere undersøgelser (ører, otoskopi, næse, mammae, genitalia, rektaleksploration m.fl.) er fravalgt fra start. Valget huskes.']},
+ {v:'15',d:'01.11.2026',items:['Kladden er det centrale vindue alene (med Indsæt-panel); faner, datafil og arkiv er flyttet bag knappen "📚 Arkiv – redigér planer".','"← Kladde" (eller Esc) fører tilbage fra arkivet.']},
+ {v:'14',d:'01.11.2026',items:['Kladde: Øvrige organsystemer er sammenfoldet som tilvalg og foldes ud ved klik (åbner automatisk, når der er indhold).','Normalfund fra Indsæt-panelet sættes ind i deres eget journalfelt – ikke i det felt, markøren står i (ABCDE går i Fritekst).','Genvejsoversigten i højre side er fjernet.']},
+ {v:'13',d:'01.11.2026',items:['Fjernet: Bronkoskopi – bestillingsnotat, Bronkoskopi – bestillingsmail og DM2-kontrol (egne redigerede udgaver bevares).']},
+ {v:'12',d:'01.11.2026',items:['Ny: Hyponatriæmi efter DES NBV og PRI (NaCl 3 %-bolus beregnes ud fra vægt, max 300 mL).','Ny: Brystsmerter – obs. AKS med negative kardiologiske fund.','Ny: Forgiftning – observation (sympatomimetika / depressanter).','Ny: Dehydratio – observationsregime.','Ny: Akut gastroenteritis (Andet › Medicinsk).','Kladde: ✕-knap ved hvert felt rydder feltet (↶ fortryd i 5 sek.).']},
+ {v:'11',d:'01.11.2026',items:['Planer fordeles automatisk i de rigtige journalfelter i kladden (anamnese, objektiv pr. felt, paraklinik, konklusion, plan).','Nye kladdefelter som i klikjournalen: Alkohol, Rygning, Misbrug.','Fordelingen kan slås fra i Indsæt-panelet.']},
+ {v:'10',d:'01.11.2026',items:['Versionshistorik i topbjælken.','"Eksportér mine ændringer" – fil med dine egne nye, redigerede og slettede planer samt normalfund, som Claude kan integrere i næste version.']},
+ {v:'9',d:'01.11.2026',items:['Kladden er hovedvinduet og åbner som standard.','Indsæt-panel med søgning i planer og normalfund – indsættes i det felt, du står i.','Fritekst/notat-felt øverst til akutkald, procedurer m.m.','F2 springer til næste {felt}; felter med {…} markeres.']},
+ {v:'8',d:'01.11.2026',items:['Kladde-fane bygget som klikjournalen med N-knap (normalfund) og kopiering felt for felt.']},
+ {v:'7',d:'01.11.2026',items:['Normalfund følger klikjournalens sektioner og felter.','Enter kopierer næste linje; ✓ på kopierede linjer.']},
+ {v:'6',d:'01.11.2026',items:['Infektion ukendt fokus og paracetamolforgiftning opdateret efter PRI (Aalborg UH).','Ny plan: Hypokalkæmi (PRI).','NAC-volumen beregnes automatisk ud fra vægt (max 110 kg).','Normalfund kopieres uden overskrift (kan slås til).']},
+ {v:'5',d:'01.11.2026',items:['KOL i exacerbation opdateret efter DLS (v4, 2024).','Apopleksi samlet i én plan med NIHSS og automatisk total.','Instrukslinks på planerne.']},
+ {v:'4',d:'01.11.2026',items:['Akutkald og journaloptagelse fastgjort øverst; "Fastgør øverst" på alle planer.']},
+ {v:'3',d:'01.11.2026',items:['Fast afslutning: "Patienten er informeret om planen, accepterer og samtykker til denne."']},
+ {v:'2',d:'01.11.2026',items:['Planerne samordnet med normalfund og ens struktur.','KOL, sepsis og pneumoni samlet; hypokaliæmi og astma som selvstændige planer.','Journaloptagelse og ABCDE-skabelon; Normalfund-fane.']},
+ {v:'1',d:'01.11.2026',items:['Første udgave: 31 anonymiserede planer fra Grønland i ABCDE + Andet, søgning, {felter}, lokal datafil.']}
 ];
 function renderVersion(){
-  let seen='';try{seen=localStorage.getItem('journalflow.seenVersion')||''}catch(e){}
+  let seen='';try{seen=localStorage.getItem('pasteplaner.seenVersion')||''}catch(e){}
   const b=$('#verBtn');b.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;b.classList.toggle('new',seen!==APP_VERSION);
 }
 function openVersions(){
   $('#verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver${c.v===APP_VERSION?' cur':''}"><h3>Version ${esc(c.v)} <span class="mono">${esc(c.d)}</span></h3><ul>${c.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
   const d=$('#verDlg');if(d.showModal)d.showModal();else d.setAttribute('open','');
-  try{localStorage.setItem('journalflow.seenVersion',APP_VERSION)}catch(e){}
+  try{localStorage.setItem('pasteplaner.seenVersion',APP_VERSION)}catch(e){}
   renderVersion();
 }
 $('#verBtn').addEventListener('click',openVersions);
@@ -3264,37 +3262,6 @@ renderAll();
 renderVersion();
 if(upgradeNote) setTimeout(()=>toast(upgradeNote),300);
 if(FS){idbGet().then(h=>{if(h&&!fh){pendingFh=h;renderSide()}})}
-/* ---------- Journalflow: mail og del ---------- */
-{
-const K='journalflow.mailTo';
-const okMail=a=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a);
-function addr(){try{return localStorage.getItem(K)||''}catch(e){return ''}}
-function subj(){const d=new Date();return 'Journalflow – '+KL_TYPES[klType].name+' '+d.toLocaleDateString('da-DK')+' kl. '+d.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}
-function body(){return cpSafe(klText())}
-function openDlg(){const d=$('#mailDlg');$('#mailTo').value=addr();$('#jfShare').hidden=!navigator.share;if(!d.open)d.showModal();setTimeout(()=>$('#mailTo').focus(),30)}
-function saveAddr(){const a=$('#mailTo').value.trim();if(!okMail(a)){toast('Skriv en gyldig mailadresse');$('#mailTo').focus();return false}try{localStorage.setItem(K,a)}catch(e){}return true}
-async function send(){
-  const to=addr();if(!to){openDlg();return}
-  const b=body();if(!b){toast('Kladden er tom');return}
-  await clip(b);
-  let text=b;
-  if(encodeURIComponent(b).length>6000) text='Kladden var for lang til at blive sat direkte ind i mailen. Den er kopieret – sæt den ind her.';
-  location.href='mailto:'+to+'?subject='+encodeURIComponent(subj())+'&body='+encodeURIComponent(text);
-  toast('Mailen åbnes – kladden er også kopieret');
-}
-async function share(){const b=body();if(!b){toast('Kladden er tom');return}try{await navigator.share({title:subj(),text:b})}catch(e){}}
-document.addEventListener('click',e=>{
-  if(e.target.closest('[data-jfmail]')){e.preventDefault();e.stopPropagation();send();return}
-  const g=e.target.closest('[data-jfgo]');
-  if(g){if($('#kl').hidden){const bb=$('#backBtn');if(bb)bb.click()}const el=g.dataset.jfgo==='fraser'?$('.kright'):$('#klxfer');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
-},true);
-$('#mailCfgBtn').addEventListener('click',openDlg);
-$('#mailX').addEventListener('click',()=>$('#mailDlg').close());
-$('#mailSave').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();toast('Mailadresse gemt på enheden')}});
-$('#mailSend').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();send()}});
-$('#jfShare').addEventListener('click',()=>{$('#mailDlg').close();share()});
-$('#mailTo').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#mailSend').click()}});
-}
 })();
 </script>
 </body>
