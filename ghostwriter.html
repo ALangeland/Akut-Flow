@@ -170,7 +170,7 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 :root[data-theme="dark"] .sbadge.s-exp{color:#ff8a80}
 .srcs.s-exp{border-left-color:#c62828}.srcs.s-old,.srcs.s-pend{border-left-color:#d08a00}
 .insbtn .sbadge{margin-left:auto}
-.nfml{margin-left:auto;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.nfml{margin-left:0;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .seg.nfmode{flex:none}.seg.nfmode button{padding:4px 10px;flex-direction:row;font-size:.8rem;font-weight:600}
 .seg.nfmode button[aria-pressed="true"]{background:var(--accent);color:#fff}
 :root[data-theme="dark"] .seg.nfmode button[aria-pressed="true"]{color:#10202b}
@@ -195,6 +195,22 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .altmenu .n{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:1em}
 .altmenu .ah{font-size:.68rem;color:var(--muted);padding:2px 10px 0}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
+
+.btn.jfmail{background:var(--go);border-color:var(--go);color:#fff}:root[data-theme="dark"] .btn.jfmail{color:#10202b}
+.jfbar{display:none}
+@media (max-width:720px){
+  .jfbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;gap:6px;padding:8px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--bar);border-top:1px solid var(--line)}
+  .jfbar button{flex:1;font:700 .85rem var(--sans);padding:10px 4px;border-radius:6px;border:1px solid var(--bar-muted);background:transparent;color:#fff}
+  .jfbar button.m{background:var(--go);border-color:var(--go)}
+  body{padding-bottom:70px}
+  .topbtns #newBtn{display:none}
+}
+@media (max-width:720px),(pointer:coarse){
+  [data-kl="first"],[data-kl="copyall"],.klbtns .klc,[data-klxc],[data-klxfirst],.xfer .xh .sum{display:none!important}
+  .xrow{grid-template-columns:minmax(0,1fr)!important}
+  .btn.jfmail{font-size:1rem;padding:10px 18px}
+}
+#mailDlg input{width:100%;font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);margin:6px 0 10px}
 .klwrap{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
 .kright{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 24px)}
 .klins{display:flex;flex-direction:column;min-height:0;flex:1}
@@ -225,9 +241,13 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .klfold .arr{color:var(--muted);width:12px}
 .klfold .foldhint{font-size:.76rem;color:var(--muted);font-weight:400}
 .klsec.folded .nfh{border-bottom:0}
-.kltype{background:transparent;border-color:var(--bar-muted)}
-.kltype button{padding:5px 12px;color:var(--bar-muted);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.05em}
-.kltype button[aria-pressed="true"]{background:var(--surface);color:var(--fg)}
+.kltype{background:transparent;border-color:var(--bar-muted);flex:none!important;margin:0 auto;border-radius:999px}
+.kltype button{flex:none;flex-direction:row;padding:3px 12px;color:var(--bar-muted);font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.kltype button[aria-pressed="true"]{background:var(--accent);color:var(--bar)}
+.klhr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.klbtns .klx:not(:disabled):not(.undo){color:var(--hit);border-color:color-mix(in srgb,var(--hit) 55%,var(--line))}
+.klbtns .klx:not(:disabled):not(.undo):hover{background:var(--hit);border-color:var(--hit);color:#fff}
+.klbtns .klx:disabled{color:color-mix(in srgb,var(--hit) 40%,transparent)}
 .klsec.free{border-color:var(--go)}
 .klrow.got{animation:got 1.6s ease-out}
 @keyframes got{0%{background:var(--done-soft);box-shadow:inset 3px 0 0 var(--done)}100%{background:transparent}}
@@ -386,8 +406,11 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:720px){
   #kldraft .card-h{flex-wrap:wrap;row-gap:8px}
-  #kldraft .kltype{flex:1 1 100%}
-  #kldraft .kltype button{padding:7px 6px}
+  #kldraft .card-h{flex-direction:column;align-items:center}
+  #kldraft .kltype{flex-basis:auto!important;margin:0}
+  .klhr{justify-content:center}
+  #klsum{display:none}
+  #kldraft .kltype button{padding:6px 14px}
   .nfml{margin-left:0}
   #klsum{margin-left:auto}
   .klrow{grid-template-columns:minmax(0,1fr)!important}
@@ -406,6 +429,7 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
   <div class="topbtns">
     <input type="file" id="ipFile" accept=".json,application/json" hidden>
     <button id="backBtn" class="solid" title="Tilbage til kladden (Alt+8)">← Kladde</button>
+    <button id="mailCfgBtn" class="solid" title="Send kladden og vælg modtageradresse">✉ Send / mail</button>
     <button id="archBtn" class="solid" title="Åbn arkivet og redigér planer">📚 Arkiv – redigér planer</button>
     <button id="newBtn" title="Ny plan (N)">+ Ny plan</button>
     <button id="themeToggle"></button>
@@ -1650,6 +1674,16 @@ D: Vågen og alderssvarende reagerende. Normal tonus. Fontanelle i niveau (spæd
 E: Ingen udslæt eller petekkier. Abdomen blød og uøm.`;
 
 </script>
+<div class="jfbar" id="jfbar"><button data-jfgo="fraser">Fraser</button><button data-jfgo="xfer">Gennemse</button><button class="m" data-jfmail="1">📎 Send</button></div>
+<dialog id="mailDlg"><div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><b style="font-size:.85rem;letter-spacing:.06em;text-transform:uppercase">Send kladden</b><button id="mailX" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer" aria-label="Luk">✕</button></div>
+<div style="padding:14px 16px;max-width:440px">
+<label style="font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)" for="mailTo">Modtager</label>
+<input id="mailTo" type="email" inputmode="email" autocomplete="email" placeholder="navn@rn.dk">
+<p class="note" style="margin:0 0 12px">Adressen gemmes kun på denne enhed. Begge måder kan indlæses i Ghostwriter lokal (📥 Fra mail, Ctrl+V eller 📂 Indlæs fil).</p>
+<div class="actions"><button class="btn primary" id="mailSave">Gem adresse</button><span class="spacer"></span></div>
+<div class="actions" style="margin-top:10px"><button class="btn jfmail" id="mailSend">📎 Send som fil</button><button class="btn" id="mailSendTxt">✉ Send som tekst</button></div>
+<p class="note" style="margin:8px 0 0"><b>Som fil:</b> telefonens del-menu åbner – vælg Mail. Kladden ligger som vedhæftet fil, og modtageradressen er kopieret, så du kan sætte den ind i Til. <b>Som tekst:</b> mailen åbner med modtager udfyldt, og kladden står i selve mailen.</p>
+</div></dialog>
 <script>
 (function(){
 'use strict';
@@ -2191,7 +2225,7 @@ const JOURNAL_NOTAT=[
   {s:'Konklusion',f:['Beskrivelse'],big:true},
   {s:'Plan',f:['Beskrivelse'],big:true}
 ];
-const KL_TYPES={optag:{name:'Journaloptagelse',J:JOURNAL_OPT,ls:'pasteplaner.kladde'},notat:{name:'Journalnotat (stuegang)',J:JOURNAL_NOTAT,ls:'pasteplaner.kladde.notat'}};
+const KL_TYPES={optag:{name:'Journaloptagelse',short:'Optagelse',J:JOURNAL_OPT,ls:'pasteplaner.kladde'},notat:{name:'Journalnotat (stuegang)',short:'Stuegang',J:JOURNAL_NOTAT,ls:'pasteplaner.kladde.notat'}};
 let klType='optag';try{const t=localStorage.getItem('pasteplaner.klType');if(KL_TYPES[t])klType=t}catch(e){}
 let JOURNAL=JOURNAL_OPT;
 const kk=(s,f)=>s+' › '+f;
@@ -2264,11 +2298,12 @@ function renderKL(){
 }
 function renderKLDraft(){
   const box=$('#kldraft');
-  let html=`<div class="card-h"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}">${esc(t.name)}</button>`).join('')}</div><span class="nfml">Normalfund</span>${nfModeSeg()}<span class="sum" id="klsum">${klFilledCount()} felter udfyldt</span></div>
+  let html=`<div class="card-h"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr"><span class="nfml">Normalfund</span>${nfModeSeg()}<span class="sum" id="klsum">${klFilledCount()} felter udfyldt</span></span></div>
   <div class="card-b">
     <div class="actions" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
       <button class="btn sm" data-kl="copyall">Kopiér hele kladden</button>
+      <button class="btn sm jfmail" data-jfmail="1" title="Send hele kladden som fil (vælg Mail i del-menuen)">📎 Send kladden</button>
       <span class="spacer"></span>
       <button class="btn sm danger" data-kl="clear">Ny kladde</button>
     </div>
@@ -2318,7 +2353,7 @@ function renderXfer(){
     const chs=chSummary(sec);if(chs.length)rows+=`<div class="xrow ch"><div class="xl">${esc(sec.s)}</div><div class="xv">Vælg i journalen: ${esc(chs.join(' · '))}</div><span></span></div>`;
   }
   const done=[...klDone].filter(k=>(KL[k]||'').trim()).length;
-  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button>':''}</div>${rows}`;
+  b.innerHTML=`<div class="xh"><span class="xt">Klar til overførsel!</span><span class="sum">${n?done+' af '+n+' kopieret · Enter = næste':'Intet udfyldt endnu'}</span>${n?'<button class="btn sm" data-klxfirst="1">Start forfra ▸</button><button class="btn sm jfmail" data-jfmail="1">📎 Send kladden</button>':''}</div>${rows}`;
 }
 function renderKLIns(){
   const box=$('#klins');if(!box) return;
@@ -3144,8 +3179,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='36';
+const APP_VERSION='37';
 const CHANGELOG=[
+ {v:'37',d:'01.11.2026',items:['📎 Send kladden sender kladden som vedhæftet fil via telefonens del-menu (vælg Mail). Modtageradressen kopieres, så den kan sættes ind i Til. ✉ Send som tekst findes stadig under ✉ Send / mail.','Webudgaven har også Send-knapperne.','Lokal: træk filen fra mailen ind i Ghostwriter, eller brug 📂 Indlæs fil.']},
  {v:'36',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter. Filerne hedder ghostwriter.html og Ghostwriter-lokal.html. Kladder sendt på mail fra den gamle udgave kan stadig indlæses.']},
  {v:'35',d:'01.11.2026',items:['Pasteplaner hedder nu Journalflow og findes i tre udgaver, der hentes fra GitHub (ALangeland/Akut-Flow): lokal fil til PC, webudgave i browseren og mobiludgave, der kan installeres på telefonen.','Mobil: ✉ Send til mail sender hele kladden til den adresse, du skriver under ✉ Mail (gemmes kun på telefonen). På telefonen er kopiér-knapperne skjult.','Lokal: 📥 Indlæs fra mail – indsæt mailen, og kladden genopstår felt for felt (også A-gas, værdier, valg og NIHSS).','Mobil og web har ⌂-knap til Akut-Flow-startsiden.']},
  {v:'34',d:'01.11.2026',items:['Instruks-mærkater på fraserne: ✓ instruks (tjekket, kilde i tooltip), ⚠ instruks udløbet / over 3 år, afventer instruks og ikke tjekket.','Pneumoni opdateret efter PRI Samfundserhvervet pneumoni hos voksne (godk. 17.06.2025): CURB-65 med gradering, behandling for let, moderat og svær, særlige grupper, steroid og opfølgning.','Ny frase: Meningitis – akut bakteriel (voksne) efter PRI (godk. 17.12.2025) og præhospital instruks.','Klik på et valg som "akut/kronisk", "let/moderat/svær" eller ">/<" åbner en lille menu – vælg med mus eller tal-tast.','"Klar til overførsel!" nederst i kladden: alle udfyldte felter i journalrækkefølge med Kopiér-knap og Enter = næste.','Journalnotat (stuegang) starter altid med "…. indlæggelsesdøgn." og Plan med "Forventes indlagt >/< 48 timer." (holdes nederst i planen).','Voksen/Barn-vælger for normalfund (standard voksen) – eget sæt normalfund til børn.','Objektiv undersøgelse: de sjældne felter (fx Mammae, Otoskopi, Ører, Genitalia externa) ligger i en fold-ud "Tilvalgsfelter". Udfyldte felter vises altid.','A-gas-pile ↑/↓ blev til ¿ i journalen – nu skrives (høj)/(lav), og tegn som ≥, ≤ og → omskrives ved kopiering.']},
@@ -3263,6 +3299,56 @@ renderAll();
 renderVersion();
 if(upgradeNote) setTimeout(()=>toast(upgradeNote),300);
 if(FS){idbGet().then(h=>{if(h&&!fh){pendingFh=h;renderSide()}})}
+/* ---------- Ghostwriter mobil: mail og del ---------- */
+{
+function jfPack(){const o={app:'ghostwriter-kladde',v:1,type:klType,sent:new Date().toISOString(),kl:KL};const b=btoa(unescape(encodeURIComponent(JSON.stringify(o))));return '-----GHOSTWRITER-----\n'+b.replace(/(.{76})/g,'$1\n').trim()+'\n-----SLUT-----'}
+
+const K='journalflow.mailTo';
+const okMail=a=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a);
+function addr(){try{return localStorage.getItem(K)||''}catch(e){return ''}}
+function subj(){const d=new Date();return 'Ghostwriter – '+KL_TYPES[klType].name+' '+d.toLocaleDateString('da-DK')+' kl. '+d.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}
+function body(){const t=cpSafe(klText());if(!t) return '';return t+'\n\n\n(Dataafsnit til Ghostwriter lokal – 📥 Indlæs fra mail. Ret ikke i det.)\n'+jfPack()}
+function openDlg(){const d=$('#mailDlg');$('#mailTo').value=addr();if(!d.open)d.showModal();setTimeout(()=>$('#mailTo').focus(),30)}
+function saveAddr(){const a=$('#mailTo').value.trim();if(!okMail(a)){toast('Skriv en gyldig mailadresse');$('#mailTo').focus();return false}try{localStorage.setItem(K,a)}catch(e){}return true}
+async function send(){
+  const to=addr();if(!to){openDlg();toast('Skriv modtageradressen først');return}
+  const b=body();if(!b){toast('Kladden er tom');return}
+  await clip(b);
+  let text=b;
+  if(encodeURIComponent(b).length>60000) text='Den læsbare tekst er udeladt, fordi kladden er lang. Indlæs i Ghostwriter lokal med 📥 Indlæs fra mail.\n\n'+jfPack();
+  location.href='mailto:'+to+'?subject='+encodeURIComponent(subj())+'&body='+encodeURIComponent(text);
+  toast('Mailen åbnes – kladden er også kopieret');
+}
+async function share(){const b=body();if(!b){toast('Kladden er tom');return}try{await navigator.share({title:subj(),text:b})}catch(e){}}
+function fname(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'Ghostwriter-'+(klType==='notat'?'notat':'optagelse')+'-'+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+'.txt'}
+async function sendFile(){
+  const b=body();if(!b){toast('Kladden er tom');return}
+  const f=new File([b.replace(/\n/g,'\r\n')],fname(),{type:'text/plain'});const to=addr();
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+    if(to){try{await navigator.clipboard.writeText(to)}catch(e){}}
+    try{await navigator.share({files:[f],title:subj(),text:subj()});toast(to?'Sæt '+to+' ind i Til (den er kopieret)':'Kladden er delt')}
+    catch(e){if(e&&e.name!=='AbortError')toast('Deling mislykkedes – brug ✉ Send som tekst')}
+    return;
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  if(to)setTimeout(()=>{location.href='mailto:'+to+'?subject='+encodeURIComponent(subj())+'&body='+encodeURIComponent('Kladden er vedhæftet: '+f.name)},400);
+  toast('Filen '+f.name+' er gemt i Overførsler – vedhæft den i mailen');
+}
+window.__gwFile=()=>new File([body()],fname(),{type:'text/plain'});
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-jfmail]')){e.preventDefault();e.stopPropagation();sendFile();return}
+  const g=e.target.closest('[data-jfgo]');
+  if(g){if($('#kl').hidden){const bb=$('#backBtn');if(bb)bb.click()}const el=g.dataset.jfgo==='fraser'?$('.kright'):$('#klxfer');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
+},true);
+$('#mailCfgBtn').addEventListener('click',openDlg);
+$('#mailX').addEventListener('click',()=>$('#mailDlg').close());
+$('#mailSave').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();toast('Mailadresse gemt på enheden')}});
+$('#mailSend').addEventListener('click',()=>{const a=$('#mailTo').value.trim();if(a&&!saveAddr())return;$('#mailDlg').close();sendFile()});
+$('#mailSendTxt').addEventListener('click',()=>{if(saveAddr()){$('#mailDlg').close();send()}});
+
+$('#mailTo').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#mailSave').click()}});
+window.__jfBody=body;
+}
 })();
 </script>
 </body>

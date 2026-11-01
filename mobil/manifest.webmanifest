@@ -1,7 +1,7 @@
 {
   "name": "Akut-Flow",
   "short_name": "Akut-Flow",
-  "description": "Ghostwriter, ASA Flow, Fordelingshatten og Fieldnotes – arbejdsværktøjer til Alb Akut- og Traumecenter.",
+  "description": "Ghostwriter, Fieldnotes, Fordelingshatten og Vagtflows – arbejdsværktøjer til Alb Akut- og Traumecenter.",
   "lang": "da",
   "start_url": "./index.html",
   "scope": "./",
@@ -33,16 +33,16 @@
       "url": "./ghostwriter.html"
     },
     {
-      "name": "Fordelingshatten",
-      "url": "./fordelingshatten.html"
-    },
-    {
       "name": "Fieldnotes",
       "url": "./fieldnotes.html"
     },
     {
-      "name": "ASA Flow",
-      "url": "./asa-flow.html"
+      "name": "Fordelingshatten",
+      "url": "./fordelingshatten.html"
+    },
+    {
+      "name": "Vagtflows",
+      "url": "./vagtflows.html"
     }
   ]
 }

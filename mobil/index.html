@@ -87,9 +87,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 <main>
   <div class="tiles">
     <a class="tile t-j" href="ghostwriter.html"><span class="ic">📝</span><h2>Ghostwriter</h2><p>Journalkladde som klikjournalen med fraser, normalfund og planer.</p><span class="go">Åbn ▸</span></a>
-    <a class="tile t-f" href="fordelingshatten.html"><span class="ic">🎩</span><h2>Fordelingshatten</h2><p>Optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
-    <a class="tile t-a" href="asa-flow.html"><span class="ic">🕒</span><h2>ASA Flow</h2><p>Tidslinje for ASA-vagten: byg faser og trin, og print som PDF i A4 eller A5.</p><span class="go">Åbn ▸</span></a>
     <a class="tile t-n" href="fieldnotes.html"><span class="ic">🗒️</span><h2>Fieldnotes</h2><p>Hurtige vagtnoter med zone, stue og prioritet, og overleveringstekst.</p><span class="go">Åbn ▸</span></a>
+    <a class="tile t-f" href="fordelingshatten.html"><span class="ic">🎩</span><h2>Fordelingshatten</h2><p>Optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
+    <a class="tile t-a" href="vagtflows.html"><span class="ic">🕒</span><h2>Vagtflows</h2><p>Tidslinjer for vagtfunktioner, fx ASA-vagten: faser og trin, print som PDF i A4 eller A5.</p><span class="go">Åbn ▸</span></a>
   </div>
   <section class="card"><h3>Installér på telefonen</h3><div class="b">
     <p><b>iPhone (Safari):</b> tryk Del <span class="muted">(firkant med pil)</span> → <b>Føj til hjemmeskærm</b>.</p>
@@ -99,9 +99,10 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 </main>
 <dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
 <script>
-const APP_VERSION='5';
+const APP_VERSION='6';
 const CHANGELOG=[
- {v:'5',d:'01.11.2026',items:['ASA Flow (Vagtflow-editoren) er med i alle tre udgaver.','Ghostwriter lokal: 📥 Fra mail står nu ved siden af Gem og Indlæs fil, og Ctrl+V med en mail indlæser kladden direkte.']},
+ {v:'6',d:'01.11.2026',items:['Vagtflows har fået samme design som de andre værktøjer og versionshistorik.','Rækkefølge på startsiden: Ghostwriter, Fieldnotes, Fordelingshatten, Vagtflows.','Ghostwriter: 📎 Send kladden sender kladden som vedhæftet fil via telefonens del-menu – også fra webudgaven.','Åbnes webudgaven på en telefon, peger en bjælke øverst på mobiludgaven.']},
+ {v:'5',d:'01.11.2026',items:['Vagtflows (tidl. Vagtflow-editoren) er med i alle tre udgaver.','Ghostwriter lokal: 📥 Fra mail står nu ved siden af Gem og Indlæs fil, og Ctrl+V med en mail indlæser kladden direkte.']},
  {v:'4',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter.']},
  {v:'3',d:'01.11.2026',items:['Fieldnotes er med i alle tre udgaver.']},
  {v:'2',d:'01.11.2026',items:['Tre udgaver: web (denne side), mobil (installerbar app under /mobil/) og lokale filer til PC (Hent).','Ghostwriter v35: mobil sender kladden på mail, lokal kan indlæse den igen.']},

@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ASA-Fordelingshatten</title>
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -163,12 +164,23 @@ button.danger{border-color:var(--warn);color:var(--warn)}
 .topbtns button:hover{border-color:var(--bar-fg)}
 .topbtns button[data-armed="1"]{background:var(--hit);border-color:var(--hit)}
 @media (prefers-reduced-motion:reduce){.shot.spin .hat{animation:none}}
+.verbtn{font:500 .74rem var(--mono)!important;background:transparent!important;color:var(--bar-muted)!important;border:1px solid var(--bar-muted)!important;border-radius:999px!important;padding:2px 9px!important;position:relative;cursor:pointer}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
+#verDlg .dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+#verDlg .dh h2{margin:0;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+#verDlg .dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;cursor:pointer}
+#verDlg .db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:#e3f2ec;color:#2e8a6b;border-radius:4px;padding:1px 6px;margin-left:6px}
 </style>
 </head>
 <body>
 
-<div class="topbar"><div class="topbar-in"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>ASA-Fordelingshatten</h1><span class="sub">Alb Akut- og Traumecenter</span>
-  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
+<div class="topbar"><div class="topbar-in"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>ASA-Fordelingshatten</h1><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
+  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="themeToggle" type="button" style="order:9"></button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
 
 <div class="page"><div class="wrap">
   <p class="intro">Tæl hver ASA-zone for sig. Akut medicin og ambulant vurdering tælles ligesom specialerne og fordeles som udgangspunkt. Skal nogle af dem ikke visiteres, tæller du dem under «ikke visit.», så bliver de på akut medicin. Er flere specialer lige, går patienten helst til det speciale der allerede har patienter i samme zone, og ellers trækkes der lod.</p>
@@ -210,10 +222,11 @@ button.danger{border-color:var(--warn);color:var(--warn)}
   <div class="result" id="result" aria-live="polite"></div>
 
   <div class="actions">
-    <button id="commit" type="button" class="primary">Fordeling udført i Cetrea</button>
+    <button id="saveDist" type="button" class="primary">💾 Gem fordeling</button>
+    <button id="commit" type="button" hidden>Fordeling udført i Cetrea</button>
     <button id="undo" type="button" hidden>Fortryd</button>
   </div>
-  <p class="hint">Når du har fordelt patienterne i Cetrea, tryk «Fordeling udført». De akutte der skal visiteres flyttes over til deres speciale i zonen og skrives i loggen. Kommer der en ny, tryk + ved Akut medicin i den zone den ligger i.</p>
+  <p class="hint">Fordel i Cetrea, og ret tallene her: − ved Akut medicin og + ved specialet. Tryk «Gem fordeling» – tallene og ændringerne siden sidst skrives i loggen. Kommer der en ny, tryk + ved Akut medicin i den zone den ligger i.</p>
 
   <div class="loghead"><h2>Log over fordelinger</h2><span id="logCount"></span></div>
   <div class="card log"><ol id="log"></ol><p class="empty" id="logEmpty">Ingen fordelinger endnu i denne vagt.</p>
@@ -330,8 +343,9 @@ function calc(){
     r.className='result'; const rest=sum%5, base=Math.floor(sum/5);
     r.innerHTML=`<strong>${mx===mn?`Alle specialer har ${mx} patienter`:`${base} patienter pr. speciale, ${rest} ${rest===1?'speciale har':'specialer har'} én ekstra`}</strong><span>${sum} patienter i alt efter fordeling af ${total} der skal visiteres.${stayTxt}</span>`;
   }else{
-    const need=tots.reduce((s,t)=>s+(mx-t),0); r.className='result warn';
-    r.innerHTML=`<strong>Ikke nok akutte til at udligne</strong><span>Der mangler ${need} patient${need===1?'':'er'} for at alle når op på ${mx}.${stayTxt}</span>`;
+    const need=tots.reduce((s,t)=>s+(mx-t),0); r.className='result';
+    const low=SPEC.filter((_,i)=>tots[i]===mn).map(([k])=>sName(k));
+    r.innerHTML=`<strong>Bedste fordeling: ${mn}–${mx} patienter pr. speciale</strong><span>${total?`De ${total} akutte er givet til dem med færrest, så forskellen er så lille som muligt. `:''}${low.join(', ')} har færrest (${mn}) og står først for skud. Helt lige kræver ${need} patient${need===1?'':'er'} mere.${stayTxt}</span>`;
   }
   // Står for skud
   let who, label, why, mode;
@@ -371,9 +385,25 @@ function showShot(who,label,why,mode){
 }
 
 function hm(iso){try{return new Date(iso).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+/* ---------- Gem fordeling (manuel omfordeling: − ved Akut medicin, + ved specialet) ---------- */
+const GEMF=[...SPEC.map(([k])=>k),'akut','amb'];
+function gemSnap(){const s={};ZONES.forEach(([z])=>{s[z]={};GEMF.forEach(k=>s[z][k]=val(z,k))});return s}
+function gemShort(k){return k==='akut'?'Akut medicin':k==='amb'?'Amb. vurd.':sName(k)}
+function gemLi(e){return `<li><time datetime="${e.tid}">${hm(e.tid)}</time><span><b>💾 Fordeling gemt</b> – ${e.tot||''}${e.diff?`<br><small style="color:var(--muted)">${e.diff}</small>`:''}</span></li>`}
+function gemSave(){
+  const snap=gemSnap(),prev=[...log].reverse().find(e=>e.kind==='gem'&&e.snap);
+  const tot=SPEC.map(([k])=>`${sName(k)} ${ZONES.reduce((a,[z])=>a+snap[z][k],0)}`).join(' · ');
+  let diff='';
+  if(prev){const parts=[];ZONES.forEach(([z])=>{const d=GEMF.map(k=>{const n=snap[z][k]-((prev.snap[z]||{})[k]||0);return n?`${gemShort(k)} ${n>0?'+':'−'}${Math.abs(n)}`:''}).filter(Boolean);if(d.length)parts.push(`${zName(z).replace('ASA Zone','Zone')}: ${d.join(', ')}`)});diff=parts.length?'Siden sidst – '+parts.join(' · '):'Ingen ændringer siden sidst'}
+  snapshot=getState();
+  log.push({tid:new Date().toISOString(),kind:'gem',speciale:'Fordeling gemt',zone:'',type:'',tot,diff,snap});
+  rnd=shuffle();
+  $('undo').hidden=false;save();calc();
+  const b=$('saveDist');b.textContent='Gemt ✓';clearTimeout(gemSave.t);gemSave.t=setTimeout(()=>b.textContent='💾 Gem fordeling',1500);
+}
 function renderLog(){
   const items=log.slice().reverse(), shown=logAll?items:items.slice(0,8);
-  $('log').innerHTML=shown.map(e=>`<li><time datetime="${e.tid}">${hm(e.tid)}</time><span>${(()=>{const sp=SPEC.find(x=>x[1]===String(e.speciale).replace('Akut-',''));return sp?`<span class="dot" style="${col(sp[0])}"></span>`:''})()}<b>${e.speciale}</b> fik ${/ambulant/i.test(e.type)?'en ambulant vurdering':'en akut medicinsk'} fra ${e.zone}</span></li>`).join('');
+  $('log').innerHTML=shown.map(e=>e.kind==='gem'?gemLi(e):`<li><time datetime="${e.tid}">${hm(e.tid)}</time><span>${(()=>{const sp=SPEC.find(x=>x[1]===String(e.speciale).replace('Akut-',''));return sp?`<span class="dot" style="${col(sp[0])}"></span>`:''})()}<b>${e.speciale}</b> fik ${/ambulant/i.test(e.type)?'en ambulant vurdering':'en akut medicinsk'} fra ${e.zone}</span></li>`).join('');
   $('logEmpty').hidden=log.length>0;
   $('logCount').textContent=log.length?`${log.length} i alt`:'';
   const m=$('logMore'); m.hidden=items.length<=8; m.textContent=logAll?'Vis færre':`Vis alle ${items.length}`;
@@ -502,6 +532,7 @@ $('commit').addEventListener('click',()=>{
   rnd=shuffle(); // ny lodtrækning til næste runde
   $('undo').hidden=false; save(); calc();
 });
+$('saveDist').addEventListener('click',gemSave);
 $('undo').addEventListener('click',()=>{
   if(!snapshot) return; applyState(snapshot,false); snapshot=null; $('undo').hidden=true; save(); calc();
 });
@@ -525,6 +556,23 @@ $('newShift').addEventListener('click',async()=>{
   inp('z78','inf').focus();
 });
 load(); calc(); initFile();
+</script>
+<dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" type="button" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
+<script>
+(function(){
+const APP_VERSION='2';
+const CHANGELOG=[
+ {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
+ {v:'1',d:'31.10.2026',items:['Optælling pr. speciale i ASA-zonerne 7-8, 9-10 og 11-12, fordeling af akut medicinske (lige antal, samme zone, lodtrækning), "står for skud", log og regnskabsfil.']}
+];
+const $$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const vb=$$('#verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;
+let seen='';try{seen=localStorage.getItem('fordelingshatten.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');
+vb.addEventListener('click',()=>{$$('#verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver"><b>Version ${esc(c.v)}</b><span class="d">${esc(c.d)}</span>${c.v===APP_VERSION?'<span class="cur">AKTUEL</span>':''}<ul>${c.items.map(i=>'<li>'+esc(i)+'</li>').join('')}</ul></div>`).join('');$$('#verDlg').showModal();vb.classList.remove('new');try{localStorage.setItem('fordelingshatten.seenVersion',APP_VERSION)}catch(e){}});
+$$('#verClose').addEventListener('click',()=>$$('#verDlg').close());
+const tb=$$('#themeToggle');const lab=()=>{tb.textContent=document.documentElement.dataset.theme==='light'?'☾ Mørk':'☀ Lys'};
+tb.addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}lab()});lab();
+})();
 </script>
 </body>
 </html>

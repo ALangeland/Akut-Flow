@@ -3,9 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ASA Flow</title>
+<title>Vagtflows</title>
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b232b">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vagtflows">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+<!--/PWA-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: værktøjslinje øverst, editor med faneblade til venstre, live forhåndsvisning til højre (stables på mobil) */
 :root{
@@ -132,14 +144,54 @@ body.present .toolbar,body.present .grid,body.present #confirm-slot{display:none
 .sheet-cut{position:absolute;top:2%;bottom:2%;border-left:1px dashed #aab3b1}
 .credit{font-size:12px;color:var(--muted);text-align:center;padding-top:6px}
 @media (prefers-reduced-motion:reduce){.sum .chev{transition:none}}
-.afhome2{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid var(--line);border-radius:8px;color:inherit;text-decoration:none;font-size:1rem;margin-right:10px;vertical-align:middle;flex:none}.afhome2:hover{border-color:var(--muted)}.h1row{display:flex;align-items:center}.edtag2{font:600 .62rem ui-monospace,Consolas,monospace;letter-spacing:.08em;border:1px solid var(--line);color:var(--muted);border-radius:4px;padding:1px 6px;margin-left:8px;vertical-align:middle}
+
+/* ---------- Akut-Flow-design (designguide) ---------- */
+:root{--bg:#eceff2;--surface:#ffffff;--sunk:#e2e7ec;--fg:#1e2a35;--muted:#66737f;--line:#d2d8de;--accent:#2f6f8f;
+  --bar:#2c3844;--bar-2:#3b4855;--bar-fg:#fff;--bar-muted:#a7b7c7;--hit:#c8462e;--done:#2e8a6b;--done-soft:#e3f2ec;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#202932;--surface:#2b3641;--sunk:#252f39;--fg:#e7ecf0;--muted:#9dadbb;--line:#3e4c59;--accent:#7cc0e0;
+  --bar:#1b232b;--bar-2:#28323c;--bar-muted:#93a6b8;--hit:#ff7a5c;--done:#5cc79f;--done-soft:#1f3a31;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#202932;--surface:#2b3641;--sunk:#252f39;--fg:#e7ecf0;--muted:#9dadbb;--line:#3e4c59;--accent:#7cc0e0;
+  --bar:#1b232b;--bar-2:#28323c;--bar-muted:#93a6b8;--hit:#ff7a5c;--done:#5cc79f;--done-soft:#1f3a31;color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+/* arket printes altid lyst */
+.sheet{--bg:#f5f7f7;--surface:#fff;--sunk:#eef2f1;--fg:#17201f;--muted:#5b6866;--line:#d8dfde;color:#17201f}
+html,body{margin:0!important}body{padding:0!important}
+.wrap{padding:18px max(16px,env(safe-area-inset-left,0px)) 40px}
+.topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+.topbar-in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--bar-fg)}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.topbtns{margin-left:auto;display:flex;gap:8px}
+.topbtns button{font-size:.82rem;padding:6px 12px;background:transparent;color:var(--bar-fg);border:1px solid var(--bar-muted);border-radius:5px}
+.topbtns button:hover{border-color:var(--bar-fg)!important}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:#fff;text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}
+.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px}
+.verbtn{font:500 .74rem var(--mono)!important;background:transparent!important;color:var(--bar-muted)!important;border:1px solid var(--bar-muted)!important;border-radius:999px!important;padding:2px 9px!important;position:relative}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+.hsub{margin:0;color:var(--muted);font-size:.88rem}
+button{border-radius:5px;font-weight:600}
+button.primary{background:var(--bar);border-color:var(--bar);color:#fff}
+:root[data-theme="dark"] button.primary{background:var(--accent);border-color:var(--accent);color:#10202b}
+.label{font-size:.72rem!important;font-weight:700!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:var(--muted)!important}
+dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
+#verDlg .dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+#verDlg .dh h2{margin:0;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase}
+#verDlg .dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem}
+#verDlg .db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
+@media (max-width:720px){input,select,textarea{font-size:16px}}
 </style>
 </head>
 <body>
 
+<header class="topbar"><div class="topbar-in"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Vagtflows</h1><span class="edtag">MOBIL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button><div class="topbtns"><button id="themeToggle" type="button"></button></div></div></header>
 <div class="wrap">
   <header>
-    <div class="h1row"><h1>ASA Flow<span class="edtag2">LOKAL</span><small>Byg tidslinjer for vagtfunktioner – ændringer gemmes i din browser</small></h1></div>
+    <p class="hsub">Byg tidslinjer for vagtfunktioner – ændringer gemmes i din browser</p>
     <div class="bar">
       <label class="label" for="pdf-format">Format</label>
       <select id="pdf-format" style="width:auto">
@@ -368,7 +420,7 @@ document.addEventListener("keydown",e=>{
 
 /* rendering */
 function renderSelect(){
-  $("flow-select").innerHTML=state.flows.map(f=>`<option value="${f.id}"${f.id===cur().id?" selected":""}>${esc(f.name||"Uden titel")}</option>`).join("");
+  $("flow-select").innerHTML='<option value="__new">+ Nyt flow</option>'+state.flows.map(f=>`<option value="${f.id}"${f.id===cur().id?" selected":""}>${esc(f.name||"Uden titel")}</option>`).join("");
 }
 const metaText=f=>{const p=[];const d=fmtDate(f.updated);if(d)p.push("Opdateret "+d);if(f.version.trim())p.push("Version "+f.version.trim());return p.join(" · ")};
 function renderPreview(){
@@ -535,7 +587,7 @@ $("meta-date").onchange=e=>{const f=cur();if(e.target.value){f.updated=e.target.
 $("btn-bump").onclick=()=>{const f=cur(),m=/^(.*?)(\d+)$/.exec(f.version.trim());f.version=m?m[1]+(parseInt(m[2],10)+1):(f.version.trim()?f.version.trim()+".1":"1");f.updated=todayISO();renderMeta();renderPreview();save(false,false)};
 
 /* flows */
-$("flow-select").onchange=e=>{state.cur=e.target.value;open.clear();renderAll(false)};
+$("flow-select").onchange=e=>{if(e.target.value==="__new"){e.target.value=cur().id;$("btn-new").click();return}state.cur=e.target.value;open.clear();renderAll(false)};
 $("btn-save").onclick=()=>save(true,false);
 $("btn-undo").onclick=undo;$("btn-redo").onclick=redo;
 $("btn-new").onclick=()=>{const s={id:uid(),time:"",title:"",text:"",icon:"",color:PALETTE[0].h};
@@ -729,6 +781,24 @@ $("btn-pdf").onclick=async()=>{
   }finally{btn.disabled=false}
 };
 renderAll(false);snap();
+</script>
+<dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" type="button" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
+<script>
+(function(){
+const APP_VERSION='3';
+const CHANGELOG=[
+ {v:'3',d:'01.11.2026',items:['Hedder nu Vagtflows.','+ Nyt flow står øverst i rullemenuen Flow.']},
+ {v:'2',d:'01.11.2026',items:['Vagtflow-editoren er en del af Akut-Flow (web, mobil og lokal fil).','Samme design som de andre værktøjer: mørk topbjælke, Open Sans, mørk tilstand som standard og fælles lys/mørk-knap.','Versionshistorik. PDF\'en ser ud som før og er altid lys.']},
+ {v:'1',d:'30.10.2026',items:['Editor til tidslinjer for vagtfunktioner med faser og trin, ikoner og farver, træk-og-slip, fortryd/gendan, visningstilstand og PDF i A4/A5 eller 2 × A5 på ét ark. Starter med ASA-vagten som eksempel.']}
+];
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const vb=$('#verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;
+let seen='';try{seen=localStorage.getItem('asaflow.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');
+vb.addEventListener('click',()=>{$('#verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver"><b>Version ${esc(c.v)}</b><span class="d">${esc(c.d)}</span>${c.v===APP_VERSION?'<span class="cur">AKTUEL</span>':''}<ul>${c.items.map(i=>'<li>'+esc(i)+'</li>').join('')}</ul></div>`).join('');$('#verDlg').showModal();vb.classList.remove('new');try{localStorage.setItem('asaflow.seenVersion',APP_VERSION)}catch(e){}});
+$('#verClose').addEventListener('click',()=>$('#verDlg').close());
+const tb=$('#themeToggle');const lab=()=>{tb.textContent=document.documentElement.dataset.theme==='light'?'☾ Mørk':'☀ Lys'};
+tb.addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}lab()});lab();
+})();
 </script>
 </body>
 </html>
