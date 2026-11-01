@@ -216,6 +216,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
   .zt td.s:first-of-type{grid-column:1}
   .zt .step button{min-height:40px}
 }
+[hidden]{display:none!important}
+[title]{cursor:help}
+button[title],a[title],input[title]{cursor:pointer}
 </style>
 <script>
 /* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
@@ -233,9 +236,8 @@ async function pickSave(blob,name,id){
   <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="themeToggle" type="button" style="order:9"></button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
 
 <div class="page"><div class="wrap">
-  <p class="intro">Én række pr. ASA-zone. Til venstre står dem, der venter på fordeling (akut medicin og ambulant vurdering – «ikke visit.» bliver på akut medicin), til højre dem, der er fordelt til specialerne. Flyt en patient med − under Akut med. og + under specialet i samme række. Er flere specialer lige, går patienten helst til det speciale der allerede har patienter i samme zone, og ellers trækkes der lod.</p>
 
-  <div class="shot" id="shot" aria-live="polite">
+  <div class="shot" id="shot" aria-live="polite" title="Næste patient går til specialet med færrest. Er flere lige, går patienten helst til det speciale, der allerede har patienter i samme zone – ellers trækkes der lod.">
     <span class="hat" aria-hidden="true">🎩</span>
     <div class="top"><span class="label" id="shotLabel">Næste til</span>
       <div class="reel"><div class="reel-in" id="reel"><span id="shotName"></span></div></div></div>
@@ -246,11 +248,11 @@ async function pickSave(blob,name,id){
     <div class="filetext"><strong id="fileMain">Ingen regnskabsfil valgt</strong><span id="fileSub"></span></div>
     <div class="filebtns" id="fsBtns">
       <button type="button" id="reconnect" class="primary" hidden>Fortsæt</button>
-      <button type="button" id="openFile">Åbn regnskabsfil</button>
-      <button type="button" id="newFile">Ny regnskabsfil</button>
+      <button type="button" id="openFile" title="Vælg en eksisterende regnskabsfil – den gemmes automatisk, mens du arbejder">Åbn regnskabsfil</button>
+      <button type="button" id="newFile" title="Opret en ny regnskabsfil i en mappe, du vælger – den gemmes automatisk">Ny regnskabsfil</button>
     </div>
     <div class="filebtns" id="dlBtns" hidden>
-      <button type="button" id="dlFile">Hent fil</button>
+      <button type="button" id="dlFile" title="Gem en kopi af vagten som fil">Gem fil</button>
       <label class="btnlike" for="upFile">Indlæs fil</label>
       <input type="file" id="upFile" accept=".json,application/json" class="vh">
     </div>
@@ -260,7 +262,7 @@ async function pickSave(blob,name,id){
 
   <div class="zones" id="zones"></div>
 
-  <h2>Samlet status og fordeling</h2>
+  <h2 title="Nu = fordelt til specialet nu. + Akut = anbefalet fordeling af de ventende. I alt = efter fordeling.">Samlet status og fordeling ⓘ</h2>
 
   <div class="card board" role="table" aria-label="Samlet status og fordeling">
     <div class="row head" role="row">
@@ -272,11 +274,10 @@ async function pickSave(blob,name,id){
   <div class="result" id="result" aria-live="polite"></div>
 
   <div class="actions">
-    <button id="saveDist" type="button" class="primary">💾 Gem fordeling</button>
+    <button id="saveDist" type="button" class="primary" title="Fordel i Cetrea, ret tallene (− ved Akut med., + ved specialet) og tryk her. Tallene og ændringerne siden sidst skrives i loggen.">💾 Gem fordeling</button>
     <button id="commit" type="button" hidden>Fordeling udført i Cetrea</button>
     <button id="undo" type="button" hidden>Fortryd</button>
   </div>
-  <p class="hint">Fordel i Cetrea, og ret tallene her: − ved Akut medicin og + ved specialet. Tryk «Gem fordeling» – tallene og ændringerne siden sidst skrives i loggen. Kommer der en ny, tryk + ved Akut medicin i den zone den ligger i.</p>
 
   <div class="loghead"><h2>Log over fordelinger</h2><span id="logCount"></span></div>
   <div class="card log"><ol id="log"></ol><p class="empty" id="logEmpty">Ingen fordelinger endnu i denne vagt.</p>
@@ -312,8 +313,8 @@ $('zones').innerHTML=`<div class="card ztab">
   <div class="ztabs" role="tablist">${ZONES.map(([z,zn],i)=>`<button type="button" role="tab" data-ztab="${z}" aria-selected="${i===0}">${ZS(zn)}</button>`).join('')}</div>
   <table class="zt">
     <thead>
-      <tr class="g"><th></th><th colspan="3" class="gv">Venter på fordeling</th><th colspan="${SPEC.length}" class="gs">Fordelt til speciale</th></tr>
-      <tr class="h"><th></th><th class="v">Akut med.</th><th class="v">Amb. vurd.</th><th class="v vi">Ikke visit.</th>${SPEC.map(([k,n])=>`<th class="s" style="${col(k)}">${n}</th>`).join('')}</tr>
+      <tr class="g"><th></th><th colspan="3" class="gv" title="Patienter der venter på at blive fordelt: akut medicin og ambulant vurdering. «Ikke visit.» skal ikke visiteres og bliver på akut medicin.">Venter på fordeling ⓘ</th><th colspan="${SPEC.length}" class="gs" title="Patienter der er fordelt til specialerne. Flyt en patient med − under Akut med. og + under specialet i samme række.">Fordelt til speciale ⓘ</th></tr>
+      <tr class="h"><th></th><th class="v">Akut med.</th><th class="v">Amb. vurd.</th><th class="v vi" title="Antal af de ventende (akut medicin + ambulant vurdering), der ikke skal visiteres. Trækkes først fra akut medicin.">Ikke visit.</th>${SPEC.map(([k,n])=>`<th class="s" style="${col(k)}">${n}</th>`).join('')}</tr>
     </thead>
     <tbody>${ZONES.map(([z,zn],i)=>`<tr data-zrow="${z}"${i===0?' class="on"':''}>
       <th class="zn" scope="row">${ZS(zn)}<span class="sum" id="sum-${z}"></span></th>
@@ -628,7 +629,7 @@ load(); calc(); initFile();
 const APP_VERSION='3';
 const CHANGELOG=[
  {v:'3',d:'01.11.2026',items:['Hedder nu Specialefordelingshatten. Til koordinerende læge i akutmodtagelsen er der kommet en søster: Forvagtsfordelingshatten.']},
- {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ny opstilling: én tabel med én række pr. zone – Venter på fordeling til venstre, Fordelt til speciale til højre og I alt nederst. På telefonen vælges zonen med faneblade.','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
+ {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ny opstilling: én tabel med én række pr. zone – Venter på fordeling til venstre, Fordelt til speciale til højre og I alt nederst. På telefonen vælges zonen med faneblade.','Forklaringsteksterne er flyttet ind i små hjælpetekster (hold musen over ⓘ, overskrifter og knapper).','Filknapperne er ryddet op: på PC vises kun Åbn regnskabsfil og Ny regnskabsfil (gemmer automatisk) – Gem fil/Indlæs fil vises kun, hvor browseren ikke kan gemme direkte i en fil (fx telefon).','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
  {v:'1',d:'31.10.2026',items:['Optælling pr. speciale i ASA-zonerne 7-8, 9-10 og 11-12, fordeling af akut medicinske (lige antal, samme zone, lodtrækning), "står for skud", log og regnskabsfil.']}
 ];
 const $$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
