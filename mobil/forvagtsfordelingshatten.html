@@ -222,8 +222,8 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* ---------- tildeler: afstemt gitter, samme højde på alle felter ---------- */
-.shot .assign{display:grid!important;gap:10px 10px;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.35fr) auto;
-  grid-template-areas:"zone stue pb pb" "ty note note btn";align-items:start}
+.shot .assign{display:grid!important;gap:10px 10px;grid-template-columns:104px 150px minmax(0,1fr) auto;
+  grid-template-areas:"zone stue pb pb" "ty ty note btn";align-items:start}
 .shot .assign .zs{flex:none!important;min-width:0;display:flex;flex-direction:column}
 .shot .assign .a-zone{grid-area:zone}.shot .assign .a-stue{grid-area:stue}.shot .assign .a-pb{grid-area:pb}
 .shot .assign .a-ty{grid-area:ty}.shot .assign .a-note{grid-area:note}.shot .assign .a-btn{grid-area:btn}
@@ -239,7 +239,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .pbseg button b{font-size:.85rem!important}
 .tyseg button{padding:0 6px!important;font-size:.82rem!important;height:100%}
 @media (max-width:700px){
-  .shot .assign{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"zone stue" "pb pb" "ty ty" "note note" "btn btn"}
+  .shot .assign{grid-template-columns:96px minmax(0,1fr);grid-template-areas:"zone stue" "pb pb" "ty ty" "note note" "btn btn"}
   .shot .assign .a-btn .lbl{display:none}
   .shot .assign #assignNext{height:44px}
 }
@@ -498,7 +498,7 @@ function buildRooms(keep){const z=$('#caseZone').value;let h='<option value="">�
   if(z&&ZONES[z])h+=ZONES[z].map(r=>roomOpt(z,r,keep===z+'|'+r)).join('');
   else h+=Object.entries(ZONES).map(([zz,l])=>`<optgroup label="Zone ${zz}">${l.map(r=>roomOpt(zz,r,keep===zz+'|'+r)).join('')}</optgroup>`).join('');
   $('#caseRoom').innerHTML=h}
-$('#caseZone').innerHTML='<option value="">– vælg –</option>'+Object.keys(ZONES).map(z=>`<option value="${z}">Zone ${z}</option>`).join('');
+$('#caseZone').innerHTML='<option value="">–</option>'+Object.keys(ZONES).map(z=>`<option value="${z}">${z}</option>`).join('');
 try{const lz=localStorage.getItem(KEY+'.lastZone');if(lz&&ZONES[lz])$('#caseZone').value=lz}catch(e){}
 buildRooms('');
 $('#caseZone').addEventListener('change',()=>{try{localStorage.setItem(KEY+'.lastZone',$('#caseZone').value)}catch(e){}buildRooms('');$('#roomHint').textContent=''});
