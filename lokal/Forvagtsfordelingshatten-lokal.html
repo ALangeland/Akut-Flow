@@ -103,7 +103,11 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .doc-f button{flex:none}
 
 /* Forvagter på arbejde */
-.addrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.addrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 120px auto;gap:8px;align-items:end}
+.until{font:600 .78rem var(--mono);color:var(--muted)}
+.until.soon{color:var(--warn)}
+.until.over{color:var(--hit)}
+.roster input[type=time]{padding:4px 6px;font-size:.85rem;width:110px}
 .roster{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .roster li{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-left:4px solid var(--lc);border-radius:5px;flex-wrap:wrap}
 .roster li.off{opacity:.55}
@@ -132,6 +136,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
 @media (max-width:600px){
   .addrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .addrow>div:first-child{grid-column:1/-1}
   .addrow button{grid-column:1/-1}
   .log li{grid-template-columns:78px minmax(0,1fr) auto;padding:7px 10px}
   input,select{font-size:16px}
@@ -167,10 +172,11 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
       <form class="addrow" id="addForm" autocomplete="off">
         <div><label class="lbl" for="docName">Fornavn</label><input id="docName" placeholder="fx Anna" maxlength="24" required></div>
         <div><label class="lbl" for="docLevel">Uddannelsesniveau</label><select id="docLevel"></select></div>
+        <div><label class="lbl" for="docUntil">Til kl.</label><input id="docUntil" type="time" title="Hvornår forvagten har fri (valgfrit)"></div>
         <button class="primary" type="submit">+ Tilføj</button>
       </form>
       <ul class="roster" id="roster"></ul>
-      <p class="note">Tryk «Går hjem», når en forvagt har fri – så får vedkommende ikke flere patienter, men står stadig i loggen.</p>
+      <p class="note">Skriv «Til kl.», så kan du se, hvor længe hver forvagt er der. De sidste 30 min foreslås forvagten kun, hvis ingen andre kan, og efter fri slet ikke. Tryk «Går hjem», når en forvagt har fri.</p>
     </div>
   </section>
 
@@ -194,8 +200,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='1';
+const APP_VERSION='2';
 const CHANGELOG=[
+ {v:'2',d:'01.11.2026',items:['«Til kl.» på hver forvagt: kortet viser, hvor længe forvagten er der («Til kl. 16:00 · 1 t 20 min tilbage»), orange de sidste 30 min og rødt efter fri. Tiden kan rettes i listen.','«Næste patient til» springer forvagter over, der har fri, og tager dem med under 30 min tilbage sidst.']},
  {v:'1',d:'01.11.2026',items:['Ny: fordel patienter til forvagterne på arbejde. Forvagter registreres med fornavn og uddannelsesniveau.','Tildel en patient med ét tryk (evt. med stue/kort note), samtidig med at du tildeler i Cetrea. Hver patient får starttidspunkt og et ur, der viser, hvor længe forvagten har været i gang.','En forvagt kan have flere patienter ad gangen. Tryk «Afslut», når patienten er færdig – varigheden skrives i loggen.','«Næste patient til» foreslår forvagten med færrest aktive patienter; ved lighed den, der har ventet længst siden sidste tildeling.','Fortryd efter tildel/afslut, Ny vagt, fil til regnskab, versionshistorik og mørk tilstand som standard.']}
 ];
 const LEVELS=[['kbu','KBU','KBU-læge'],['intro','Intro','Introduktionslæge'],['hu','HU','HU-læge'],['uk','Uklass.','Uklassificeret læge'],['stud','Stud.','Lægevikar / stud. med.']];
@@ -208,6 +215,11 @@ const p2=n=>String(n).padStart(2,'0');
 const hm=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/60000));return m<60?m+' min':Math.floor(m/60)+' t '+p2(m%60)+' min'};
 const lvl=k=>LEVELS.find(l=>l[0]===k)||LEVELS[0];
+const SOON_MIN=30;
+function nextAt(hhmm){if(!hhmm) return null;const [h,m]=hhmm.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()-5*60000)d.setDate(d.getDate()+1);return d.getTime()}
+const left=d=>d.untilTs?d.untilTs-Date.now():null;
+function untilTxt(d){const l=left(d);if(l===null) return '';return l<=0?`Fri siden ${hm(d.untilTs)}`:`Til kl. ${hm(d.untilTs)} · ${dur(l)} tilbage`}
+function untilCls(d){const l=left(d);return l===null?'':l<=0?' over':l<=SOON_MIN*60000?' soon':''}
 
 let S={doctors:[],cases:[]};
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.doctors)&&Array.isArray(d.cases))S=d}catch(e){}}
@@ -219,8 +231,9 @@ const lastAssigned=id=>Math.max(0,...S.cases.filter(c=>c.doc===id).map(c=>c.star
 
 /* Forslag: færrest aktive → længst siden sidste tildeling (aldrig tildelt først) → tilføjet først */
 function next(){
-  const ds=onDuty();if(!ds.length) return null;
-  return ds.slice().sort((a,b)=>active(a.id).length-active(b.id).length||lastAssigned(a.id)-lastAssigned(b.id)||a.added-b.added)[0];
+  const ds=onDuty().filter(d=>left(d)===null||left(d)>0);if(!ds.length) return null;
+  const late=d=>{const l=left(d);return l!==null&&l<=SOON_MIN*60000?1:0};
+  return ds.slice().sort((a,b)=>late(a)-late(b)||active(a.id).length-active(b.id).length||lastAssigned(a.id)-lastAssigned(b.id)||a.added-b.added)[0];
 }
 
 /* ---------- fortryd ---------- */
@@ -260,18 +273,20 @@ $('#log').addEventListener('click',e=>{const r=e.target.closest('[data-reopen]')
 
 /* forvagter */
 $('#docLevel').innerHTML=LEVELS.map(([k,s,n])=>`<option value="${k}">${esc(n)}</option>`).join('');
-try{const l=localStorage.getItem(KEY+'.lastLevel');if(l)$('#docLevel').value=l}catch(e){}
+try{const l=localStorage.getItem(KEY+'.lastLevel');if(l)$('#docLevel').value=l;const u=localStorage.getItem(KEY+'.lastUntil');if(u)$('#docUntil').value=u}catch(e){}
 $('#addForm').addEventListener('submit',e=>{
-  e.preventDefault();const name=$('#docName').value.trim();if(!name) return;const level=$('#docLevel').value;
+  e.preventDefault();const name=$('#docName').value.trim();if(!name) return;const level=$('#docLevel').value;const until=$('#docUntil').value;
   const ex=S.doctors.find(d=>d.name.toLowerCase()===name.toLowerCase()&&d.level===level);
-  if(ex){ex.on=true;toast(ex.name+' er på arbejde igen')}
-  else S.doctors.push({id:uid(),name:name.charAt(0).toUpperCase()+name.slice(1),level,on:true,added:Date.now()});
-  try{localStorage.setItem(KEY+'.lastLevel',level)}catch(_){}
+  if(ex){ex.on=true;if(until){ex.until=until;ex.untilTs=nextAt(until)}toast(ex.name+' er på arbejde igen')}
+  else S.doctors.push({id:uid(),name:name.charAt(0).toUpperCase()+name.slice(1),level,on:true,added:Date.now(),until:until||'',untilTs:nextAt(until)});
+  try{localStorage.setItem(KEY+'.lastLevel',level);localStorage.setItem(KEY+'.lastUntil',until)}catch(_){}
   $('#docName').value='';save();render();$('#docName').focus();
 });
+$('#roster').addEventListener('change',e=>{const t=e.target.closest('input[data-until]');if(!t) return;const d=S.doctors.find(x=>x.id===t.dataset.until);if(!d) return;d.until=t.value;d.untilTs=nextAt(t.value);save();render()});
 $('#roster').addEventListener('click',e=>{
   const b=e.target.closest('button[data-act]');if(!b) return;const d=S.doctors.find(x=>x.id===b.dataset.id);if(!d) return;
   const a=b.dataset.act;
+  if(a==='toggle'&&!d.on&&d.untilTs&&d.untilTs<=Date.now()){d.until='';d.untilTs=null}
   if(a==='toggle'){if(d.on&&active(d.id).length&&!confirm(`${d.name} har ${active(d.id).length} aktiv(e) patient(er). Går ${d.name} hjem alligevel? (Patienterne bliver stående som aktive)`)) return;d.on=!d.on}
   if(a==='lvl'){const i=LEVELS.findIndex(l=>l[0]===d.level);d.level=LEVELS[(i+1)%LEVELS.length][0]}
   if(a==='rm'){if(S.cases.some(c=>c.doc===d.id)){if(!confirm(`Fjern ${d.name} og ${d.name}s patienter fra vagten?`)) return;S.cases=S.cases.filter(c=>c.doc!==d.id)}S.doctors=S.doctors.filter(x=>x!==d)}
@@ -314,7 +329,8 @@ function render(){
   const shot=$('#shot');shot.classList.toggle('empty',!n);
   if(n){const a=active(n.id).length,la=lastAssigned(n.id),tie=ds.filter(d=>active(d.id).length===a).length;
     $('#shotWho').innerHTML=`${esc(n.name)} <span class="lv" style="--lc:var(--l-${n.level})">${esc(lvl(n.level)[1])}</span>`;
-    $('#shotWhy').textContent=(a?`${a} aktiv${a===1?'':'e'} patient${a===1?'':'er'}`:'Ingen aktive patienter')+(tie>1?` · ${la?'længst siden sidste patient ('+dur(now-la)+')':'har ikke fået nogen endnu'}`:'')+'.';
+    const sl=left(n);
+    $('#shotWhy').textContent=(a?`${a} aktiv${a===1?'':'e'} patient${a===1?'':'er'}`:'Ingen aktive patienter')+(tie>1?` · ${la?'længst siden sidste patient ('+dur(now-la)+')':'har ikke fået nogen endnu'}`:'')+(sl!==null?` · ${untilTxt(n).toLowerCase()}`:'')+'.';
     $('#assignNext').textContent='Tildel '+n.name;
   }else{$('#shotWho').textContent='Ingen forvagter på arbejde';$('#shotWhy').textContent='Tilføj forvagterne nedenfor.';$('#assignNext').textContent='Tildel patient'}
   // forvagter
@@ -323,7 +339,7 @@ function render(){
     const avg=dn.length?dur(dn.reduce((s,c)=>s+(c.end-c.start),0)/dn.length):'–';
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
     return `<article class="doc${n&&n.id===d.id?' next':''}" style="--lc:var(--l-${d.level})">
-      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}<span class="cnt">${act.length} aktiv${act.length===1?'':'e'}</span></div>
+      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}<span class="cnt">${act.length} aktiv${act.length===1?'':'e'}</span>${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${esc(untilTxt(d))}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${c.label?esc(c.label):'Patient'}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}</span>
@@ -336,7 +352,8 @@ function render(){
   // roster
   $('#roster').innerHTML=S.doctors.slice().sort((a,b)=>(b.on-a.on)||a.added-b.added).map(d=>`<li class="${d.on?'':'off'}" style="--lc:var(--l-${d.level})">
     <span class="nm">${esc(d.name)}</span><button type="button" class="lv" style="border:0;cursor:pointer" data-act="lvl" data-id="${d.id}" title="Skift uddannelsesniveau">${esc(lvl(d.level)[1])}</button>
-    <span class="sp muted" style="font-size:.82rem">${d.on?'På arbejde':'Ikke på arbejde'}</span>
+    <span class="sp muted" style="font-size:.82rem">${d.on?(d.untilTs?`<span class="until${untilCls(d)}">${esc(untilTxt(d))}</span>`:'På arbejde'):'Ikke på arbejde'}</span>
+    ${d.on?`<input type="time" data-until="${d.id}" value="${esc(d.until||'')}" title="Til kl." aria-label="${esc(d.name)} til kl.">`:''}
     <button type="button" data-act="toggle" data-id="${d.id}">${d.on?'Går hjem':'På arbejde'}</button>
     <button type="button" class="rm" data-act="rm" data-id="${d.id}" title="Fjern fra listen">✕</button></li>`).join('');
   $('#rosterSum').textContent=S.doctors.length?`${ds.length} af ${S.doctors.length}`:'';
