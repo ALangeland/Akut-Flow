@@ -234,6 +234,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
   .shot .assign #assignNext{height:44px}
 }
 .topbtns button[aria-pressed="true"]{background:rgba(255,255,255,.14)}
+.exbtn{padding:2px 8px;font-size:.85rem;margin:0 2px}
 </style>
 </head>
 <body>
@@ -259,7 +260,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
   <section>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><h2>Forvagter</h2><div class="kpis" id="docSum"></div></div>
     <div class="docs" id="docs"></div>
-    <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem nedenfor.</p>
+    <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem nedenfor, eller <button type="button" class="exbtn" data-example="1">indlæs eksempeldata</button> for at se, hvordan det ser ud.</p>
   </section>
 
   <section class="card" id="sleepCard">
@@ -298,7 +299,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
   <section class="card">
     <div class="card-h"><h2>Fil</h2></div>
     <div class="card-b">
-      <div class="files"><button id="saveFile" type="button">⇩ Gem vagten som fil</button><button id="loadFile" type="button">📂 Indlæs fil</button><input type="file" id="fileIn" accept=".json,application/json" hidden></div>
+      <div class="files"><button type="button" data-example="1" title="Erstatter vagten med 4 forvagter og opdigtede patienter – kan fortrydes">🧪 Indlæs eksempeldata</button><button id="saveFile" type="button">⇩ Gem vagten som fil</button><button id="loadFile" type="button">📂 Indlæs fil</button><input type="file" id="fileIn" accept=".json,application/json" hidden></div>
       <p class="note">Alt gemmes automatisk i browseren på denne enhed. Filen kan bruges som regnskab eller til at flytte vagten til en anden enhed.</p>
     </div>
   </section>
@@ -309,8 +310,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='10';
+const APP_VERSION='11';
 const CHANGELOG=[
+ {v:'11',d:'01.11.2026',items:['🧪 Indlæs eksempeldata (under Fil, og når der ingen forvagter er): 4 forvagter med opdigtede patienter i forskellige zoner, med forskellig status, problematik og tyngde, og nogle afsluttede i loggen. Kan fortrydes; Ny vagt rydder.','Zone- og stuevælgeren er gjort smallere.']},
  {v:'10',d:'01.11.2026',items:['Soveplanen vises kun om aftenen og natten (kl. 20–08) eller når der er en aktiv plan. Om dagen kan den åbnes med 🌙 Soveplan i topbjælken.','Tildeleren er afstemt: Zone, Stue og Problematik på én række; Tyngde, Note og Tildel på den næste.']},
  {v:'9',d:'01.11.2026',items:['Tyngde (Let/Middel/Tung) og en kort note er tilbage i tildeleren sammen med Zone, Stue og Problematik. Noten afvises, hvis den ligner et CPR-nummer.','B-problematik bruger 💨, som vises på alle enheder.']},
  {v:'8',d:'01.11.2026',items:['Tildeleren har kun Zone, Stue og Problematik: A 🗣️ Luftvej, B 💨 Respiration, C ❤️ Kredsløb, D 🧠 Neurologi, E 🌡️ Eksponering (tryk igen for at fravælge).','Problematikken vises som farvet mærke på patienten og i loggen. Tyngden sættes nu på patienten (tryk på mærket; standard Middel).']},
@@ -533,6 +535,28 @@ $('#newShift').addEventListener('click',()=>{
   S.cases=[];S.sleep=null;S.doctors.forEach(d=>d.on=false);save();render();toast('Ny vagt – tilføj eller genaktivér forvagterne',true);undoState=before;
 });
 $('#cancelShift').addEventListener('click',disarm);
+
+/* ---------- eksempeldata (opdigtet, ingen rigtige patienter) ---------- */
+function exampleData(){
+  const now=Date.now(),m=x=>now-x*60000,id=uid;
+  const D=[['Anna','kbu',180],['Bo','hu',300],['Carl','intro',120],['Dorte','uk',25]].map(([name,level,lm],i)=>{const t=new Date(now+lm*60000);const hhmm=p2(t.getHours())+':'+p2(t.getMinutes());return {id:id()+i,name,level,on:true,added:m(400-i),until:hhmm,untilTs:now+lm*60000}});
+  const [A,B,C,Dd]=D.map(d=>d.id);
+  const cs=[
+    [A,'3','208','C','t','recv',95,null,'Brystsmerter, troponin afventes'],
+    [A,'4','505','B','m','start',22,null,''],
+    [B,'2','204','D','m','plan',140,null,'Svimmelhed, CT-cerebrum'],
+    [B,'5','520','E','l','recv',48,null,''],
+    [B,'1','316.2','A','t','start',8,null,'Stridor'],
+    [C,'6','530','C','m','start',35,null,''],
+    [Dd,'3','215','E','l','plan',150,null,''],
+    [A,'2','202.1','B','m','plan',260,190,'KOL i exacerbation'],
+    [C,'4','509','E','l','plan',230,170,''],
+    [Dd,'5','523','C','m','plan',210,120,''],
+    [B,'3','209.1','D','t','plan',320,215,'Apopleksi, trombolyse']
+  ].map(([doc,zone,room,pb,ty,st,startAgo,endAgo,note],i)=>({id:id()+'c'+i,doc,zone,room,pb,ty,st,stAt:m(Math.max(1,startAgo-15)),note,start:m(startAgo),end:endAgo===null?null:m(endAgo)}));
+  return {doctors:D,cases:cs,sleep:null};
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-example]');if(!b) return;const before=JSON.stringify(S);S=exampleData();save();render();window.scrollTo({top:0,behavior:'smooth'});toast('Eksempeldata indlæst – opdigtede patienter. Fortryd, eller tryk «Ny vagt» for at rydde.',true);undoState=before});
 
 /* ---------- fil ---------- */
 async function pickSaveF(blob,name){
