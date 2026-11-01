@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fieldnotes</title>
+<!--PWA-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1b232b">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fieldnotes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+<!--/PWA-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Samme palet og typografi som ASA-Fordelingshatten */
+:root{
+  --bar:#2c3844; --bar-2:#3b4855; --bar-fg:#ffffff; --bar-muted:#a7b7c7;
+  --bg:#eceff2; --surface:#ffffff; --fg:#1e2a35; --muted:#66737f; --line:#d2d8de;
+  --accent:#41505f; --accent-soft:#e2e7ec; --go:#2f6f8f; --hit:#c8462e; --warn:#a35a00; --warn-soft:#fbefdd;
+  --done:#2e8a6b; --done-soft:#e3f2ec;
+  --p1:#d6201f;--p2:#f07d00;--p3:#ffd400;--p4:#2e9e44;--p5:#1f6fc5;
+  --p1t:#fff;--p2t:#fff;--p3t:#1e2a35;--p4t:#fff;--p5t:#fff;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --warn:#f0a85a; --warn-soft:#3b2d1a;
+  --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --warn:#f0a85a; --warn-soft:#3b2d1a;
+  --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
+.topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px}
+.topbar-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.topbtns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.topbtns button{font-size:.82rem;padding:6px 12px;background:transparent;color:var(--bar-fg);border-color:var(--bar-muted)}
+.topbtns button:hover{border-color:var(--bar-fg)}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+h2{font-size:.85rem;font-weight:700;margin:0;letter-spacing:.06em;text-transform:uppercase}
+button{font:600 .9rem var(--sans);padding:8px 14px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+button.primary{background:var(--bar);border-color:var(--bar);color:var(--bar-fg)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+
+/* Filbjælke */
+.filebar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);border-left:4px solid var(--warn)}
+.filebar.ok{border-left-color:var(--go)}
+#status{font-size:.92rem;font-weight:600;flex:1 1 240px}
+.filebar.err #status{color:var(--warn)}
+.filebtns{display:flex;gap:8px;flex-wrap:wrap}
+.filebtns button{font-size:.85rem;padding:6px 11px;background:var(--bg)}
+.filebtns button.primary{background:var(--bar);color:var(--bar-fg);border-color:var(--bar)}
+
+/* Formular */
+.sec-head{background:var(--bar-2);color:var(--bar-fg);padding:9px 14px;display:flex;justify-content:space-between;align-items:baseline}
+.sec-head .sum{font:500 .8rem var(--mono);color:var(--bar-muted)}
+.form-body{padding:14px}
+.grid{display:grid;grid-template-columns:1.8fr 1fr 1.2fr 1.3fr 1.3fr;gap:10px}
+label{display:block;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
+input,textarea,select{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg)}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:-2px}
+textarea{min-height:70px;resize:vertical}
+#roomhint{font-size:.78rem;color:var(--go);margin-top:3px;min-height:16px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:10px}
+.prio{display:flex;gap:4px}
+.prio button{width:44px;height:36px;padding:0;border:2px solid transparent;font-weight:700;opacity:.4}
+.prio button.sel{opacity:1;border-color:var(--fg)}
+.prio button[data-p="1"],.badge[data-p="1"],.fchip[data-p="1"].on{background:var(--p1);color:var(--p1t)}
+.prio button[data-p="2"],.badge[data-p="2"],.fchip[data-p="2"].on{background:var(--p2);color:var(--p2t)}
+.prio button[data-p="3"],.badge[data-p="3"],.fchip[data-p="3"].on{background:var(--p3);color:var(--p3t)}
+.prio button[data-p="4"],.badge[data-p="4"],.fchip[data-p="4"].on{background:var(--p4);color:var(--p4t)}
+.prio button[data-p="5"],.badge[data-p="5"],.fchip[data-p="5"].on{background:var(--p5);color:var(--p5t)}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+
+/* Værktøjslinje */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.tabs button{border:0;border-radius:0;padding:7px 12px;font-size:.85rem}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button.sel{background:var(--bar);color:var(--bar-fg)}
+.toolbar select{width:auto}
+#search{flex:1;min-width:150px;width:auto}
+.fchip{width:28px;height:28px;padding:0;border-radius:50%;font:700 .78rem var(--mono);color:var(--muted)}
+#btnClearDone{font-size:.85rem;padding:6px 11px;border-color:var(--warn);color:var(--warn)}
+
+/* Noter */
+#list{display:flex;flex-direction:column;gap:8px}
+.note{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.note .bar{width:6px;flex:none}
+.note[data-p="1"] .bar{background:var(--p1)}.note[data-p="2"] .bar{background:var(--p2)}
+.note[data-p="3"] .bar{background:var(--p3)}.note[data-p="4"] .bar{background:var(--p4)}
+.note[data-p="5"] .bar{background:var(--p5)}
+.note.done{background:var(--done-soft);border-color:var(--done)}
+.note.done .bar{background:var(--done)!important}
+.note.done .pt,.note.done .txt{color:var(--muted)}
+.note.done .badge{opacity:.45}
+.donemark{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--done);color:#fff;letter-spacing:.04em;text-transform:uppercase}
+.body{padding:10px 14px;flex:1;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.badge{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px}
+.pt{font-weight:700;font-size:1rem}
+.id{color:var(--muted);font:500 .85rem var(--mono)}
+.zone{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--bar-2);color:var(--bar-fg);letter-spacing:.04em;text-transform:uppercase}
+.room{font:600 .95rem var(--mono)}
+.tag{font-size:.7rem;padding:2px 7px;border-radius:4px;background:var(--accent-soft);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.txt{margin:6px 0 0;white-space:pre-wrap;word-wrap:break-word}
+.actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.actions button{font-size:.82rem;padding:5px 10px;background:var(--bg)}
+.actions button[data-a=done]{border-color:var(--done);color:var(--done)}
+.actions .meta{margin-left:auto;font:500 .78rem var(--mono);color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:30px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+@media (max-width:760px){.grid{grid-template-columns:1fr 1fr}}
+:root[data-theme="light"]{color-scheme:light}
+.verbtn{font:500 .74rem var(--mono);background:transparent;color:var(--bar-muted);border:1px solid var(--bar-muted);border-radius:999px;padding:2px 9px;cursor:pointer;position:relative}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
+#verDlg .dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+#verDlg .dh h2{margin:0}#verDlg .dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;padding:0 4px}
+#verDlg .db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
+@media (max-width:760px){input,select,textarea{font-size:16px}.topbtns{margin-left:0}}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in"><a class="afhome" href="index.html" title="Til Akut-Flow">⌂</a><h1>Fieldnotes</h1><span class="edtag">MOBIL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
+  <div class="topbtns"><button id="btnCopy" type="button" title="Kopiér aktive noter som tekst">Kopiér overlevering</button><button id="btnMask" type="button">Skjul CPR</button><button id="themeToggle" type="button" title="Skift mellem lys og mørk tilstand"></button></div></div></div>
+<div class="wrap">
+<div class="filebar" id="filebar">
+  <span id="status">Gemt i browseren</span>
+  <div class="filebtns">
+    <button id="btnReconnect" class="primary" hidden></button>
+    <button id="btnOpenFile" title="Åbn en eksisterende datafil">Åbn datafil</button>
+    <button id="btnNewFile" title="Opret en ny datafil på dit drev">Ny datafil</button>
+    <button id="btnExport">Eksportér</button>
+    <button id="btnImport">Importér</button>
+    <input type="file" id="importInput" accept=".json,application/json" hidden>
+  </div>
+</div>
+
+<form id="form" class="card" autocomplete="off">
+<div class="sec-head"><h2 id="formTitle">Ny note</h2><span class="sum">Ctrl+Enter gemmer</span></div><div class="form-body">
+  <div class="grid">
+    <div><label for="f-patient">Patient</label><input id="f-patient" placeholder="Navn"></div>
+    <div><label for="f-zone">Zone</label><select id="f-zone"></select></div>
+    <div><label for="f-stue">Stue</label><select id="f-stue"></select><div id="roomhint"></div></div>
+    <div><label for="f-id">CPR / tlf.</label><input id="f-id" placeholder="fx 010180-1234"></div>
+    <div><label for="f-cat">Afdeling</label><select id="f-cat"><option>Akutmodtagelse</option><option>ASA</option></select></div>
+  </div>
+  <div style="margin-top:10px"><label for="f-note">Note</label>
+    <textarea id="f-note" placeholder="fx Dement, ventralhernie. S-gentamicin i morgen ef. vægt. Sortér medicinliste."></textarea></div>
+  <div class="row">
+    <div><label>Prioritet</label>
+      <div class="prio" id="prio">
+        <button type="button" data-p="1" title="Rød">1</button>
+        <button type="button" data-p="2" title="Orange">2</button>
+        <button type="button" data-p="3" title="Gul" class="sel">3</button>
+        <button type="button" data-p="4" title="Grøn">4</button>
+        <button type="button" data-p="5" title="Blå">5</button>
+      </div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button type="button" id="btnCancel" hidden>Annullér</button>
+      <button type="submit" class="primary" id="btnSave">Gem note</button>
+    </div>
+  </div>
+  <p class="hint">Alt+1–5 vælger prioritet.</p>
+</div></form>
+
+<div class="toolbar">
+  <div class="tabs" id="tabs">
+    <button data-f="all" class="sel">Alle</button>
+    <button data-f="active">Aktive</button>
+    <button data-f="done">Afsluttede</button>
+  </div>
+  <div id="prioFilter" style="display:flex;gap:4px" title="Filtrér på prioritet">
+    <button class="fchip on" data-p="1">1</button><button class="fchip on" data-p="2">2</button>
+    <button class="fchip on" data-p="3">3</button><button class="fchip on" data-p="4">4</button>
+    <button class="fchip on" data-p="5">5</button>
+  </div>
+  <select id="zoneFilter"></select>
+  <select id="catFilter"></select>
+  <input id="search" placeholder="Søg…">
+  <button id="btnClearDone">Ryd afsluttede</button>
+</div>
+
+<div id="list"></div>
+</div>
+<dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" type="button" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
+
+<script>
+const KEY='fieldnotes.v1',OLDKEY='vagtnoter.v1';
+const PNAME={1:'Rød',2:'Orange',3:'Gul',4:'Grøn',5:'Blå'};
+let notes=[],fileHandle=null,editingId=null,filter='all',maskCpr=false,prio=3;
+let prioOn=new Set([1,2,3,4,5]);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const p2=n=>String(n).padStart(2,'0');
+const hhmm=d=>p2(d.getHours())+':'+p2(d.getMinutes());
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const mask=s=>maskCpr?String(s??'').replace(/\b(\d{6})-?(\d{4})\b/g,'$1-****'):String(s??'');
+
+/* migrering fra første version (3 prioriteter, separat opfølgning) */
+function migrate(n){
+  if(n.v===2)return n;
+  if(n.todo){n.note=(n.note?n.note+'\n':'')+'→ '+n.todo}
+  n.prio={1:1,2:3,3:4}[n.prio]||3;
+  delete n.todo;delete n.due;delete n.notified;
+  n.v=2;return n;
+}
+
+/* ---------- lagring ---------- */
+function fixCat(n){if(n.cat!=='ASA')n.cat='Akutmodtagelse';return n}
+function load(){try{notes=(JSON.parse(localStorage.getItem(KEY)??localStorage.getItem(OLDKEY))||[]).map(migrate).map(fixCat)}catch(e){notes=[]}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(notes))}catch(e){}writeFile();render()}
+function setStatus(t,err){$('status').textContent=t;$('filebar').className='filebar '+(err?'err':(fileHandle?'ok':''))}
+let wt;
+function writeFile(){
+  if(!fileHandle)return;
+  clearTimeout(wt);
+  wt=setTimeout(async()=>{
+    try{
+      const w=await fileHandle.createWritable();
+      await w.write(JSON.stringify({version:2,saved:new Date().toISOString(),notes},null,2));
+      await w.close();
+      setStatus('Gemt i '+fileHandle.name+' kl. '+hhmm(new Date()));
+    }catch(e){setStatus('Kunne ikke skrive til '+fileHandle.name+' – forbind filen igen',true)}
+  },300);
+}
+function merge(incoming){
+  const map=new Map(notes.map(n=>[n.id,n]));
+  for(let n of incoming||[]){n=fixCat(migrate(n));const cur=map.get(n.id);if(!cur||(n.updated||0)>(cur.updated||0))map.set(n.id,n)}
+  notes=[...map.values()];
+}
+async function readFromHandle(h){const t=await (await h.getFile()).text();if(t.trim()){const d=JSON.parse(t);merge(Array.isArray(d)?d:d.notes)}}
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('fieldnotes',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function saveHandle(h){try{const db=await idb();db.transaction('h','readwrite').objectStore('h').put(h,'file')}catch(e){}}
+async function getHandle(){try{const db=await idb();return await new Promise(res=>{const q=db.transaction('h').objectStore('h').get('file');q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)})}catch(e){return null}}
+const fsSupported='showSaveFilePicker' in window;
+const pickerOpts={types:[{description:'Fieldnotes',accept:{'application/json':['.json']}}]};
+async function useHandle(h,read){
+  fileHandle=h;await saveHandle(h);
+  if(read){try{await readFromHandle(h)}catch(e){alert('Kunne ikke læse filen: '+e.message)}}
+  $('btnReconnect').hidden=true;persist();
+}
+$('btnNewFile').onclick=async()=>{
+  if(!fsSupported)return alert('Din browser understøtter ikke direkte filadgang. Brug Chrome eller Edge – eller Eksportér/Importér.');
+  try{await useHandle(await window.showSaveFilePicker({...pickerOpts,suggestedName:'fieldnotes.json'}),false)}catch(e){}
+};
+$('btnOpenFile').onclick=async()=>{
+  if(!fsSupported)return alert('Din browser understøtter ikke direkte filadgang. Brug Chrome eller Edge – eller Importér.');
+  try{const [h]=await window.showOpenFilePicker(pickerOpts);if((await h.requestPermission({mode:'readwrite'}))!=='granted')return;await useHandle(h,true)}catch(e){}
+};
+$('btnReconnect').onclick=async()=>{
+  const h=await getHandle();if(!h)return;
+  try{if((await h.requestPermission({mode:'readwrite'}))==='granted')await useHandle(h,true)}catch(e){}
+};
+async function initFile(){
+  if(!fsSupported){setStatus('Gemt i browseren (brug Eksportér for at gemme fil)');return}
+  const h=await getHandle();if(!h){setStatus('Gemt i browseren – vælg "Ny datafil" for at gemme på drevet');return}
+  try{if((await h.queryPermission({mode:'readwrite'}))==='granted'){await useHandle(h,true);return}}catch(e){}
+  const b=$('btnReconnect');b.hidden=false;b.textContent='Genforbind '+h.name;
+  setStatus('Ikke forbundet til fil – klik "Genforbind"',true);
+}
+
+/* ---------- eksport / import / kopi ---------- */
+$('btnExport').onclick=()=>{
+  const d=new Date();
+  const blob=new Blob([JSON.stringify({version:2,saved:d.toISOString(),notes},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`fieldnotes-${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}.json`;
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$('btnImport').onclick=()=>$('importInput').click();
+$('importInput').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{const d=JSON.parse(await f.text());merge(Array.isArray(d)?d:d.notes);persist()}catch(err){alert('Kunne ikke læse filen.')}
+  e.target.value='';
+};
+$('btnCopy').onclick=async()=>{
+  const act=sorted(notes.filter(n=>!n.done)),now=new Date();
+  let out=`Fieldnotes ${p2(now.getDate())}.${p2(now.getMonth()+1)}.${now.getFullYear()} kl. ${hhmm(now)}\n`;
+  for(const z of [...new Set(act.map(n=>n.zone||'Uden zone'))]){
+    out+=`\n[${z}]\n`;
+    for(const n of act.filter(x=>(x.zone||'Uden zone')===z)){
+      out+=`- (${PNAME[n.prio]}) ${n.stue?'st. '+n.stue+' ':''}${mask(n.patient)}${n.id_?' – '+mask(n.id_):''}${n.cat?' ['+n.cat+']':''}`;
+      if(n.note)out+=`\n  ${mask(n.note).replace(/\n/g,'\n  ')}`;
+      out+='\n';
+    }
+  }
+  try{await navigator.clipboard.writeText(out)}catch(e){const t=document.createElement('textarea');t.value=out;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}
+  const b=$('btnCopy'),o=b.textContent;b.textContent='Kopieret ✓';setTimeout(()=>b.textContent=o,1500);
+};
+$('btnMask').onclick=()=>{maskCpr=!maskCpr;$('btnMask').textContent=maskCpr?'Vis CPR':'Skjul CPR';render()};
+
+let zone='';
+/* ---------- stuer → zoner (ret her hvis stuer flytter) ---------- */
+const ZONES={
+  1:['111','113','119.1','119.2','544 Samtalerum','546 Retsmedicinsk','118.1 Dekontaminering','118.2 Dekontaminering','118.3 Dekontaminering','316.1 Triage','316.2 Triage','316.3 Triage'],
+  2:['202.1','202.2','202.3','202.4','203.1','203.2','204','205','206'],
+  3:['208','209.1','209.2','210','213','215','501','506'],
+  4:['503','505','507','508','509','512','514','516'],
+  5:['518','520','523','524','525'],
+  6:['526','528','530','532','534','536','546'],
+  7:['205','207','209','210','212','214'],
+  8:['211','213','216','501','503','506','508','510'],
+  9:['408','410','411','413','505','512','516','518','520'],
+  10:['522','524','525','526','527','529','531','532','614','615','617'],
+  11:['129','606','608','610','611','612','613'],
+  12:['117','118','119','120','122','123','124','125','126','128']
+};
+const ROOMLABEL={};
+for(const [z,list] of Object.entries(ZONES))list.forEach((item,i)=>{const [nr,...rest]=item.split(' ');list[i]=nr;if(rest.length)ROOMLABEL[nr]=rest.join(' ')});
+const roomOpt=(z,r,sel)=>`<option value="${z}|${esc(r)}"${sel?' selected':''}>${esc(r)}${ROOMLABEL[r]?' – '+esc(ROOMLABEL[r]):''}</option>`;
+$('f-zone').innerHTML='<option value="">– vælg –</option>'+Object.keys(ZONES).map(z=>`<option value="Zone ${z}">Zone ${z}</option>`).join('');
+function buildRooms(keep){
+  const zn=zone.replace('Zone ','');let h='<option value="">– vælg –</option>';
+  if(zn&&ZONES[zn])h+=ZONES[zn].map(r=>roomOpt(zn,r,keep===zn+'|'+r)).join('');
+  else h+=Object.entries(ZONES).map(([z,l])=>`<optgroup label="Zone ${z}">${l.map(r=>roomOpt(z,r,keep===z+'|'+r)).join('')}</optgroup>`).join('');
+  if(keep&&!h.includes(`value="${esc(keep)}"`)){const [kz,kr]=keep.split('|');if(kr)h+=roomOpt(kz,kr,true)}
+  $('f-stue').innerHTML=h;
+}
+function stueVal(){return $('f-stue').value.split('|')[1]||''}
+function onRoom(){
+  const v=$('f-stue').value;
+  if(v){const z='Zone '+v.split('|')[0];if(z!==zone){zone=z;$('f-zone').value=z;buildRooms(v)}}
+  $('roomhint').textContent=ROOMLABEL[stueVal()]||'';
+}
+function setZone(z){zone=z||'';$('f-zone').value=zone;const v=$('f-stue').value;buildRooms(v&&('Zone '+v.split('|')[0])===zone?v:'');onRoom()}
+$('f-zone').onchange=()=>setZone($('f-zone').value);
+$('f-stue').onchange=onRoom;
+
+/* ---------- formular ---------- */
+$('prio').onclick=e=>{const b=e.target.closest('button');if(b)setPrio(+b.dataset.p)};
+function setPrio(p){prio=p;[...$('prio').children].forEach(b=>b.classList.toggle('sel',+b.dataset.p===p))}
+function resetForm(){
+  ['f-patient','f-id','f-note'].forEach(id=>$(id).value='');$('f-stue').value='';onRoom();
+  setPrio(3);editingId=null;$('btnSave').textContent='Gem note';$('formTitle').textContent='Ny note';$('btnCancel').hidden=true;$('f-patient').focus();
+}
+$('btnCancel').onclick=resetForm;
+$('form').onsubmit=e=>{
+  e.preventDefault();
+  const v={patient:$('f-patient').value.trim(),stue:stueVal(),id_:$('f-id').value.trim(),zone,
+    cat:$('f-cat').value,note:$('f-note').value.trim(),prio,v:2};
+  if(!v.patient&&!v.stue&&!v.id_&&!v.note){$('f-patient').focus();return}
+  try{localStorage.setItem(KEY+'.last',JSON.stringify({zone:v.zone,cat:v.cat}))}catch(e){}
+  if(editingId){const n=notes.find(x=>x.id===editingId);if(n)Object.assign(n,v,{updated:Date.now()})}
+  else notes.push({id:uid(),created:Date.now(),updated:Date.now(),done:false,...v});
+  persist();resetForm();
+};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&$('form').contains(document.activeElement)){e.preventDefault();$('form').requestSubmit()}
+  if(e.altKey&&/^[1-5]$/.test(e.key)){e.preventDefault();setPrio(+e.key)}
+});
+
+/* ---------- liste ---------- */
+function sorted(arr){
+  return [...arr].sort((a,b)=>(a.done?1:0)-(b.done?1:0)||(a.done&&b.done?(b.doneAt||0)-(a.doneAt||0):0)||a.prio-b.prio||String(a.zone||'~').localeCompare(String(b.zone||'~'),'da',{numeric:true})||String(a.stue||'~').localeCompare(String(b.stue||'~'),'da',{numeric:true})||a.created-b.created);
+}
+function fmtAbs(d){const same=d.toDateString()===new Date().toDateString();return (same?'':p2(d.getDate())+'/'+p2(d.getMonth()+1)+' ')+'kl. '+hhmm(d)}
+function fillSelect(sel,label,vals){
+  const cur=sel.value;
+  sel.innerHTML=`<option value="">${label}</option>`+vals.map(v=>`<option ${v===cur?'selected':''}>${esc(v)}</option>`).join('');
+}
+function render(){
+  const q=$('search').value.trim().toLowerCase(),zf=$('zoneFilter').value,cf=$('catFilter').value;
+  const zones=[...new Set(notes.map(n=>n.zone).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'da',{numeric:true}));
+  const cats=['Akutmodtagelse','ASA'];
+  fillSelect($('zoneFilter'),'Alle zoner',zones);fillSelect($('catFilter'),'Alle afdelinger',cats);
+  const counts={active:notes.filter(n=>!n.done).length,done:notes.filter(n=>n.done).length,all:notes.length};
+  [...$('tabs').children].forEach(b=>{b.classList.toggle('sel',b.dataset.f===filter);b.textContent={active:'Aktive',done:'Afsluttede',all:'Alle'}[b.dataset.f]+' ('+counts[b.dataset.f]+')'});
+  let list=notes.filter(n=>(filter==='all'||(filter==='done'?n.done:!n.done))&&prioOn.has(n.prio));
+  if(zf)list=list.filter(n=>n.zone===zf);
+  if(cf)list=list.filter(n=>n.cat===cf);
+  if(q)list=list.filter(n=>[n.patient,n.stue,n.id_,n.note,n.zone,n.cat].join(' ').toLowerCase().includes(q));
+  list=sorted(list);
+  if(!list.length){$('list').innerHTML=`<div class="empty">${notes.length?'Ingen noter matcher.':'Ingen noter endnu – skriv den første ovenfor.'}</div>`;return}
+  $('list').innerHTML=list.map(n=>`<div class="note ${n.done?'done':''}" data-p="${n.prio}" data-id="${n.id}">
+    <div class="bar"></div><div class="body">
+      <div class="top">${n.done?'<span class="donemark">✓ Færdig</span>':''}<span class="badge" data-p="${n.prio}">${PNAME[n.prio]}</span>
+        ${n.zone?`<span class="zone">${esc(n.zone)}</span>`:''}
+        ${n.stue?`<span class="room">St. ${esc(n.stue)}</span>`:''}
+        <span class="pt">${esc(mask(n.patient))||'<i>Uden navn</i>'}</span>
+        ${n.id_?`<span class="id">${esc(mask(n.id_))}</span>`:''}
+        ${n.cat?`<span class="tag">${esc(n.cat)}</span>`:''}</div>
+      ${n.note?`<p class="txt">${esc(mask(n.note))}</p>`:''}
+      <div class="actions">
+        ${n.done?'<button data-a="reopen">Genåbn</button>':'<button data-a="done">✓ Færdig</button><button data-a="edit">Redigér</button>'}
+        <button data-a="del">Slet</button>
+        <span class="meta">Oprettet ${fmtAbs(new Date(n.created))}${n.done&&n.doneAt?' · afsluttet '+fmtAbs(new Date(n.doneAt)):''}</span>
+      </div></div></div>`).join('');
+}
+$('list').onclick=e=>{
+  const b=e.target.closest('button[data-a]');if(!b)return;
+  const id=b.closest('.note').dataset.id,n=notes.find(x=>x.id===id);if(!n)return;
+  const a=b.dataset.a;
+  if(a==='done'){n.done=true;n.doneAt=Date.now();n.updated=Date.now()}
+  if(a==='reopen'){n.done=false;n.doneAt=null;n.updated=Date.now()}
+  if(a==='del'){if(!confirm('Slet denne note permanent?'))return;notes=notes.filter(x=>x.id!==id)}
+  if(a==='edit'){
+    editingId=id;$('f-patient').value=n.patient||'';$('f-id').value=n.id_||'';setZone(n.zone);buildRooms(n.stue?String(n.zone||'').replace('Zone ','')+'|'+n.stue:'');onRoom();
+    $('f-cat').value=n.cat==='ASA'?'ASA':'Akutmodtagelse';$('f-note').value=n.note||'';setPrio(n.prio);
+    $('btnSave').textContent='Opdatér note';$('formTitle').textContent='Redigér note';$('btnCancel').hidden=false;
+    window.scrollTo({top:0,behavior:'smooth'});$('f-note').focus();return;
+  }
+  persist();
+};
+$('tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;filter=b.dataset.f;render()};
+$('prioFilter').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const p=+b.dataset.p;
+  prioOn.has(p)?prioOn.delete(p):prioOn.add(p);b.classList.toggle('on',prioOn.has(p));render();
+};
+$('zoneFilter').onchange=render;$('catFilter').onchange=render;$('search').oninput=render;
+$('btnClearDone').onclick=()=>{
+  const c=notes.filter(n=>n.done).length;if(!c)return;
+  if(confirm(`Slet ${c} afsluttede note(r) permanent?`)){notes=notes.filter(n=>!n.done);persist()}
+};
+
+/* ---------- versionshistorik ---------- */
+const APP_VERSION='2';
+const CHANGELOG=[
+ {v:'2',d:'01.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.']},
+ {v:'1',d:'31.10.2026',items:['Noter med patient, zone og stue (rullemenuer), CPR/tlf., afdeling og 5 prioriteter.','Færdig-markering, filtre, søgning, Kopiér overlevering, Skjul CPR og datafil (fieldnotes.json). Henter noter fra Vagtnoter første gang.']}
+];
+(function(){const vb=$('verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;let seen='';try{seen=localStorage.getItem('fieldnotes.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');
+vb.onclick=()=>{$('verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver"><b>Version ${esc(c.v)}</b><span class="d">${esc(c.d)}</span>${c.v===APP_VERSION?'<span class="cur">AKTUEL</span>':''}<ul>${c.items.map(i=>'<li>'+esc(i)+'</li>').join('')}</ul></div>`).join('');$('verDlg').showModal();vb.classList.remove('new');try{localStorage.setItem('fieldnotes.seenVersion',APP_VERSION)}catch(e){}};
+$('verClose').onclick=()=>$('verDlg').close();})();
+if(!fsSupported){$('btnOpenFile').hidden=true;$('btnNewFile').hidden=true}
+
+/* ---------- start ---------- */
+load();
+try{const l=JSON.parse(localStorage.getItem(KEY+'.last'))||{};setZone(l.zone);$('f-cat').value=l.cat==='ASA'?'ASA':'Akutmodtagelse'}catch(e){}
+render();initFile();
+$('f-patient').focus();
+
+/* ---------- lys/mørk tilstand (fælles for alle værktøjer) ---------- */
+(function(){
+  const b=document.getElementById('themeToggle'),root=document.documentElement,mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+  const cur=()=>root.dataset.theme||(mq&&mq.matches?'dark':'light');
+  const lab=()=>{const d=cur()==='dark';b.textContent=d?'☀ Lys':'☾ Mørk';b.setAttribute('aria-label',d?'Skift til lys tilstand':'Skift til mørk tilstand')};
+  b.addEventListener('click',()=>{const n=cur()==='dark'?'light':'dark';root.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}lab()});
+  window.addEventListener('storage',e=>{if(e.key==='alb-theme'){if(e.newValue)root.dataset.theme=e.newValue;else delete root.dataset.theme;lab()}});
+  if(mq&&mq.addEventListener)mq.addEventListener('change',lab);
+  lab();
+})();
+</script>
+</body>
+</html>

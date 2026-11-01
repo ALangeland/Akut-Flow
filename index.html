@@ -79,22 +79,23 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <div class="tiles">
     <a class="tile t-j" href="journalflow.html"><span class="ic">📝</span><h2>Journalflow</h2><p>Journalkladde som klikjournalen med fraser, normalfund og planer.</p><span class="go">Åbn ▸</span></a>
     <a class="tile t-f" href="fordelingshatten.html"><span class="ic">🎩</span><h2>Fordelingshatten</h2><p>Optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
-    <div class="tile t-n off" aria-disabled="true"><span class="ic">🗒️</span><h2>Fieldnotes</h2><p>Hurtige vagtnoter med zone, stue og prioritet.</p><span class="go">Kommer i næste version</span></div>
+    <a class="tile t-n" href="fieldnotes.html"><span class="ic">🗒️</span><h2>Fieldnotes</h2><p>Hurtige vagtnoter med zone, stue og prioritet, og overleveringstekst.</p><span class="go">Åbn ▸</span></a>
   </div>
   <section class="card"><h3>📱 Mobil – installér på telefonen</h3><div class="b">
     <p>Åbn <a href="mobil/"><b>alangeland.github.io/Akut-Flow/mobil/</b></a> på telefonen. I mobiludgaven kan Journalflow sende kladden på mail.</p>
     <p><b>iPhone (Safari):</b> Del → <b>Føj til hjemmeskærm</b>. <b>Android (Chrome):</b> ⋮ → <b>Installer app</b>.</p>
   </div></section>
   <section class="card"><h3>💻 Lokal udgave – hent til PC</h3><div class="b">
-    <p><a class="btn dl" href="lokal/Journalflow-lokal.html" download>⇩ Journalflow (lokal)</a> <a class="btn dl" href="lokal/Fordelingshatten-lokal.html" download>⇩ Fordelingshatten (lokal)</a></p>
+    <p><a class="btn dl" href="lokal/Journalflow-lokal.html" download>⇩ Journalflow (lokal)</a> <a class="btn dl" href="lokal/Fordelingshatten-lokal.html" download>⇩ Fordelingshatten (lokal)</a> <a class="btn dl" href="lokal/Fieldnotes-lokal.html" download>⇩ Fieldnotes (lokal)</a></p>
     <p>Gem filen og åbn den i Edge eller Chrome. Kun den lokale Journalflow kan indlæse kladder sendt fra mobilen (📥 Indlæs fra mail).</p>
     <p class="muted">Ved en opdatering henter du bare filen igen. Planer, normalfund og kladde ligger i browseren og bliver liggende.</p>
   </div></section>
 </main>
 <dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
 <script>
-const APP_VERSION='2';
+const APP_VERSION='3';
 const CHANGELOG=[
+ {v:'3',d:'01.11.2026',items:['Fieldnotes er med i alle tre udgaver.']},
  {v:'2',d:'01.11.2026',items:['Tre udgaver: web (denne side), mobil (installerbar app under /mobil/) og lokale filer til PC (Hent).','Journalflow v35: mobil sender kladden på mail, lokal kan indlæse den igen.']},
  {v:'1',d:'01.11.2026',items:['Akut-Flow samler Journalflow og Fordelingshatten i én app, der kan installeres på telefonen og virker offline.']}
 ];

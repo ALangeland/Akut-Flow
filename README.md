@@ -8,15 +8,15 @@ Arbejdsværktøjer til Alb Akut- og Traumecenter i tre udgaver: web, mobil og lo
 
 | Udgave | Hvor | Til |
 |---|---|---|
-| **Web** | `index.html`, `journalflow.html`, `fordelingshatten.html` | Åbnes direkte i browseren via GitHub Pages. |
+| **Web** | `index.html`, `journalflow.html`, `fordelingshatten.html`, `fieldnotes.html` | Åbnes direkte i browseren via GitHub Pages. |
 | **Mobil** | `mobil/` | Installeres på telefonen og virker offline. Journalflow kan sende kladden på mail. |
-| **Lokal** | `lokal/Journalflow-lokal.html`, `lokal/Fordelingshatten-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Journalflow kan indlæse kladder fra mail (📥 Indlæs fra mail). |
+| **Lokal** | `lokal/Journalflow-lokal.html`, `lokal/Fordelingshatten-lokal.html`, `lokal/Fieldnotes-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Journalflow kan indlæse kladder fra mail (📥 Indlæs fra mail). |
 
 ## Værktøjer
 
 - **Journalflow** (tidligere Pasteplaner): journalkladde som klikjournalen med fraser, normalfund og planer, der fordeles i journalfelterne.
 - **Fordelingshatten:** optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.
-- **Fieldnotes:** kommer i næste version.
+- **Fieldnotes:** hurtige vagtnoter med zone, stue, afdeling og 5 prioriteter, færdig-markering og overleveringstekst.
 
 ## Opdatering
 
