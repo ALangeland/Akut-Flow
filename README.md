@@ -10,7 +10,7 @@ Arbejdsværktøjer til Alb Akut- og Traumecenter i tre udgaver: web, mobil og lo
 |---|---|---|
 | **Web** | `index.html`, `ghostwriter.html`, `fieldnotes.html`, `fordelingshatten.html`, `vagtflows.html` | Åbnes direkte i browseren via GitHub Pages. |
 | **Mobil** | `mobil/` | Installeres på telefonen og virker offline. Ghostwriter kan sende kladden på mail. |
-| **Lokal** | `lokal/Ghostwriter-lokal.html`, `lokal/Fieldnotes-lokal.html`, `lokal/Fordelingshatten-lokal.html`, `lokal/Vagtflows-lokal.html`, `lokal/ASA-Flow-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Ghostwriter kan indlæse kladder fra mail (📥 Indlæs fra mail). |
+| **Lokal** | `lokal/Ghostwriter-lokal.html`, `lokal/Fieldnotes-lokal.html`, `lokal/Fordelingshatten-lokal.html`, `lokal/Vagtflows-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Ghostwriter kan indlæse kladder fra mail (📥 Indlæs fra mail). |
 
 ## Værktøjer
 
