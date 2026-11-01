@@ -71,7 +71,10 @@ input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-r
 .shot .who{font-size:1.25rem;font-weight:800}
 .shot .why{font-size:.85rem;color:var(--muted)}
 .shot .assign{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
-.shot .assign input{flex:1 1 160px}
+.shot .assign .zs{flex:1 1 130px;min-width:0}
+.shot .assign .zs select{width:100%}
+.shot .assign .rh{font-size:.72rem;color:var(--go);font-weight:600;min-height:1em}
+.shot .assign button{align-self:flex-start;margin-top:18px}
 .shot .assign button{flex:none;font-size:1rem;padding:10px 18px}
 .shot.empty{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
 
@@ -136,6 +139,7 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
 @media (max-width:600px){
   .addrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .shot .assign button{margin-top:0;flex:1 1 100%}
   .addrow>div:first-child{grid-column:1/-1}
   .addrow button{grid-column:1/-1}
   .log li{grid-template-columns:78px minmax(0,1fr) auto;padding:7px 10px}
@@ -155,7 +159,8 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
     <span class="hat" aria-hidden="true">🎩</span>
     <div><div class="why" id="shotLabel">Næste patient til</div><div class="who" id="shotWho">–</div><div class="why" id="shotWhy"></div></div>
     <div class="assign">
-      <input id="caseLabel" placeholder="Stue / kort note (valgfrit – ingen CPR)" autocomplete="off" maxlength="40">
+      <div class="zs"><label class="lbl" for="caseZone">Zone</label><select id="caseZone"></select></div>
+      <div class="zs"><label class="lbl" for="caseRoom">Stue</label><select id="caseRoom"></select><div id="roomHint" class="rh"></div></div>
       <button class="primary" id="assignNext" type="button">Tildel patient</button>
     </div>
   </section>
@@ -200,8 +205,9 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 <script>
 (function(){
 'use strict';
-const APP_VERSION='2';
+const APP_VERSION='3';
 const CHANGELOG=[
+ {v:'3',d:'01.11.2026',items:['Tildeleren har Zone og Stue som rullemenuer (samme stuer som Fieldnotes) i stedet for et fritekstfelt – så der aldrig skal skrives CPR eller navn. Vælger du en stue, sættes zonen selv, og zonen huskes til næste patient.','Zone og stue står på patienten, i loggen og i fortryd-beskeden.']},
  {v:'2',d:'01.11.2026',items:['«Til kl.» på hver forvagt: kortet viser, hvor længe forvagten er der («Til kl. 16:00 · 1 t 20 min tilbage»), orange de sidste 30 min og rødt efter fri. Tiden kan rettes i listen.','«Næste patient til» springer forvagter over, der har fri, og tager dem med under 30 min tilbage sidst.']},
  {v:'1',d:'01.11.2026',items:['Ny: fordel patienter til forvagterne på arbejde. Forvagter registreres med fornavn og uddannelsesniveau.','Tildel en patient med ét tryk (evt. med stue/kort note), samtidig med at du tildeler i Cetrea. Hver patient får starttidspunkt og et ur, der viser, hvor længe forvagten har været i gang.','En forvagt kan have flere patienter ad gangen. Tryk «Afslut», når patienten er færdig – varigheden skrives i loggen.','«Næste patient til» foreslår forvagten med færrest aktive patienter; ved lighed den, der har ventet længst siden sidste tildeling.','Fortryd efter tildel/afslut, Ny vagt, fil til regnskab, versionshistorik og mørk tilstand som standard.']}
 ];
@@ -215,6 +221,24 @@ const p2=n=>String(n).padStart(2,'0');
 const hm=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/60000));return m<60?m+' min':Math.floor(m/60)+' t '+p2(m%60)+' min'};
 const lvl=k=>LEVELS.find(l=>l[0]===k)||LEVELS[0];
+/* stuer → zoner (samme som Fieldnotes; ret her hvis stuer flytter) */
+const ZONES={
+  1:['111','113','119.1','119.2','544 Samtalerum','546 Retsmedicinsk','118.1 Dekontaminering','118.2 Dekontaminering','118.3 Dekontaminering','316.1 Triage','316.2 Triage','316.3 Triage'],
+  2:['202.1','202.2','202.3','202.4','203.1','203.2','204','205','206'],
+  3:['208','209.1','209.2','210','213','215','501','506'],
+  4:['503','505','507','508','509','512','514','516'],
+  5:['518','520','523','524','525'],
+  6:['526','528','530','532','534','536','546'],
+  7:['205','207','209','210','212','214'],
+  8:['211','213','216','501','503','506','508','510'],
+  9:['408','410','411','413','505','512','516','518','520'],
+  10:['522','524','525','526','527','529','531','532','614','615','617'],
+  11:['129','606','608','610','611','612','613'],
+  12:['117','118','119','120','122','123','124','125','126','128']
+};
+const ROOMLABEL={};
+for(const [z,list] of Object.entries(ZONES))list.forEach((it,i)=>{const [nr,...rest]=it.split(' ');list[i]=nr;if(rest.length)ROOMLABEL[nr]=rest.join(' ')});
+const caseTxt=c=>[c.zone?'Zone '+c.zone:'',c.room?'St. '+c.room:'',(!c.zone&&!c.room&&c.label)?c.label:''].filter(Boolean).join(' · ');
 const SOON_MIN=30;
 function nextAt(hhmm){if(!hhmm) return null;const [h,m]=hhmm.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d.getTime()<=Date.now()-5*60000)d.setDate(d.getDate()+1);return d.getTime()}
 const left=d=>d.untilTs?d.untilTs-Date.now():null;
@@ -248,23 +272,32 @@ $('#toastUndo').addEventListener('click',()=>{if(!undoState)return;S=JSON.parse(
 /* ---------- handlinger ---------- */
 function assign(docId){
   const d=S.doctors.find(x=>x.id===docId);if(!d) return;
-  const label=$('#caseLabel').value.trim();
+  const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';
   const before=JSON.stringify(S);
-  S.cases.push({id:uid(),doc:d.id,label,start:Date.now(),end:null});
-  save();$('#caseLabel').value='';render();
-  undoState=before;toast(`Patient${label?' ('+label+')':''} tildelt ${d.name} kl. ${hm(Date.now())}`,true);undoState=before;
+  const c={id:uid(),doc:d.id,zone,room,start:Date.now(),end:null};S.cases.push(c);
+  save();$('#caseRoom').value='';$('#roomHint').textContent='';render();
+  const lt=caseTxt(c);toast(`Patient${lt?' ('+lt+')':''} tildelt ${d.name} kl. ${hm(Date.now())}`,true);undoState=before;
 }
 function finish(caseId){
   const c=S.cases.find(x=>x.id===caseId);if(!c||c.end) return;
   const before=JSON.stringify(S);
   c.end=Date.now();save();render();
   const d=S.doctors.find(x=>x.id===c.doc);
-  toast(`${d?d.name:'Forvagt'} afsluttede${c.label?' '+c.label:''} efter ${dur(c.end-c.start)}`,true);undoState=before;
+  const lt=caseTxt(c);toast(`${d?d.name:'Forvagt'} afsluttede${lt?' '+lt:''} efter ${dur(c.end-c.start)}`,true);undoState=before;
 }
 function reopen(caseId){const c=S.cases.find(x=>x.id===caseId);if(!c) return;c.end=null;save();render()}
 
 $('#assignNext').addEventListener('click',()=>{const n=next();if(!n){$('#docName').focus();toast('Tilføj først de forvagter, der er på arbejde');return}assign(n.id)});
-$('#caseLabel').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#assignNext').click()}});
+function roomOpt(z,r,sel){return `<option value="${z}|${esc(r)}"${sel?' selected':''}>${esc(r)}${ROOMLABEL[r]?' – '+esc(ROOMLABEL[r]):''}</option>`}
+function buildRooms(keep){const z=$('#caseZone').value;let h='<option value="">– vælg –</option>';
+  if(z&&ZONES[z])h+=ZONES[z].map(r=>roomOpt(z,r,keep===z+'|'+r)).join('');
+  else h+=Object.entries(ZONES).map(([zz,l])=>`<optgroup label="Zone ${zz}">${l.map(r=>roomOpt(zz,r,keep===zz+'|'+r)).join('')}</optgroup>`).join('');
+  $('#caseRoom').innerHTML=h}
+$('#caseZone').innerHTML='<option value="">– vælg –</option>'+Object.keys(ZONES).map(z=>`<option value="${z}">Zone ${z}</option>`).join('');
+try{const lz=localStorage.getItem(KEY+'.lastZone');if(lz&&ZONES[lz])$('#caseZone').value=lz}catch(e){}
+buildRooms('');
+$('#caseZone').addEventListener('change',()=>{try{localStorage.setItem(KEY+'.lastZone',$('#caseZone').value)}catch(e){}buildRooms('');$('#roomHint').textContent=''});
+$('#caseRoom').addEventListener('change',()=>{const v=$('#caseRoom').value;if(v){const z=v.split('|')[0];if($('#caseZone').value!==z){$('#caseZone').value=z;try{localStorage.setItem(KEY+'.lastZone',z)}catch(e){}buildRooms(v)}}$('#roomHint').textContent=ROOMLABEL[v.split('|')[1]]||''});
 $('#docs').addEventListener('click',e=>{
   const a=e.target.closest('[data-assign]');if(a){assign(a.dataset.assign);return}
   const f=e.target.closest('[data-finish]');if(f){finish(f.dataset.finish);return}
@@ -341,7 +374,7 @@ function render(){
     return `<article class="doc${n&&n.id===d.id?' next':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}<span class="cnt">${act.length} aktiv${act.length===1?'':'e'}</span>${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${esc(untilTxt(d))}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case${ms>=LONG_MIN*60000?' long':''}">
-        <span class="cl">${c.label?esc(c.label):'Patient'}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
+        <span class="cl">${esc(caseTxt(c)||'Patient')}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}</span>
         <div class="acts"><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats">I dag: ${dn.length} afsluttet · gns. ${avg}${la?' · sidst tildelt '+hm(la):''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
@@ -360,7 +393,7 @@ function render(){
   // log
   const fin=S.cases.filter(c=>c.end).sort((a,b)=>b.end-a.end);
   $('#log').innerHTML=fin.map(c=>{const d=S.doctors.find(x=>x.id===c.doc);return `<li><time>${hm(c.start)}–${hm(c.end)}</time>
-    <span><b>${esc(d?d.name:'?')}</b> ${d?`<span class="lv" style="--lc:var(--l-${d.level});font-size:.62rem">${esc(lvl(d.level)[1])}</span>`:''}${c.label?' · '+esc(c.label):''} <button type="button" data-reopen="${c.id}" style="padding:1px 7px;font-size:.72rem;margin-left:4px" title="Genåbn – fx hvis du trykkede Afslut ved en fejl">↺</button></span>
+    <span><b>${esc(d?d.name:'?')}</b> ${d?`<span class="lv" style="--lc:var(--l-${d.level});font-size:.62rem">${esc(lvl(d.level)[1])}</span>`:''}${caseTxt(c)?' · '+esc(caseTxt(c)):''} <button type="button" data-reopen="${c.id}" style="padding:1px 7px;font-size:.72rem;margin-left:4px" title="Genåbn – fx hvis du trykkede Afslut ved en fejl">↺</button></span>
     <span class="d">${dur(c.end-c.start)}</span></li>`}).join('');
   $('#logEmpty').hidden=fin.length>0;
   $('#logSum').textContent=fin.length?`${fin.length} afsluttet · gns. ${dur(fin.reduce((s,c)=>s+(c.end-c.start),0)/fin.length)}`:'';
