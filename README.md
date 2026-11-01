@@ -16,7 +16,7 @@ Arbejdsværktøjer til Alb Akut- og Traumecenter i tre udgaver: web, mobil og lo
 
 - **Journalflow** (tidligere Pasteplaner): journalkladde som klikjournalen med fraser, normalfund og planer, der fordeles i journalfelterne.
 - **Fordelingshatten:** optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.
-- **Noteflow:** kommer i næste version.
+- **Fieldnotes:** kommer i næste version.
 
 ## Opdatering
 

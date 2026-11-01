@@ -1,7 +1,7 @@
 {
   "name": "Akut-Flow",
   "short_name": "Akut-Flow",
-  "description": "Journalflow, Fordelingshatten og Noteflow – arbejdsværktøjer til Alb Akut- og Traumecenter.",
+  "description": "Journalflow, Fordelingshatten og Fieldnotes – arbejdsværktøjer til Alb Akut- og Traumecenter.",
   "lang": "da",
   "start_url": "./index.html",
   "scope": "./",
