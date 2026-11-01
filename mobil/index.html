@@ -60,7 +60,7 @@ main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
 .tile .go{margin-top:auto;font-weight:700;color:var(--go);font-size:.85rem}
 .tile.off{border-top-color:var(--line);opacity:.7;cursor:default}
 .tile.off .go{color:var(--warn)}
-.t-j{border-top-color:#2e8a6b}.t-a{border-top-color:#2f75b3}.t-f{border-top-color:#b98316}.t-n{border-top-color:#6f5bab}
+.t-j{border-top-color:#2e8a6b}.t-v{border-top-color:#c8462e}.tile h2{hyphens:manual;overflow-wrap:anywhere}.t-a{border-top-color:#2f75b3}.t-f{border-top-color:#b98316}.t-n{border-top-color:#6f5bab}
 .card{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .card h3{margin:0;padding:9px 14px;background:var(--bar-2);color:#fff;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
 .card .b{padding:12px 14px;font-size:.9rem}
@@ -88,7 +88,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   <div class="tiles">
     <a class="tile t-j" href="ghostwriter.html"><span class="ic">📝</span><h2>Ghostwriter</h2><p>Journalkladde som klikjournalen med fraser, normalfund og planer.</p><span class="go">Åbn ▸</span></a>
     <a class="tile t-n" href="fieldnotes.html"><span class="ic">🗒️</span><h2>Fieldnotes</h2><p>Hurtige vagtnoter med zone, stue og prioritet, og overleveringstekst.</p><span class="go">Åbn ▸</span></a>
-    <a class="tile t-f" href="fordelingshatten.html"><span class="ic">🎩</span><h2>Fordelingshatten</h2><p>Optælling pr. speciale i ASA-zonerne og jævn fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
+    <a class="tile t-f" href="specialefordelingshatten.html"><span class="ic">🎩</span><h2>Speciale&shy;fordelings&shy;hatten</h2><p>ASA: optælling pr. speciale i zonerne og bedste fordeling af nye akutte.</p><span class="go">Åbn ▸</span></a>
+    <a class="tile t-v" href="forvagtsfordelingshatten.html"><span class="ic">🧑‍⚕️</span><h2>Forvagts&shy;fordelings&shy;hatten</h2><p>Koordinerende læge: fordel patienter til forvagterne og se, hvor længe de har været i gang.</p><span class="go">Åbn ▸</span></a>
     <a class="tile t-a" href="vagtflows.html"><span class="ic">🕒</span><h2>Vagtflows</h2><p>Tidslinjer for vagtfunktioner, fx ASA-vagten: faser og trin, print som PDF i A4 eller A5.</p><span class="go">Åbn ▸</span></a>
   </div>
   <section class="card"><h3>Installér på telefonen</h3><div class="b">
@@ -99,8 +100,9 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 </main>
 <dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
 <script>
-const APP_VERSION='6';
+const APP_VERSION='7';
 const CHANGELOG=[
+ {v:'7',d:'01.11.2026',items:['Fordelingshatten hedder nu Specialefordelingshatten.','Ny: Forvagtsfordelingshatten til koordinerende læge – fordel patienter til forvagterne, følg hvor længe de har været i gang, og afslut, når de er færdige.']},
  {v:'6',d:'01.11.2026',items:['Vagtflows har fået samme design som de andre værktøjer og versionshistorik.','Rækkefølge på startsiden: Ghostwriter, Fieldnotes, Fordelingshatten, Vagtflows.','Gem-knapperne i alle værktøjer spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ghostwriter: 📎 Send kladden sender kladden som vedhæftet fil via telefonens del-menu – også fra webudgaven.','Åbnes webudgaven på en telefon, peger en bjælke øverst på mobiludgaven.']},
  {v:'5',d:'01.11.2026',items:['Vagtflows (tidl. Vagtflow-editoren) er med i alle tre udgaver.','Ghostwriter lokal: 📥 Fra mail står nu ved siden af Gem og Indlæs fil, og Ctrl+V med en mail indlæser kladden direkte.']},
  {v:'4',d:'01.11.2026',items:['Journalflow hedder nu Ghostwriter.']},

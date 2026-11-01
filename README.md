@@ -8,15 +8,16 @@ Arbejdsværktøjer til Alb Akut- og Traumecenter i tre udgaver: web, mobil og lo
 
 | Udgave | Hvor | Til |
 |---|---|---|
-| **Web** | `index.html`, `ghostwriter.html`, `fieldnotes.html`, `fordelingshatten.html`, `vagtflows.html` | Åbnes direkte i browseren via GitHub Pages. |
+| **Web** | `index.html`, `ghostwriter.html`, `fieldnotes.html`, `specialefordelingshatten.html`, `forvagtsfordelingshatten.html`, `vagtflows.html` | Åbnes direkte i browseren via GitHub Pages. |
 | **Mobil** | `mobil/` | Installeres på telefonen og virker offline. Ghostwriter kan sende kladden på mail. |
-| **Lokal** | `lokal/Ghostwriter-lokal.html`, `lokal/Fieldnotes-lokal.html`, `lokal/Fordelingshatten-lokal.html`, `lokal/Vagtflows-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Ghostwriter kan indlæse kladder fra mail (📥 Indlæs fra mail). |
+| **Lokal** | `lokal/Ghostwriter-lokal.html`, `lokal/Fieldnotes-lokal.html`, `lokal/Specialefordelingshatten-lokal.html`, `lokal/Forvagtsfordelingshatten-lokal.html`, `lokal/Vagtflows-lokal.html` | Hentes og åbnes som fil i Edge/Chrome på PC'en. Kun den lokale Ghostwriter kan indlæse kladder fra mail (📥 Indlæs fra mail). |
 
 ## Værktøjer
 
 - **Ghostwriter** (tidligere Pasteplaner og Journalflow): journalkladde som klikjournalen med fraser, normalfund og planer, der fordeles i journalfelterne.
 - **Fieldnotes:** hurtige vagtnoter med zone, stue, afdeling og 5 prioriteter, færdig-markering og overleveringstekst.
-- **Fordelingshatten:** optælling pr. speciale i ASA-zonerne, bedste fordeling af nye akutte og 💾 Gem fordeling til loggen.
+- **Specialefordelingshatten** (tidligere Fordelingshatten): ASA – optælling pr. speciale i zonerne, bedste fordeling af nye akutte og 💾 Gem fordeling til loggen.
+- **Forvagtsfordelingshatten:** til koordinerende læge i akutmodtagelsen – forvagter med fornavn og uddannelsesniveau, tildel patienter med starttid, se hvor længe de har været i gang, og afslut, når de er færdige.
 - **Vagtflows** (tidligere Vagtflow): tidslinjer for vagtfunktioner, fx ASA-vagten – faser og trin, print som PDF i A4/A5.
 
 ## Opdatering

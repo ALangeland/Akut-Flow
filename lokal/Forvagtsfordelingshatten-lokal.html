@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forvagtsfordelingshatten</title>
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Forvagtsfordelingshatten – fordeling af patienter til forvagter med tid. Designguide: Alb Akut- og Traumecenter */
+:root{
+  --bar:#2c3844; --bar-2:#3b4855; --bar-fg:#ffffff; --bar-muted:#a7b7c7;
+  --bg:#eceff2; --surface:#ffffff; --fg:#1e2a35; --muted:#66737f; --line:#d2d8de;
+  --accent:#41505f; --accent-soft:#e2e7ec; --go:#2f6f8f; --hit:#c8462e;
+  --warn:#a35a00; --warn-soft:#fbefdd; --done:#2e8a6b; --done-soft:#e3f2ec;
+  --l-kbu:#2f75b3; --l-intro:#2e8a6b; --l-hu:#6f5bab; --l-uk:#b98316; --l-stud:#66737f;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c;
+  --warn:#f0a85a; --warn-soft:#3b2d1a; --done:#5cc79f; --done-soft:#1f3a31;
+  --l-kbu:#6eb0ec; --l-intro:#5cc79f; --l-hu:#a894e6; --l-uk:#e8b54a; --l-stud:#9dadbb; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c;
+  --warn:#f0a85a; --warn-soft:#3b2d1a; --done:#5cc79f; --done-soft:#1f3a31;
+  --l-kbu:#6eb0ec; --l-intro:#5cc79f; --l-hu:#a894e6; --l-uk:#e8b54a; --l-stud:#9dadbb; color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
+.topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top))}
+.topbar-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:#fff;text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}
+.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px}
+.verbtn{font:500 .74rem var(--mono);background:transparent;color:var(--bar-muted);border:1px solid var(--bar-muted);border-radius:999px;padding:2px 9px;cursor:pointer;position:relative}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+.topbtns{margin-left:auto;display:flex;gap:8px}
+.topbtns button{font:600 .82rem var(--sans);padding:6px 12px;background:transparent;color:var(--bar-fg);border:1px solid var(--bar-muted);border-radius:5px;cursor:pointer}
+.topbtns button:hover{border-color:var(--bar-fg)}
+.topbtns button[data-armed="1"]{background:var(--hit);border-color:var(--hit)}
+.wrap{max-width:960px;margin:0 auto;padding:18px 16px 60px;display:flex;flex-direction:column;gap:16px}
+h2{font-size:.85rem;font-weight:700;margin:0;letter-spacing:.06em;text-transform:uppercase}
+button{font:600 .9rem var(--sans);padding:8px 14px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:1px}
+button.primary{background:var(--bar);border-color:var(--bar);color:#fff}
+:root[data-theme="dark"] button.primary{background:var(--go);border-color:var(--go);color:#10202b}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg);min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.card-h{background:var(--bar-2);color:var(--bar-fg);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-h .sum{margin-left:auto;font:500 .8rem var(--mono);color:var(--bar-muted)}
+.card-b{padding:14px}
+.lbl{display:block;font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.muted{color:var(--muted)}
+.note{font-size:.84rem;color:var(--muted);margin:8px 0 0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Står for skud */
+.shot{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:14px;background:color-mix(in srgb,var(--go) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--go) 45%,var(--line));border-radius:6px}
+.shot .hat{font-size:2.2rem;line-height:1}
+.shot .who{font-size:1.25rem;font-weight:800}
+.shot .why{font-size:.85rem;color:var(--muted)}
+.shot .assign{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.shot .assign input{flex:1 1 160px}
+.shot .assign button{flex:none;font-size:1rem;padding:10px 18px}
+.shot.empty{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+
+/* Forvagter */
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.doc{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--lc,var(--line));border-radius:6px;overflow:hidden}
+.doc.next{box-shadow:0 0 0 2px var(--go)}
+.doc-h{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;flex-wrap:wrap}
+.doc-h .nm{font-weight:800;font-size:1.05rem}
+.lv{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:4px;color:#fff;background:var(--lc)}
+:root[data-theme="dark"] .lv{color:#10202b}
+.doc-h .cnt{margin-left:auto;font:600 .8rem var(--mono);color:var(--muted)}
+.doc-h .nexttag{font-size:.68rem;font-weight:700;color:var(--go);text-transform:uppercase;letter-spacing:.06em}
+.cases{list-style:none;margin:0;padding:0 12px;display:flex;flex-direction:column;gap:6px}
+.case{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-left:4px solid var(--go);border-radius:5px;background:var(--bg)}
+.case .cl{font-weight:700;overflow-wrap:anywhere}
+.case .ct{font:500 .78rem var(--mono);color:var(--muted)}
+.case .el{font:700 1.05rem var(--mono);grid-row:1/3;grid-column:2;text-align:right}
+.case .el small{display:block;font:500 .68rem var(--sans);color:var(--muted);text-align:right}
+.case .acts{grid-column:1/-1;display:flex;gap:6px}
+.case .acts button{padding:6px 12px;font-size:.85rem}
+.case .acts .fin{border-color:var(--done);color:var(--done);flex:1}
+.case .acts .fin:hover{background:var(--done);color:#fff}
+.case.long{border-left-color:var(--warn)}
+.case.long .el{color:var(--warn)}
+.nocase{padding:4px 12px;color:var(--muted);font-size:.88rem}
+.doc-f{margin-top:auto;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:10px}
+.doc-f .stats{font:500 .76rem var(--mono);color:var(--muted);flex:1 1 150px}
+.doc-f button{flex:none}
+
+/* Forvagter på arbejde */
+.addrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+.roster{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.roster li{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--line);border-left:4px solid var(--lc);border-radius:5px;flex-wrap:wrap}
+.roster li.off{opacity:.55}
+.roster .nm{font-weight:700}
+.roster .sp{flex:1}
+.roster button{padding:5px 10px;font-size:.82rem}
+.roster button.rm{color:var(--hit);border-color:color-mix(in srgb,var(--hit) 50%,var(--line))}
+
+/* Log */
+.log{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;padding:7px 14px;border-bottom:1px solid var(--line);font-size:.9rem;align-items:baseline}
+.log li:last-child{border-bottom:0}
+.log time{font:500 .8rem var(--mono);color:var(--muted)}
+.log .d{font:600 .85rem var(--mono)}
+.empty{padding:14px;color:var(--muted);text-align:center}
+.files{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--bar);color:#fff;padding:10px 14px;border-radius:6px;font-weight:600;font-size:.9rem;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:50;max-width:calc(100vw - 24px)}
+.toast button{background:transparent;color:#fff;border-color:rgba(255,255,255,.5);padding:4px 10px;font-size:.85rem}
+dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
+#verDlg .dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+#verDlg .dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;padding:0 4px}
+#verDlg .db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
+@media (max-width:600px){
+  .addrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .addrow button{grid-column:1/-1}
+  .log li{grid-template-columns:78px minmax(0,1fr) auto;padding:7px 10px}
+  input,select{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-in">
+  <h1>Forvagtsfordelingshatten</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
+  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="newShift" type="button" title="Tømmer patienter og log. Forvagterne bliver på listen, men sættes som ikke på arbejde.">Ny vagt</button><button id="themeToggle" type="button"></button></div>
+</div></header>
+
+<main class="wrap">
+  <section class="shot" id="shot" aria-live="polite">
+    <span class="hat" aria-hidden="true">🎩</span>
+    <div><div class="why" id="shotLabel">Næste patient til</div><div class="who" id="shotWho">–</div><div class="why" id="shotWhy"></div></div>
+    <div class="assign">
+      <input id="caseLabel" placeholder="Stue / kort note (valgfrit – ingen CPR)" autocomplete="off" maxlength="40">
+      <button class="primary" id="assignNext" type="button">Tildel patient</button>
+    </div>
+  </section>
+
+  <section>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px"><h2>Forvagter</h2><span class="muted mono" id="docSum" style="font-size:.8rem;margin-left:auto"></span></div>
+    <div class="docs" id="docs"></div>
+    <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem nedenfor.</p>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Forvagter på arbejde</h2><span class="sum" id="rosterSum"></span></div>
+    <div class="card-b">
+      <form class="addrow" id="addForm" autocomplete="off">
+        <div><label class="lbl" for="docName">Fornavn</label><input id="docName" placeholder="fx Anna" maxlength="24" required></div>
+        <div><label class="lbl" for="docLevel">Uddannelsesniveau</label><select id="docLevel"></select></div>
+        <button class="primary" type="submit">+ Tilføj</button>
+      </form>
+      <ul class="roster" id="roster"></ul>
+      <p class="note">Tryk «Går hjem», når en forvagt har fri – så får vedkommende ikke flere patienter, men står stadig i loggen.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Log over afsluttede</h2><span class="sum" id="logSum"></span></div>
+    <ol class="log" id="log"></ol>
+    <p class="empty" id="logEmpty">Ingen afsluttede patienter endnu.</p>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h2>Fil</h2></div>
+    <div class="card-b">
+      <div class="files"><button id="saveFile" type="button">⇩ Gem vagten som fil</button><button id="loadFile" type="button">📂 Indlæs fil</button><input type="file" id="fileIn" accept=".json,application/json" hidden></div>
+      <p class="note">Alt gemmes automatisk i browseren på denne enhed. Filen kan bruges som regnskab eller til at flytte vagten til en anden enhed.</p>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastUndo" type="button">Fortryd</button></div>
+<dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" type="button" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
+
+<script>
+(function(){
+'use strict';
+const APP_VERSION='1';
+const CHANGELOG=[
+ {v:'1',d:'01.11.2026',items:['Ny: fordel patienter til forvagterne på arbejde. Forvagter registreres med fornavn og uddannelsesniveau.','Tildel en patient med ét tryk (evt. med stue/kort note), samtidig med at du tildeler i Cetrea. Hver patient får starttidspunkt og et ur, der viser, hvor længe forvagten har været i gang.','En forvagt kan have flere patienter ad gangen. Tryk «Afslut», når patienten er færdig – varigheden skrives i loggen.','«Næste patient til» foreslår forvagten med færrest aktive patienter; ved lighed den, der har ventet længst siden sidste tildeling.','Fortryd efter tildel/afslut, Ny vagt, fil til regnskab, versionshistorik og mørk tilstand som standard.']}
+];
+const LEVELS=[['kbu','KBU','KBU-læge'],['intro','Intro','Introduktionslæge'],['hu','HU','HU-læge'],['uk','Uklass.','Uklassificeret læge'],['stud','Stud.','Lægevikar / stud. med.']];
+const KEY='forvagtsfordeling.v1';
+const LONG_MIN=120;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const p2=n=>String(n).padStart(2,'0');
+const hm=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
+const dur=ms=>{const m=Math.max(0,Math.floor(ms/60000));return m<60?m+' min':Math.floor(m/60)+' t '+p2(m%60)+' min'};
+const lvl=k=>LEVELS.find(l=>l[0]===k)||LEVELS[0];
+
+let S={doctors:[],cases:[]};
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.doctors)&&Array.isArray(d.cases))S=d}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const active=id=>S.cases.filter(c=>c.doc===id&&!c.end);
+const done=id=>S.cases.filter(c=>c.doc===id&&c.end);
+const onDuty=()=>S.doctors.filter(d=>d.on);
+const lastAssigned=id=>Math.max(0,...S.cases.filter(c=>c.doc===id).map(c=>c.start));
+
+/* Forslag: færrest aktive → længst siden sidste tildeling (aldrig tildelt først) → tilføjet først */
+function next(){
+  const ds=onDuty();if(!ds.length) return null;
+  return ds.slice().sort((a,b)=>active(a.id).length-active(b.id).length||lastAssigned(a.id)-lastAssigned(b.id)||a.added-b.added)[0];
+}
+
+/* ---------- fortryd ---------- */
+let undoState=null,toastT=null;
+function toast(msg,undo){
+  $('#toastMsg').textContent=msg;$('#toastUndo').hidden=!undo;$('#toast').hidden=false;
+  undoState=undo?JSON.stringify(S):null;
+  clearTimeout(toastT);toastT=setTimeout(()=>{$('#toast').hidden=true;undoState=null},undo?7000:2500);
+}
+$('#toastUndo').addEventListener('click',()=>{if(!undoState)return;S=JSON.parse(undoState);undoState=null;save();render();$('#toast').hidden=true});
+
+/* ---------- handlinger ---------- */
+function assign(docId){
+  const d=S.doctors.find(x=>x.id===docId);if(!d) return;
+  const label=$('#caseLabel').value.trim();
+  const before=JSON.stringify(S);
+  S.cases.push({id:uid(),doc:d.id,label,start:Date.now(),end:null});
+  save();$('#caseLabel').value='';render();
+  undoState=before;toast(`Patient${label?' ('+label+')':''} tildelt ${d.name} kl. ${hm(Date.now())}`,true);undoState=before;
+}
+function finish(caseId){
+  const c=S.cases.find(x=>x.id===caseId);if(!c||c.end) return;
+  const before=JSON.stringify(S);
+  c.end=Date.now();save();render();
+  const d=S.doctors.find(x=>x.id===c.doc);
+  toast(`${d?d.name:'Forvagt'} afsluttede${c.label?' '+c.label:''} efter ${dur(c.end-c.start)}`,true);undoState=before;
+}
+function reopen(caseId){const c=S.cases.find(x=>x.id===caseId);if(!c) return;c.end=null;save();render()}
+
+$('#assignNext').addEventListener('click',()=>{const n=next();if(!n){$('#docName').focus();toast('Tilføj først de forvagter, der er på arbejde');return}assign(n.id)});
+$('#caseLabel').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#assignNext').click()}});
+$('#docs').addEventListener('click',e=>{
+  const a=e.target.closest('[data-assign]');if(a){assign(a.dataset.assign);return}
+  const f=e.target.closest('[data-finish]');if(f){finish(f.dataset.finish);return}
+});
+$('#log').addEventListener('click',e=>{const r=e.target.closest('[data-reopen]');if(r){const before=JSON.stringify(S);reopen(r.dataset.reopen);toast('Patienten er genåbnet',true);undoState=before}});
+
+/* forvagter */
+$('#docLevel').innerHTML=LEVELS.map(([k,s,n])=>`<option value="${k}">${esc(n)}</option>`).join('');
+try{const l=localStorage.getItem(KEY+'.lastLevel');if(l)$('#docLevel').value=l}catch(e){}
+$('#addForm').addEventListener('submit',e=>{
+  e.preventDefault();const name=$('#docName').value.trim();if(!name) return;const level=$('#docLevel').value;
+  const ex=S.doctors.find(d=>d.name.toLowerCase()===name.toLowerCase()&&d.level===level);
+  if(ex){ex.on=true;toast(ex.name+' er på arbejde igen')}
+  else S.doctors.push({id:uid(),name:name.charAt(0).toUpperCase()+name.slice(1),level,on:true,added:Date.now()});
+  try{localStorage.setItem(KEY+'.lastLevel',level)}catch(_){}
+  $('#docName').value='';save();render();$('#docName').focus();
+});
+$('#roster').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');if(!b) return;const d=S.doctors.find(x=>x.id===b.dataset.id);if(!d) return;
+  const a=b.dataset.act;
+  if(a==='toggle'){if(d.on&&active(d.id).length&&!confirm(`${d.name} har ${active(d.id).length} aktiv(e) patient(er). Går ${d.name} hjem alligevel? (Patienterne bliver stående som aktive)`)) return;d.on=!d.on}
+  if(a==='lvl'){const i=LEVELS.findIndex(l=>l[0]===d.level);d.level=LEVELS[(i+1)%LEVELS.length][0]}
+  if(a==='rm'){if(S.cases.some(c=>c.doc===d.id)){if(!confirm(`Fjern ${d.name} og ${d.name}s patienter fra vagten?`)) return;S.cases=S.cases.filter(c=>c.doc!==d.id)}S.doctors=S.doctors.filter(x=>x!==d)}
+  save();render();
+});
+
+/* ny vagt (to-trins) */
+let shiftT=null;
+function disarm(){clearTimeout(shiftT);const b=$('#newShift');b.textContent='Ny vagt';b.dataset.armed='';$('#cancelShift').hidden=true}
+$('#newShift').addEventListener('click',()=>{
+  const b=$('#newShift');
+  if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='Ja, ny vagt';$('#cancelShift').hidden=false;shiftT=setTimeout(disarm,6000);return}
+  disarm();const before=JSON.stringify(S);
+  S.cases=[];S.doctors.forEach(d=>d.on=false);save();render();toast('Ny vagt – tilføj eller genaktivér forvagterne',true);undoState=before;
+});
+$('#cancelShift').addEventListener('click',disarm);
+
+/* ---------- fil ---------- */
+async function pickSaveF(blob,name){
+  if(typeof window.showSaveFilePicker==='function'){try{const h=await window.showSaveFilePicker({id:'forvagtsfordeling',suggestedName:name,types:[{description:'JSON',accept:{'application/json':['.json']}}]});const w=await h.createWritable();await w.write(blob);await w.close();return true}catch(e){if(e&&e.name==='AbortError')return false}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);return true;
+}
+$('#saveFile').addEventListener('click',async()=>{
+  const d=new Date();const out={app:'forvagtsfordeling',version:1,gemt:d.toISOString(),forvagter:S.doctors,patienter:S.cases.map(c=>({...c,varighed_min:c.end?Math.round((c.end-c.start)/60000):null}))};
+  if(await pickSaveF(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}),`forvagtsfordeling_${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}_kl${p2(d.getHours())}-${p2(d.getMinutes())}.json`))toast('Vagten er gemt som fil');
+});
+$('#loadFile').addEventListener('click',()=>$('#fileIn').click());
+$('#fileIn').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f) return;
+  try{const j=JSON.parse(await f.text());if(j.app!=='forvagtsfordeling'||!Array.isArray(j.forvagter)) throw 0;
+    if(!confirm('Erstat den nuværende vagt med filens indhold?')) return;
+    const before=JSON.stringify(S);S={doctors:j.forvagter,cases:(j.patienter||[]).map(({varighed_min,...c})=>c)};save();render();toast('Vagten er indlæst',true);undoState=before}
+  catch(_){toast('Filen kunne ikke læses')}
+});
+
+/* ---------- visning ---------- */
+function render(){
+  const now=Date.now(),ds=onDuty(),n=next();
+  // står for skud
+  const shot=$('#shot');shot.classList.toggle('empty',!n);
+  if(n){const a=active(n.id).length,la=lastAssigned(n.id),tie=ds.filter(d=>active(d.id).length===a).length;
+    $('#shotWho').innerHTML=`${esc(n.name)} <span class="lv" style="--lc:var(--l-${n.level})">${esc(lvl(n.level)[1])}</span>`;
+    $('#shotWhy').textContent=(a?`${a} aktiv${a===1?'':'e'} patient${a===1?'':'er'}`:'Ingen aktive patienter')+(tie>1?` · ${la?'længst siden sidste patient ('+dur(now-la)+')':'har ikke fået nogen endnu'}`:'')+'.';
+    $('#assignNext').textContent='Tildel '+n.name;
+  }else{$('#shotWho').textContent='Ingen forvagter på arbejde';$('#shotWhy').textContent='Tilføj forvagterne nedenfor.';$('#assignNext').textContent='Tildel patient'}
+  // forvagter
+  $('#docs').innerHTML=ds.map(d=>{
+    const act=active(d.id).sort((a,b)=>a.start-b.start),dn=done(d.id),la=lastAssigned(d.id);
+    const avg=dn.length?dur(dn.reduce((s,c)=>s+(c.end-c.start),0)/dn.length):'–';
+    const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
+    return `<article class="doc${n&&n.id===d.id?' next':''}" style="--lc:var(--l-${d.level})">
+      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}<span class="cnt">${act.length} aktiv${act.length===1?'':'e'}</span></div>
+      ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case${ms>=LONG_MIN*60000?' long':''}">
+        <span class="cl">${c.label?esc(c.label):'Patient'}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
+        <span class="ct">Tildelt kl. ${hm(c.start)}</span>
+        <div class="acts"><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
+      <div class="doc-f"><span class="stats">I dag: ${dn.length} afsluttet · gns. ${avg}${la?' · sidst tildelt '+hm(la):''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
+    </article>`}).join('');
+  $('#docsEmpty').hidden=ds.length>0;
+  const totAct=S.cases.filter(c=>!c.end).length;
+  $('#docSum').textContent=ds.length?`${ds.length} på arbejde · ${totAct} aktive patienter`:'';
+  // roster
+  $('#roster').innerHTML=S.doctors.slice().sort((a,b)=>(b.on-a.on)||a.added-b.added).map(d=>`<li class="${d.on?'':'off'}" style="--lc:var(--l-${d.level})">
+    <span class="nm">${esc(d.name)}</span><button type="button" class="lv" style="border:0;cursor:pointer" data-act="lvl" data-id="${d.id}" title="Skift uddannelsesniveau">${esc(lvl(d.level)[1])}</button>
+    <span class="sp muted" style="font-size:.82rem">${d.on?'På arbejde':'Ikke på arbejde'}</span>
+    <button type="button" data-act="toggle" data-id="${d.id}">${d.on?'Går hjem':'På arbejde'}</button>
+    <button type="button" class="rm" data-act="rm" data-id="${d.id}" title="Fjern fra listen">✕</button></li>`).join('');
+  $('#rosterSum').textContent=S.doctors.length?`${ds.length} af ${S.doctors.length}`:'';
+  // log
+  const fin=S.cases.filter(c=>c.end).sort((a,b)=>b.end-a.end);
+  $('#log').innerHTML=fin.map(c=>{const d=S.doctors.find(x=>x.id===c.doc);return `<li><time>${hm(c.start)}–${hm(c.end)}</time>
+    <span><b>${esc(d?d.name:'?')}</b> ${d?`<span class="lv" style="--lc:var(--l-${d.level});font-size:.62rem">${esc(lvl(d.level)[1])}</span>`:''}${c.label?' · '+esc(c.label):''} <button type="button" data-reopen="${c.id}" style="padding:1px 7px;font-size:.72rem;margin-left:4px" title="Genåbn – fx hvis du trykkede Afslut ved en fejl">↺</button></span>
+    <span class="d">${dur(c.end-c.start)}</span></li>`}).join('');
+  $('#logEmpty').hidden=fin.length>0;
+  $('#logSum').textContent=fin.length?`${fin.length} afsluttet · gns. ${dur(fin.reduce((s,c)=>s+(c.end-c.start),0)/fin.length)}`:'';
+}
+setInterval(()=>{if(!document.hidden)render()},20000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+window.addEventListener('storage',e=>{if(e.key===KEY){load();render()}});
+
+/* ---------- versionshistorik og tema ---------- */
+const vb=$('#verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;
+let seen='';try{seen=localStorage.getItem('forvagtsfordeling.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');
+vb.addEventListener('click',()=>{$('#verBody').innerHTML=CHANGELOG.map(c=>`<div class="ver"><b>Version ${esc(c.v)}</b><span class="d">${esc(c.d)}</span>${c.v===APP_VERSION?'<span class="cur">AKTUEL</span>':''}<ul>${c.items.map(i=>'<li>'+esc(i)+'</li>').join('')}</ul></div>`).join('');$('#verDlg').showModal();vb.classList.remove('new');try{localStorage.setItem('forvagtsfordeling.seenVersion',APP_VERSION)}catch(e){}});
+$('#verClose').addEventListener('click',()=>$('#verDlg').close());
+const tb=$('#themeToggle');const lab=()=>{tb.textContent=document.documentElement.dataset.theme==='light'?'☾ Mørk':'☀ Lys'};
+tb.addEventListener('click',()=>{const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}lab()});lab();
+
+load();render();
+})();
+</script>
+</body>
+</html>
