@@ -187,6 +187,47 @@ dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
 .ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
 .cur{font-size:.68rem;font-weight:700;background:#e3f2ec;color:#2e8a6b;border-radius:4px;padding:1px 6px;margin-left:6px}
 .mini.skipall{grid-column:1/-1}
+.wrap,.topbar-in{max-width:960px!important}
+.ztab{overflow:hidden}
+.ztabs{display:none}
+.zt{width:100%;border-collapse:collapse;table-layout:fixed}
+.zt th,.zt td{padding:6px 5px;text-align:center;vertical-align:middle}
+.zt thead .g th{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--bar-fg);background:var(--bar-2);padding:7px 5px}
+.zt thead .g th.gv{background:color-mix(in srgb,var(--go) 55%,var(--bar-2))}
+.zt thead .h th{font-size:.76rem;font-weight:700;color:var(--muted);border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zt thead .h th.v{color:var(--go)}
+.zt thead .h th.s{color:var(--c);border-bottom:3px solid var(--c)}
+.zt th.zn,.zt tfoot th{text-align:left;font-size:.9rem;font-weight:700;width:120px;padding-left:12px}
+.zt th.zn .sum{display:none;font:500 .68rem var(--mono);color:var(--muted);font-weight:500;white-space:normal;line-height:1.3;margin-top:2px}
+.zt tbody tr{border-bottom:1px solid var(--line)}
+.zt tbody tr:hover{background:color-mix(in srgb,var(--accent-soft) 60%,transparent)}
+.zt td.v{background:color-mix(in srgb,var(--go) 7%,transparent)}
+.zt td.vi{border-right:2px solid var(--line)}
+.zt thead .h th.vi,.zt thead .g th.gv{border-right:2px solid var(--line)}
+.zt .step{grid-template-columns:22px minmax(0,1fr) 22px;background:var(--surface)}
+.zt .step button{min-height:32px;font-size:.95rem}
+.zt .step input{font-size:1rem;padding:4px 0;text-align:center}
+.zt td.s .step{border-top:3px solid var(--c)}
+.zt tfoot td,.zt tfoot th{font:700 .95rem var(--mono);padding:8px 5px;border-top:2px solid var(--line)}
+.zt tfoot td.s{color:var(--c)}
+.zt tfoot th{font-family:var(--sans)}
+@media (max-width:760px){
+  .ztabs{display:flex;border-bottom:1px solid var(--line)}
+  .ztabs button{flex:1;border:0;border-radius:0;background:transparent;padding:10px 4px;font:700 .9rem var(--sans);color:var(--muted);border-bottom:3px solid transparent}
+  .ztabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--go)}
+  .zt,.zt tbody{display:block}
+  .zt thead,.zt tfoot{display:none}
+  .zt tbody tr{display:none;border:0}
+  .zt tbody tr.on{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px}
+  .zt th.zn{grid-column:1/-1;width:auto;padding:0 2px}
+  .zt th.zn .sum{display:block}
+  .zt td{padding:0;background:none!important;border:0!important}
+  .zt td::before{content:attr(data-l);display:block;font-size:.74rem;font-weight:700;margin-bottom:3px;color:var(--muted)}
+  .zt td.v::before{color:var(--go)}
+  .zt td.s::before{color:var(--c)}
+  .zt td.s:first-of-type{grid-column:1}
+  .zt .step button{min-height:40px}
+}
 </style>
 <script>
 /* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
@@ -204,7 +245,7 @@ async function pickSave(blob,name,id){
   <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="themeToggle" type="button" style="order:9"></button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
 
 <div class="page"><div class="wrap">
-  <p class="intro">Tæl hver ASA-zone for sig. Akut medicin og ambulant vurdering tælles ligesom specialerne og fordeles som udgangspunkt. Skal nogle af dem ikke visiteres, tæller du dem under «ikke visit.», så bliver de på akut medicin. Er flere specialer lige, går patienten helst til det speciale der allerede har patienter i samme zone, og ellers trækkes der lod.</p>
+  <p class="intro">Én række pr. ASA-zone. Til venstre står dem, der venter på fordeling (akut medicin og ambulant vurdering – «ikke visit.» bliver på akut medicin), til højre dem, der er fordelt til specialerne. Flyt en patient med − under Akut med. og + under specialet i samme række. Er flere specialer lige, går patienten helst til det speciale der allerede har patienter i samme zone, og ellers trækkes der lod.</p>
 
   <div class="shot" id="shot" aria-live="polite">
     <span class="hat" aria-hidden="true">🎩</span>
@@ -278,19 +319,29 @@ const stepper=(z,k,lab,go)=>`<div class="step${go?' go':''}">
   <button type="button" data-step="-1" data-for="in-${z}-${k}" aria-label="Fjern én, ${lab}">−</button>
   <input type="number" id="in-${z}-${k}" min="0" inputmode="numeric" aria-label="${lab}">
   <button type="button" data-step="1" data-for="in-${z}-${k}" aria-label="Tilføj én, ${lab}">+</button></div>`;
-$('zones').innerHTML=ZONES.map(([z,zn])=>`
-  <section class="card zone" aria-label="${zn}">
-    <div class="zone-head"><h2>${zn}</h2><span class="sum" id="sum-${z}"></span></div>
-    <div class="zone-body">
-      <div class="groups">
-      <div class="grp"><span class="grp-h">Akut</span><div class="fields">${SPEC.map(([k,n])=>`<div class="field sp" style="${col(k)}"><label for="in-${z}-${k}">${n}</label>${stepper(z,k,'Akut-'+n+', '+zn)}</div>`).join('')}</div></div>
-      <div class="grp"><span class="grp-h">Til fordeling</span><div class="fields two">${AKUT.map(([k,n])=>`<div class="field ak"><label for="in-${z}-${k}">${k==='amb'?'Amb. vurd.':n}</label>${stepper(z,k,n+', '+zn,true)}
-          <div hidden>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></div>`).join('')}
-          <div class="mini skipall"><span>heraf ikke visit.</span>${stepper(z,'skip','Ikke visiteres i alt, '+zn)}</div>
-      </div></div>
-      </div>
-    </div>
-  </section>`).join('');
+const ZS=zn=>zn.replace('ASA Zone ','Zone ');
+$('zones').innerHTML=`<div class="card ztab">
+  <div class="ztabs" role="tablist">${ZONES.map(([z,zn],i)=>`<button type="button" role="tab" data-ztab="${z}" aria-selected="${i===0}">${ZS(zn)}</button>`).join('')}</div>
+  <table class="zt">
+    <thead>
+      <tr class="g"><th></th><th colspan="3" class="gv">Venter på fordeling</th><th colspan="${SPEC.length}" class="gs">Fordelt til speciale</th></tr>
+      <tr class="h"><th></th><th class="v">Akut med.</th><th class="v">Amb. vurd.</th><th class="v vi">Ikke visit.</th>${SPEC.map(([k,n])=>`<th class="s" style="${col(k)}">${n}</th>`).join('')}</tr>
+    </thead>
+    <tbody>${ZONES.map(([z,zn],i)=>`<tr data-zrow="${z}"${i===0?' class="on"':''}>
+      <th class="zn" scope="row">${ZS(zn)}<span class="sum" id="sum-${z}"></span></th>
+      ${AKUT.map(([k,n])=>`<td class="v" data-l="${k==='amb'?'Amb. vurd.':'Akut med.'}">${stepper(z,k,n+', '+zn,true)}<div hidden>${stepper(z,k+'I',n+' der ikke skal visiteres, '+zn)}</div></td>`).join('')}
+      <td class="v vi" data-l="Ikke visit.">${stepper(z,'skip','Ikke visiteres i alt, '+zn)}</td>
+      ${SPEC.map(([k,n])=>`<td class="s" style="${col(k)}" data-l="${n}">${stepper(z,k,'Akut-'+n+', '+zn)}</td>`).join('')}
+    </tr>`).join('')}</tbody>
+    <tfoot><tr><th scope="row">I alt</th><td class="v" id="ft-akut"></td><td class="v" id="ft-amb"></td><td class="v vi" id="ft-skip"></td>${SPEC.map(([k])=>`<td class="s" style="${col(k)}" id="ft-${k}"></td>`).join('')}</tr></tfoot>
+  </table>
+</div>`;
+$('zones').addEventListener('click',e=>{const b=e.target.closest('[data-ztab]');if(!b)return;
+  document.querySelectorAll('[data-ztab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('[data-zrow]').forEach(r=>r.classList.toggle('on',r.dataset.zrow===b.dataset.ztab));
+  try{localStorage.setItem('fordelingshatten.ztab',b.dataset.ztab)}catch(_){}});
+try{const t=localStorage.getItem('fordelingshatten.ztab');const b=t&&document.querySelector(`[data-ztab="${t}"]`);if(b)setTimeout(()=>b.click(),0)}catch(_){}
+
 $('rows').innerHTML=SPEC.map(([k,n])=>`<div class="row" role="row">
   <span class="name" style="${col(k)}"><span class="dot"></span>${n}</span>
   <span class="num" id="cur-${k}"></span><span class="num add" id="add-${k}"></span>
@@ -350,6 +401,7 @@ function calc(){
     const s=SPEC.reduce((a,[k])=>a+val(z,k),0), v=avail(z,'akut')+avail(z,'amb'), ik=stays(z,'akut')+stays(z,'amb');
     $('sum-'+z).textContent=`${s} fordelt · ${v} til fordeling · ${ik} bliver`;
   });
+  ['akut','amb','skip',...SPEC.map(s=>s[0])].forEach(k=>{const e=$('ft-'+k);if(e)e.textContent=ZONES.reduce((a,[z])=>a+val(z,k),0)});
   const {cur,add,tots,out,total,next}=distribute(); assign=out;
   SPEC.forEach(([k],i)=>{
     $('cur-'+k).textContent=cur[i];
@@ -587,7 +639,7 @@ load(); calc(); initFile();
 (function(){
 const APP_VERSION='2';
 const CHANGELOG=[
- {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
+ {v:'2',d:'01.11.2026',items:['Finder altid den bedste tilnærmelse: når der ikke er akutte nok til at gøre alle lige, gives de til dem med færrest, og resultatet vises som "Bedste fordeling" i stedet for en advarsel.','«Fordeling udført» er erstattet af 💾 Gem fordeling, der altid kan trykkes: den gemmer tallene i loggen med ændringerne siden sidst (efter du har rettet med − ved Akut medicin og + ved specialet). Fortryd fjerner det sidste gem.','Hent fil spørger, hvor filen skal gemmes (Edge/Chrome på PC).','Ny opstilling: én tabel med én række pr. zone – Venter på fordeling til venstre, Fordelt til speciale til højre og I alt nederst. På telefonen vælges zonen med faneblade.','Én fælles «heraf ikke visit.» pr. zone under Akut medicin og Amb. vurd. – den trækkes først fra akut medicin, derefter fra ambulant vurdering.','Del af Akut-Flow (web, mobil og lokal fil) med versionshistorik, lys/mørk-knap og mørk tilstand som standard.']},
  {v:'1',d:'31.10.2026',items:['Optælling pr. speciale i ASA-zonerne 7-8, 9-10 og 11-12, fordeling af akut medicinske (lige antal, samme zone, lodtrækning), "står for skud", log og regnskabsfil.']}
 ];
 const $$=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
