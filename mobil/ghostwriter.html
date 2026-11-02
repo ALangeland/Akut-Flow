@@ -107,6 +107,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .seg button[aria-pressed="true"] .n,.seg button[aria-pressed="true"] .c{color:var(--bar-muted)}
 .seg button:hover:not([aria-pressed="true"]){background:var(--accent-soft)}
 .seg button .k i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:2px}
+#tabs{flex-wrap:wrap;gap:6px;border:0;background:transparent;overflow:visible}
+#tabs button{flex:0 0 auto;flex-direction:row;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+#tabs button:last-child{border:1px solid var(--line)}
+#tabs .k{font-size:.88rem;font-weight:700;letter-spacing:0;white-space:nowrap}
+#tabs button[aria-pressed="true"]{border-color:var(--bar)}
 
 .searchrow{display:flex;gap:8px;align-items:center}
 .search{flex:1;position:relative}
@@ -121,6 +126,9 @@ kbd{font-family:var(--mono);font-size:.7rem;border:1px solid var(--line);border-
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted)}
 .chip[aria-pressed="true"]{background:var(--bar-2);border-color:var(--bar-2);color:#fff}
 .chip .c{font-family:var(--mono);font-size:.72rem;margin-left:5px;opacity:.8}
+.abcl{font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--muted);align-self:center;margin:0 2px 0 4px}
+.sepv{width:1px;align-self:stretch;background:var(--line);margin:0 6px}
+.chip.abc b{font-family:var(--mono)}
 
 /* Split */
 .split{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
@@ -501,8 +509,8 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
     <button id="impBtn" title="Indsæt planer fra ChatGPT og læg dem ind i arkivet">Importér planer</button>
 <style>.improw{display:block;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}.improw .hint{display:block;margin:2px 0 0 24px}</style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
-<div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori X – … · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
-<textarea id="gwImpText" rows="12" style="width:100%;font:.8rem/1.4 var(--mono)" spellcheck="false" placeholder="15. Akutte abdominalsmerter – ukendt årsag&#10;Kategori X – Andet · Mappe: Akut abdomen&#10;```&#10;…&#10;```"></textarea>
+<div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
+<textarea id="gwImpText" rows="12" style="width:100%;font:.8rem/1.4 var(--mono)" spellcheck="false" placeholder="15. Akutte abdominalsmerter – ukendt årsag&#10;Kategori: Mave-tarm · ABCDE: C · Mappe: Akut abdomen&#10;```&#10;…&#10;```"></textarea>
 <div class="actions" style="margin-top:10px"><button type="button" id="gwImpRead" class="btn">Læs planer</button><button type="button" id="gwImpGo" class="btn primary" disabled>Importér valgte</button></div>
 <div id="gwImpList" style="margin-top:10px;max-height:40vh;overflow:auto"></div></div></dialog>
 
@@ -1762,12 +1770,37 @@ E: Ingen udslæt eller petekkier. Abdomen blød og uøm.`;
 <script>
 (function(){
 'use strict';
-const CATS=[
-  {k:'A',n:'Luftvej'},{k:'B',n:'Respiration'},{k:'C',n:'Kredsløb'},
-  {k:'D',n:'Neurologi'},{k:'E',n:'Eksponering'},{k:'X',n:'Andet',short:'Andet'}
-];
-const CATNAME=Object.fromEntries(CATS.map(c=>[c.k,c.n]));
-const DEFAULT_SUBS=['Skabeloner','Procedurenotater','Palliation','Pædiatri og neonatologi','Død og ligsyn','Parkeret'];
+/* Emnekategorier (p.cat = fri tekst, fx Elektrolytforstyrrelser). A–E ligger separat i p.abc som ABCDE-spor. */
+const GROUP_ORDER=['Respiration','Hjerte','Infektion','Elektrolytforstyrrelser','Nyre og væske','Mave-tarm','Neurologi','Forgiftning','Pædiatri og neonatologi','Palliation og ligsyn','Skabeloner og procedurer','Andet'];
+const ABC_NAME={A:'Luftvej',B:'Respiration',C:'Kredsløb',D:'Neurologi',E:'Eksponering'};
+const GRP_OF={'s-x-abcde':['Skabeloner og procedurer',''],'s-b-lungeoedem':['Respiration',''],'s-b-kol':['Respiration',''],'s-b-sepsis':['Infektion',''],'s-b-pneumoni':['Respiration',''],'s-b-astma':['Respiration',''],
+ 's-c-hypokaliaemi':['Elektrolytforstyrrelser',''],'s-c-hypokalkaemi':['Elektrolytforstyrrelser',''],'s-c-hyponatriaemi':['Elektrolytforstyrrelser',''],'s-b-pleuracentese':['Respiration',''],'s-c-ctkag':['Andet','Parkeret'],
+ 's-c-dehydratio':['Nyre og væske',''],'s-c-brystsmerter':['Hjerte',''],'s-c-dc':['Hjerte','Parkeret'],'s-c-holter':['Hjerte','Parkeret'],'s-c-nyresvigt':['Nyre og væske',''],'s-d-apopleksi':['Neurologi',''],'s-d-meningitis':['Infektion',''],
+ 's-d-obj-normal':['Neurologi',''],'s-d-obj-udfald':['Neurologi',''],'s-e-paracetamol':['Forgiftning',''],'s-e-forgiftning-obs':['Forgiftning',''],'s-x-lp':['Skabeloner og procedurer',''],'s-x-lfu':['Respiration','Parkeret'],
+ 's-x-pall-sc':['Palliation og ligsyn',''],'s-x-sectio':['Pædiatri og neonatologi',''],'s-x-nyfoedt-indl':['Pædiatri og neonatologi',''],'s-x-neo-obj':['Pædiatri og neonatologi',''],'s-x-paed-obj':['Pædiatri og neonatologi',''],
+ 's-x-stuegang-billi':['Pædiatri og neonatologi',''],'s-x-stuegang-sepsis':['Pædiatri og neonatologi',''],'s-x-stuegang-vaegt':['Pædiatri og neonatologi',''],'s-x-sprængning':['Andet','Parkeret'],'s-x-ligsyn':['Palliation og ligsyn',''],
+ 's-x-gastroenterit':['Mave-tarm',''],'s-x-journal':['Skabeloner og procedurer','']};
+const LEGACY_SUB_GRP={'Pædiatri og neonatologi':'Pædiatri og neonatologi','Død og ligsyn':'Palliation og ligsyn','Palliation':'Palliation og ligsyn','Skabeloner':'Skabeloner og procedurer','Procedurenotater':'Skabeloner og procedurer'};
+/* Gammel A–E/X-plan → {cat:emne, abc, sub}. Nye planer (cat er allerede et emne) røres ikke. */
+function toGroup(p){
+  const c=String(p.cat||'');
+  if(!/^[A-EX]$/.test(c)){return {cat:c.trim()||'Andet',abc:/^[A-E]$/.test(p.abc||'')?p.abc:'',sub:String(p.sub||'')}}
+  const abc=c==='X'?'':c, g=GRP_OF[p.id], sub=String(p.sub||'');
+  if(g) return {cat:g[0],abc,sub:g[1]};
+  if(LEGACY_SUB_GRP[sub]) return {cat:LEGACY_SUB_GRP[sub],abc,sub:''};
+  return {cat:'Andet',abc,sub};
+}
+const CATS=[]; const CATNAME={};
+function rebuildCats(){
+  const have=new Set((S&&S.plans||[]).map(p=>p.cat));
+  const rest=[...have].filter(x=>!GROUP_ORDER.includes(x)).sort((a,b)=>a.localeCompare(b,'da'));
+  const names=[...GROUP_ORDER.filter(x=>x!=='Andet'&&have.has(x)),...rest.filter(x=>x!=='Andet'),...(have.has('Andet')?['Andet']:[])];
+  CATS.length=0;for(const k in CATNAME) delete CATNAME[k];
+  for(const n of names){CATS.push({k:n,n});CATNAME[n]=n}
+}
+const GRP_COL=['#2f75b3','#c8462e','#2e8a6b','#b98316','#6f5bab','#c24f87','#2f8f9d','#7a8f2c','#a5622f','#66737f'];
+function catColor(k){let h=0;for(const ch of String(k))h=(h*31+ch.charCodeAt(0))>>>0;return GRP_COL[h%GRP_COL.length]}
+function abcColor(k){return `var(--c${k})`}
 const RETIRED_SUBS=['Ambulant kontrol','Medicinsk','Øjne'];
 const LS='pasteplaner.v1', LSUI='pasteplaner.ui';
 const PH=/\{([^{}\n]{1,40})\}/g;
@@ -1778,23 +1811,27 @@ const uid=()=>'p-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)
 
 /* ---------- state ---------- */
 let S=null;
-let ui={cat:'ALL',sub:'',q:'',sel:null,editing:false,isNew:false,sort:'fav'};
+let ui={cat:'ALL',abc:'',sub:'',q:'',sel:null,editing:false,isNew:false,sort:'fav'};
 let vals={};           // placeholder values, shared by name
 let fh=null, pendingFh=null, fileOk=false, fileMsg='', lastSaved=null;
 
 function fresh(){
-  return {app:'pasteplaner',version:1,seedRev:SEED_REV,normal:NORMAL_DEFAULT,normalRev:NORMAL_REV,subs:{X:DEFAULT_SUBS.slice()},plans:SEED.map(seedPlan)};
+  return {app:'pasteplaner',version:1,seedRev:SEED_REV,normal:NORMAL_DEFAULT,normalRev:NORMAL_REV,subs:{},plans:SEED.map(seedPlan)};
 }
-function seedPlan(p){const t=now();return {id:p.id,title:p.title,cat:p.cat,sub:p.sub||'',text:p.text,fav:!!p.fav,pin:!!p.pin,src:p.src?JSON.parse(JSON.stringify(p.src)):[],uses:0,created:t,updated:t,seed:true,rev:SEED_REV,edited:false}}
+function seedPlan(p){const t=now();const g=toGroup(p);return {id:p.id,title:p.title,cat:g.cat,abc:g.abc,sub:g.sub,text:p.text,fav:!!p.fav,pin:!!p.pin,src:p.src?JSON.parse(JSON.stringify(p.src)):[],uses:0,created:t,updated:t,seed:true,rev:SEED_REV,edited:false}}
 function migrate(d){
   if(!d||typeof d!=='object'||!Array.isArray(d.plans)) throw new Error('Ikke en pasteplan-fil');
-  const out={app:'pasteplaner',version:1,seedRev:+d.seedRev||1,normal:typeof d.normal==='string'?d.normal:NORMAL_DEFAULT,normalRev:+d.normalRev||1,normalEdited:!!d.normalEdited,normalPaed:typeof d.normalPaed==='string'?d.normalPaed:undefined,normalPaedEdited:!!d.normalPaedEdited&&typeof d.normalPaed==='string',deletedSeeds:Array.isArray(d.deletedSeeds)?d.deletedSeeds.map(String):[],subs:(d.subs&&typeof d.subs==='object')?d.subs:{X:DEFAULT_SUBS.slice()},plans:[]};
+  const out={app:'pasteplaner',version:1,seedRev:+d.seedRev||1,normal:typeof d.normal==='string'?d.normal:NORMAL_DEFAULT,normalRev:+d.normalRev||1,normalEdited:!!d.normalEdited,normalPaed:typeof d.normalPaed==='string'?d.normalPaed:undefined,normalPaedEdited:!!d.normalPaedEdited&&typeof d.normalPaed==='string',deletedSeeds:Array.isArray(d.deletedSeeds)?d.deletedSeeds.map(String):[],subs:(d.subs&&typeof d.subs==='object')?d.subs:{},plans:[]};
   for(const p of d.plans){
     if(!p||typeof p.text!=='string') continue;
-    out.plans.push({id:String(p.id||uid()),title:String(p.title||'Uden titel'),cat:CATNAME[p.cat]?p.cat:'X',sub:String(p.sub||''),text:p.text,
+    const g=toGroup({id:String(p.id||''),cat:p.cat,abc:p.abc,sub:p.sub});
+    out.plans.push({id:String(p.id||uid()),title:String(p.title||'Uden titel'),cat:g.cat,abc:g.abc,sub:g.sub,text:p.text,
       fav:!!p.fav,uses:+p.uses||0,created:p.created||now(),updated:p.updated||now(),lastUsed:p.lastUsed||null,seed:!!p.seed,rev:+p.rev||1,edited:!!p.edited,pin:p.pin===undefined?undefined:!!p.pin,src:Array.isArray(p.src)?p.src.filter(x=>x&&x.u).map(x=>({t:String(x.t||x.u),u:String(x.u),pending:!!x.pending})):[]});
   }
-  if(!Array.isArray(out.subs.X)) out.subs.X=DEFAULT_SUBS.slice();
+  /* gamle undermapper (nøglet på A–E) droppes – undermapper findes via planerne selv */
+  const ns={};for(const k in out.subs){if(!/^[A-EX]$/.test(k)&&Array.isArray(out.subs[k])) ns[k]=out.subs[k]}
+  for(const p of out.plans){if(p.sub){ns[p.cat]=ns[p.cat]||[];if(!ns[p.cat].includes(p.sub))ns[p.cat].push(p.sub)}}
+  out.subs=ns;
   return out;
 }
 function loadLocal(){
@@ -1829,7 +1866,7 @@ function upgradeSeeds(){
     if(p){
       if(!p.seed||(p.rev||1)>=SEED_REV) continue;
       const untouched=!p.edited&&Math.abs(Date.parse(p.updated)-Date.parse(p.created))<5000;
-      if(untouched){p.title=s.title;p.text=s.text;p.cat=s.cat;p.sub=s.sub||'';p.rev=SEED_REV;p.updated=p.created;if(s.fav)p.fav=true;upd++}
+      if(untouched){const g=toGroup(s);p.title=s.title;p.text=s.text;p.cat=g.cat;p.abc=g.abc;p.sub=g.sub;p.rev=SEED_REV;p.updated=p.created;if(s.fav)p.fav=true;upd++}
       else{p.rev=SEED_REV;kept++}
     }else if(NEW_SEEDS[s.id]&&NEW_SEEDS[s.id]>(S.seedRev||1)){S.plans.push(seedPlan(s));add++}
   }
@@ -1840,9 +1877,6 @@ function upgradeSeeds(){
       if(untouched){upd++;return false} p.seed=false;kept++;return true;
     });
   }
-  S.subs.X=(S.subs.X||[]).filter(x=>!RETIRED_SUBS.includes(x)||S.plans.some(p=>p.cat==='X'&&p.sub===x));
-  for(const x of DEFAULT_SUBS) if(!S.subs.X.includes(x)) S.subs.X.unshift(x);
-  S.subs.X=[...DEFAULT_SUBS.filter(x=>S.subs.X.includes(x)),...S.subs.X.filter(x=>!DEFAULT_SUBS.includes(x))];
   if(typeof S.normal!=='string') S.normal=NORMAL_DEFAULT;
   else if(!/^#\s*Afslutning/m.test(S.normal)){const m=NORMAL_DEFAULT.match(/# Afslutning[\s\S]*$/);if(m)S.normal=S.normal.replace(/\s+$/,'')+'\n\n'+m[0]}
   S.seedRev=SEED_REV;
@@ -1857,6 +1891,7 @@ function saveUi(){try{localStorage.setItem(LSUI,JSON.stringify({cat:ui.cat,sort:
 
 let saveT=null;
 function save(){
+  rebuildCats();
   try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
   if(fh){clearTimeout(saveT);saveT=setTimeout(writeFile,350)}
   renderSide();
@@ -1920,7 +1955,7 @@ function exportJson(){
 }
 async function importFiles(files){
   let added=0,merged=0,bad=0;
-  const cat=ui.cat==='ALL'?'X':ui.cat;
+  const cat=ui.cat==='ALL'?'Andet':ui.cat;
   for(const f of files){
     try{
       const t=await f.text();
@@ -1930,7 +1965,7 @@ async function importFiles(files){
         for(const k in d.subs){S.subs[k]=[...new Set([...(S.subs[k]||[]),...d.subs[k]])]}
       }else{
         const title=f.name.replace(/\.[^.]+$/,'').replace(/[_]+/g,' ').trim()||'Importeret plan';
-        S.plans.push({id:uid(),title,cat,sub:cat===ui.cat?ui.sub:'',text:t.replace(/\r\n?/g,'\n').trim(),fav:false,uses:0,created:now(),updated:now()});
+        S.plans.push({id:uid(),title,cat,abc:'',sub:cat===ui.cat?ui.sub:'',text:t.replace(/\r\n?/g,'\n').trim(),fav:false,uses:0,created:now(),updated:now()});
         added++;
       }
     }catch(e){bad++}
@@ -1958,6 +1993,7 @@ function visible(){
   let arr=S.plans.filter(p=>{
     if(q){const terms=q.split(/\s+/);const hay=norm(p.title+' '+p.sub+' '+CATNAME[p.cat]+' '+(p.src||[]).map(x=>x.t).join(' ')+' '+p.text);return terms.every(t=>hay.includes(t))}
     if(ui.cat!=='ALL'&&p.cat!==ui.cat) return false;
+    if(ui.abc&&p.abc!==ui.abc) return false;
     if(ui.sub&&ui.cat!=='ALL'&&p.sub!==ui.sub) return false;
     return true;
   });
@@ -2001,32 +2037,37 @@ function srcStatus(p){
   return {k:'ok',txt:'✓ instruks',tip:'Tjekket mod:\n'+list};
 }
 function srcBadge(p){const s=srcStatus(p);return s?`<span class="sbadge s-${s.k}" title="${esc(s.tip)}">${esc(s.txt)}</span>`:''}
-function catColor(k){return `var(--c${k})`}
 let toastT=null;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800)}
 
 /* ---------- render ---------- */
 function renderTabs(){
   const counts={};S.plans.forEach(p=>counts[p.cat]=(counts[p.cat]||0)+1);
-  const all=[{k:'ALL',n:'Alle',lbl:'Alle'},...CATS.map(c=>({k:c.k,n:c.n,lbl:c.k==='X'?'Andet':c.k}))];
+  rebuildCats();
+  const all=[{k:'ALL',n:'Alle',lbl:'Alle'},...CATS.map(c=>({k:c.k,n:c.n,lbl:c.n}))];
   const nfCount=parseNormal(NT()).reduce((a,g)=>a+g.rows.length,0);
   $('#tabs').innerHTML=all.map((c,i)=>{
     const cnt=c.k==='ALL'?S.plans.length:(counts[c.k]||0);
     const dot=c.k!=='ALL'?`<i style="background:${catColor(c.k)}"></i>`:'';
-    return `<button data-cat="${c.k}" aria-pressed="${ui.cat===c.k&&(!ui.q||false)}" title="${esc(c.n)} (Alt+${i})"><span class="k">${dot}${esc(c.lbl)}</span><span class="n">${c.k==='ALL'||c.k==='X'?'&nbsp;':esc(c.n)}</span><span class="c">${cnt}</span></button>`;
+    return `<button data-cat="${esc(c.k)}" aria-pressed="${ui.cat===c.k&&(!ui.q||false)}" title="${esc(c.n)}${i<=6?' (Alt+'+i+')':''}"><span class="k">${dot}${esc(c.lbl)}</span><span class="c">${cnt}</span></button>`;
   }).join('')+`<button data-cat="NF" aria-pressed="${ui.cat==='NF'}" title="Normalfund og negative fund (Alt+7)"><span class="k">✓ Normal</span><span class="n">Negative fund</span><span class="c">${nfCount}</span></button>`;
 }
 function renderSubs(){
   const box=$('#subs');
-  if(ui.q||ui.cat==='ALL'){box.innerHTML='';box.hidden=true;return}
-  const subs=subsFor(ui.cat);
-  if(!subs.length){box.innerHTML='';box.hidden=true;return}
+  if(ui.q){box.innerHTML='';box.hidden=true;return}
+  const subs=ui.cat==='ALL'?[]:subsFor(ui.cat);
+  const base=S.plans.filter(p=>ui.cat==='ALL'||p.cat===ui.cat);
+  const abcN=l=>base.filter(p=>p.abc===l).length;
+  const abcRow=`<span class="abcl" title="ABCDE-spor – filtrér på den akutte tilgang">ABCDE</span>`+['A','B','C','D','E'].filter(l=>abcN(l)||ui.abc===l).map(l=>`<button class="chip abc" data-abc="${l}" aria-pressed="${ui.abc===l}" title="${ABC_NAME[l]}"><b style="color:${abcColor(l)}">${l}</b> ${ABC_NAME[l]}<span class="c">${abcN(l)}</span></button>`).join('');
+  const hasAbc=base.some(p=>p.abc);
+  if(!subs.length&&!hasAbc){box.innerHTML='';box.hidden=true;return}
   box.hidden=false;
+  if(!subs.length){box.innerHTML=abcRow;return}
   const cnt=s=>S.plans.filter(p=>p.cat===ui.cat&&p.sub===s).length;
   const none=S.plans.filter(p=>p.cat===ui.cat&&!p.sub).length;
   box.innerHTML=`<button class="chip" data-sub="" aria-pressed="${!ui.sub}">Alle<span class="c">${S.plans.filter(p=>p.cat===ui.cat).length}</span></button>`+
     subs.map(s=>`<button class="chip" data-sub="${esc(s)}" aria-pressed="${ui.sub===s}">${esc(s)}<span class="c">${cnt(s)}</span></button>`).join('')+
-    (none&&ui.cat==='X'?'':'');
+    (hasAbc?'<span class="sepv"></span>'+abcRow:'');
 }
 function renderList(){
   const arr=visible();
@@ -2038,7 +2079,7 @@ function renderList(){
   for(const p of arr){
     const gkey=(ui.cat==='ALL'&&!ui.q&&p.pin)?'PIN':p.cat;
     if(gkey==='PIN'&&last!=='PIN'){last='PIN';html+=`<div class="grp">📌 Fastgjort øverst</div>`}
-    else if(gkey!=='PIN'&&showGroups&&p.cat!==last){last=p.cat;html+=`<div class="grp">${p.cat==='X'?'Andet':p.cat+' · '+esc(CATNAME[p.cat])}</div>`}
+    else if(gkey!=='PIN'&&showGroups&&p.cat!==last){last=p.cat;html+=`<div class="grp">${esc(p.cat)}</div>`}
     else if(gkey!=='PIN'&&!showGroups&&last==='PIN'){last='REST';html+=`<div class="grp">Øvrige planer</div>`}
     else if(showSubGroups&&(p.sub||'—')!==last){last=p.sub||'—';html+=`<div class="grp">${esc(p.sub||'Uden underkategori')}</div>`}
     const first=p.text.split('\n').map(l=>l.trim()).find(l=>l&&!/^[\/\[_]/.test(l))||'';
@@ -2065,7 +2106,7 @@ function renderPreview(){
       ${names.map(n=>`<label><span title="${esc(n)}">${esc(n)}</span><input data-ph="${esc(n)}" value="${esc(vals[n]||'')}" autocomplete="off"></label>`).join('')}
     </div></details>`:'';
   pv.innerHTML=`<div class="card-h">
-      <span class="badge cat" style="background:${catColor(p.cat)}">${p.cat==='X'?'Andet':p.cat}</span>
+      ${p.abc?`<span class="badge cat" style="background:${abcColor(p.abc)}" title="ABCDE-spor: ${ABC_NAME[p.abc]}">${p.abc}</span>`:''}
       <h2 title="${esc(p.title)}">${esc(p.title)}</h2>
       <span class="sum">${p.sub?esc(p.sub)+' · ':''}${p.uses}× brugt</span>
     </div>
@@ -2107,12 +2148,13 @@ function updateText(){
 }
 function renderEditor(p){
   const pv=$('#pv');
-  const catOpts=CATS.map(c=>`<option value="${c.k}" ${p.cat===c.k?'selected':''}>${c.k==='X'?'Andet':c.k+' – '+c.n}</option>`).join('');
+  const catOpts=CATS.map(c=>`<option value="${esc(c.k)}">`).join('');const abcOpts=`<option value="" ${!p.abc?'selected':''}>Ingen</option>`+['A','B','C','D','E'].map(l=>`<option value="${l}" ${p.abc===l?'selected':''}>${l} – ${ABC_NAME[l]}</option>`).join('');
   pv.innerHTML=`<div class="card-h"><h2>${ui.isNew?'Ny plan':'Redigér plan'}</h2><span class="sum">Ctrl+Enter gemmer</span></div>
     <div class="card-b"><form class="ed" id="edForm" autocomplete="off">
       <div class="row">
         <label><span class="lbl">Titel</span><input id="edTitle" value="${esc(p.title)}" placeholder="Fx Sepsis uden fokus" required></label>
-        <label><span class="lbl">Kategori</span><select id="edCat">${catOpts}</select></label>
+        <label><span class="lbl">Kategori (emne)</span><input id="edCat" list="catList" value="${esc(p.cat)}" placeholder="Fx Elektrolytforstyrrelser"><datalist id="catList">${catOpts}</datalist></label>
+        <label><span class="lbl">ABCDE-spor</span><select id="edAbc">${abcOpts}</select></label>
         <label><span class="lbl">Underkategori</span><input id="edSub" list="subList" value="${esc(p.sub)}" placeholder="Valgfri, fx Procedurenotater"></label>
         <datalist id="subList"></datalist>
       </div>
@@ -2125,7 +2167,7 @@ function renderEditor(p){
       </div>
     </form></div>`;
   const fillSubs=()=>{$('#subList').innerHTML=subsFor($('#edCat').value).map(s=>`<option value="${esc(s)}">`).join('')};
-  fillSubs();$('#edCat').addEventListener('change',fillSubs);
+  fillSubs();$('#edCat').addEventListener('input',fillSubs);
   $('#edForm').addEventListener('submit',e=>{e.preventDefault();commitEdit()});
   const f=ui.isNew&&!p.text?$('#edText'):$('#edTitle');
   if(ui.isNew){ (p.title?$('#edText'):$('#edTitle')).focus() } else f.focus();
@@ -2149,7 +2191,7 @@ function renderSide(){
     if(pendingFh){cont.hidden=false;cont.textContent='Fortsæt med '+pendingFh.name;cont.classList.add('primary')}else cont.hidden=true;
   }
   const c={};S.plans.forEach(p=>c[p.cat]=(c[p.cat]||0)+1);
-  $('#arcSt').innerHTML=`${S.plans.length} planer<small>${CATS.map(k=>`${k.k==='X'?'Andet':k.k}&nbsp;${c[k.k]||0}`).join(' · ')}</small>`;
+  $('#arcSt').innerHTML=`${S.plans.length} planer<small>${CATS.map(k=>`${esc(k.n)}&nbsp;${c[k.k]||0}`).join(' · ')}</small>`;
 }
 function renderAll(){
   renderTabs();renderSide();
@@ -2453,7 +2495,7 @@ function renderKLIns(){
     for(const p of arr){
       const sc=tScore(p);
       const isFold=!q&&!p.pin&&INS_FOLD.includes(p.sub);
-      const g=q?(sc<2?'Bedste match':'Nævnt i teksten'):(p.pin?'📌 Fastgjort':isFold?'📁 '+p.sub:(p.cat==='X'?'Andet':p.cat+' · '+CATNAME[p.cat]));
+      const g=q?(sc<2?'Bedste match':'Nævnt i teksten'):(p.pin?'📌 Fastgjort':isFold?'📁 '+p.sub:p.cat);
       if(g!==last){last=g;
         if(isFold){folded=!klInsOpen.has(p.sub);const n=arr.filter(x=>x.sub===p.sub&&!x.pin).length;list+=`<button class="grp grpfold" data-insfold="${esc(p.sub)}" aria-expanded="${!folded}">${folded?'▸':'▾'} ${esc(p.sub)} <span class="c">${n}</span></button>`}
         else{folded=false;list+=`<div class="grp">${esc(g)}</div>`}}
@@ -2679,13 +2721,14 @@ function editNormalRow(key){
 }
 function editPlanInline(id){
   const p=byId(id);if(!p) return;
-  const catOpts=CATS.map(c=>`<option value="${c.k}" ${p.cat===c.k?'selected':''}>${c.k==='X'?'Andet':c.k+' – '+c.n}</option>`).join('');
+  const catOpts=CATS.map(c=>`<option value="${esc(c.k)}">`).join('');const abcOpts=`<option value="" ${!p.abc?'selected':''}>Ingen</option>`+['A','B','C','D','E'].map(l=>`<option value="${l}" ${p.abc===l?'selected':''}>${l} – ${ABC_NAME[l]}</option>`).join('');
   pmOpen('Rediger plan',`<div class="pmrow"><label class="pmf"><span class="lbl">Titel</span><input id="pmT" value="${esc(p.title)}"></label>
-    <label class="pmf" style="max-width:170px"><span class="lbl">Kategori</span><select id="pmC">${catOpts}</select></label>
+    <label class="pmf" style="max-width:210px"><span class="lbl">Kategori (emne)</span><input id="pmC" list="pmCatList" value="${esc(p.cat)}"><datalist id="pmCatList">${catOpts}</datalist></label>
+    <label class="pmf" style="max-width:130px"><span class="lbl">ABCDE</span><select id="pmA">${abcOpts}</select></label>
     <label class="pmf" style="max-width:220px"><span class="lbl">Underkategori</span><input id="pmS" value="${esc(p.sub||'')}"></label></div>
     <label class="pmf"><span class="lbl">Tekst – brug {felt} og overskrifterne ANAMNESE / OBJEKTIVT / PARAKLINIK / KONKLUSION / PLAN, så planen fordeles i kladden</span><textarea id="pmX" class="mono" rows="18">${esc(p.text)}</textarea></label>`+pmButtons('Gem plan'));
   pmSave=()=>{const t=$('#pmT').value.trim(),x=$('#pmX').value.replace(/\s+$/,'');if(!t||!x.trim()){toast('Titel og tekst skal udfyldes');return false}
-    p.title=t;p.text=x;p.cat=$('#pmC').value;p.sub=$('#pmS').value.trim();p.edited=true;p.updated=now();
+    p.title=t;p.text=x;p.cat=$('#pmC').value.trim()||'Andet';p.abc=$('#pmA').value;p.sub=$('#pmS').value.trim();p.edited=true;p.updated=now();
     if(p.sub){S.subs[p.cat]=S.subs[p.cat]||[];if(!S.subs[p.cat].includes(p.sub))S.subs[p.cat].push(p.sub)}save()};
 }
 function pmButtons(lbl){return `<div class="actions" style="margin-top:12px"><button class="btn primary" data-pm="save">${lbl||'Gem'}</button><button class="btn" data-pm="cancel">Annullér</button><span class="spacer"></span><span class="note">Ctrl+Enter gemmer</span></div>`}
@@ -3125,8 +3168,8 @@ async function copyPlan(){
 function newPlan(text=''){
   if(ui.editing&&!confirmLeave()) return;
   if(!CATNAME[ui.cat]&&ui.cat!=='ALL'){ui.cat='ALL';ui.sub=''}
-  const cat=ui.cat==='ALL'?'X':ui.cat;
-  const p={id:uid(),title:'',cat,sub:ui.cat===cat?ui.sub:'',text,fav:false,uses:0,created:now(),updated:now()};
+  const cat=ui.cat==='ALL'?'Andet':ui.cat;
+  const p={id:uid(),title:'',cat,abc:ui.abc||'',sub:ui.cat===cat?ui.sub:'',text,fav:false,uses:0,created:now(),updated:now()};
   S.plans.push(p);ui.sel=p.id;ui.editing=true;ui.isNew=true;ui.q='';$('#q').value='';
   renderAll();
 }
@@ -3137,7 +3180,7 @@ function commitEdit(){
   if(!text.trim()){$('#edText').focus();toast('Planen er tom');return}
   const oldSrc=p.src||[];
   p.src=$('#edSrc').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.lastIndexOf('|');const t=i>0?l.slice(0,i).trim():l;const u=(i>0?l.slice(i+1):l).trim();const o=oldSrc.find(x=>x.u===u);return {t:t||u,u,pending:!!(o&&o.pending)}}).filter(x=>/^https?:\/\//.test(x.u));
-  p.edited=true;p.title=title;p.text=text;p.cat=$('#edCat').value;p.sub=$('#edSub').value.trim();p.updated=now();
+  p.edited=true;p.title=title;p.text=text;p.cat=$('#edCat').value.trim()||'Andet';p.abc=$('#edAbc').value;p.sub=$('#edSub').value.trim();p.updated=now();
   if(p.sub){S.subs[p.cat]=S.subs[p.cat]||[];if(!S.subs[p.cat].includes(p.sub))S.subs[p.cat].push(p.sub)}
   ui.editing=false;ui.isNew=false;
   if(!ui.q){ui.cat=p.cat;ui.sub=(ui.sub&&ui.sub!==p.sub)?'':ui.sub}
@@ -3165,7 +3208,6 @@ function dupPlan(){
 function toggleFav(){const p=byId(ui.sel);if(!p) return;p.fav=!p.fav;save();renderList();renderPreview()}
 function restoreSeeds(){
   let n=0;for(const s of SEED){if(!byId(s.id)){S.plans.push(seedPlan(s));n++}}S.seedRev=SEED_REV;S.deletedSeeds=[];
-  for(const s of DEFAULT_SUBS){if(!S.subs.X.includes(s))S.subs.X.push(s)}
   save();renderAll();toast(n?`${n} standardplan${n>1?'er':''} gendannet`:'Alle standardplaner findes allerede');
 }
 function openArchive(){setCat(ui.archCat&&ui.archCat!=='KL'?ui.archCat:'ALL')}
@@ -3177,7 +3219,7 @@ function setCat(k){
 
 /* ---------- events ---------- */
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-cat]');if(b) setCat(b.dataset.cat)});
-$('#subs').addEventListener('click',e=>{const b=e.target.closest('[data-sub]');if(!b) return;if(ui.editing&&!confirmLeave())return;ui.sub=b.dataset.sub;ui.sel=null;saveUi();renderSubs();renderList();renderPreview()});
+$('#subs').addEventListener('click',e=>{const a=e.target.closest('[data-abc]');if(a){ui.abc=ui.abc===a.dataset.abc?'':a.dataset.abc;ui.sel=null;renderSubs();renderList();renderPreview();return}const b=e.target.closest('[data-sub]');if(!b) return;if(ui.editing&&!confirmLeave())return;ui.sub=b.dataset.sub;ui.sel=null;saveUi();renderSubs();renderList();renderPreview()});
 $('#list').addEventListener('click',e=>{const b=e.target.closest('.item');if(b) select(b.dataset.id)});
 $('#list').addEventListener('dblclick',e=>{const b=e.target.closest('.item');if(b){select(b.dataset.id);copyPlan()}});
 $('#q').addEventListener('input',e=>{ui.q=e.target.value;if(ui.cat==='NF'){renderNF();return}if(ui.editing&&!confirmLeave()){return}ui.sel=null;renderTabs();renderSubs();renderList();renderPreview()});
@@ -3223,13 +3265,13 @@ function reviewMD(){
   o+="## Opgave til dig (ChatGPT)\n\nDu er en erfaren dansk speciallæge i akutmedicin og intern medicin og samtidig en omhyggelig sprogredaktør. Denne fil indeholder to sammenhængende værktøjer, som en læge bruger i en dansk akutmodtagelse. Du skal gennemgå og udbygge **begge** i ét samlet arbejde, så de passer sammen.\n\n### De to værktøjer\n- **Ghostwriter** er en klikjournal. Lægen udfylder journalens felter (anamnese, objektivt, paraklinik, konklusion og plan) ved at indsætte tekstskabeloner. Skabelonerne kaldes her **planer/fraser**. Der er også en samling **normalfund og negative fund**.\n- **Spørge Jørgen** er et søsterværktøj. Lægen vælger et **symptom** (fx brystsmerter), får de relevante **anamnesespørgsmål**, klikker svarene af (ja, nej eller et valg), og værktøjet bygger **færdig journaltekst**. Teksten sendes til Ghostwriters anamnesefelter. **Spørgsmålene skal derfor udgå fra Ghostwriters anamnesefelter** (listen står nedenfor), og hver spørgsmålsgruppe skal pege på det felt, teksten hører hjemme i.\n\n### Vigtigt om materialet\n- Alt indhold er **lægens egne udkast**, gemt til senere brug og rettelse. Det er ikke en endelig sandhed og ikke autoriseret. Det skal gøres bedre og underbygges.\n- Formålet er (1) at tingene **skrives ensartet**, (2) at lægen **sparer tastetid** og (3) at forslag og planer **følger gældende danske instrukser**.\n- Filen indeholder ingen patientdata. Skriv aldrig patientdata i dine svar.\n\n### Kilder: søg og underbyg i denne prioriterede rækkefølge\n1. **PRI** (pri.rn.dk), Region Nordjylland og Aalborg Universitetshospital.\n2. **De faglige selskaber**, fx Dansk Selskab for Intern Medicin, Dansk Cardiologisk Selskab, Dansk Lungemedicinsk Selskab, Dansk Endokrinologisk Selskab, Dansk Neurologisk Selskab, Dansk Selskab for Anæstesiologi og Intensiv Medicin, Dansk Pædiatrisk Selskab og andre relevante selskaber.\n3. **VIP Hovedstaden** (vip.regionh.dk) og tilsvarende regionale databaser, når 1 og 2 ikke dækker emnet.\n\nRegler for kilder:\n- Brug den **højest prioriterede kilde, der findes**. Angiv titel, udgiver, version eller godkendelsesdato og link.\n- Kontrollér, om instruksen stadig er **gyldig**. Skriv tydeligt, hvis den er udløbet eller forældet.\n- Hvis du **ikke kan finde eller åbne** en kilde (fx fordi PRI kræver login), så skriv \"ikke verificeret\" og angiv det PRI-emne, lægen bør slå op. **Opfind aldrig** en kilde, et link, en dosis eller en grænseværdi.\n- Markér alle **doser, grænseværdier og tidsvinduer** med kilde.\n- Hvis kilderne er uenige, så beskriv uenigheden og angiv, hvilken kilde der har forrang efter listen ovenfor.\n\n### Arbejd i runder\nFilen er lang. Svar i denne rækkefølge, og vent på, at jeg skriver \"fortsæt\" mellem runderne:\n1. **Runde 1:** Del A og B (gennemgang af eksisterende planer, normalfund og negative fund).\n2. **Runde 2:** Del C (nye planer).\n3. **Runde 3 og frem:** Del D (Spørge Jørgen), højst 6–8 symptomer ad gangen.\n\n### Del A – Gennemgå de eksisterende planer (Del 3 i filen)\nFor hver plan: (1) **Underbyggelse** mod gældende instruks, eller find den, hvis der står \"MANGLER\". (2) **Faglige afvigelser**: forkert, forældet eller manglende (indikationer, kontraindikationer, doser, kontrolprøver, opfølgning). (3) **Negative fund og normalfund**: påstår teksten noget, der ikke nødvendigvis er undersøgt? (4) **Sprog og ensartethed**: præcision, danske termer, forkortelser, stavning og uens opbygning. (5) **Dubletter og modsigelser**.\n\n### Del B – Gennemgå normalfund og negative fund (Del 1 og 2 i filen)\nSamme kriterier. Foreslå tilføjelser og rettelser linje for linje.\n\n### Del C – Foreslå og udfærdig nye planer\n1. Lav en prioriteret liste (op til 25) over **hyppigt forekommende tilstande i en dansk akutmodtagelse**, som planerne ikke dækker. Begrund kort.\n2. Udfærdig de højest prioriterede som færdige planer **i samme stil og format som de eksisterende**. De er ligesom lægens egne udkast til senere rettelse.\n3. Underbyg hver plan med kilder efter prioriteringen. Angiv kilderne som én pr. linje i formatet `Titel (version/dato) | URL`.\n\nStilregler for planer: Fri tekst uden markdown inde i planen. Overskrifter med store bogstaver (fx PLAN, KONKLUSION OG PLAN, PARAKLINIK). **Tre prikker (…)** markerer felter, lægen selv udfylder. Korte, præcise sætninger i journalsprog. Doser med enhed og indikation. Normalfund som afkrydsningsklare negative fund. Planen skal kunne indsættes og rettes på under et minut.\n\n### Del D – Byg Spørge Jørgens spørgsmål\n**Opgave:** (1) Gennemgå og forbedr lægens 20 udkast (Del 4 i filen). (2) Foreslå og byg **yderligere hyppige henvendelsessymptomer**, prioriteret efter hyppighed og klinisk betydning i en dansk akutmodtagelse (medicinske og traumatiske symptomer, ældre og voksne; børn kun hvis du kan underbygge det). Byg dem alle i samme struktur.\n\n**Ghostwriters anamnesefelter.** Hver gruppe i et symptom skal pege på præcis ét af disse felter (skriv feltnavnet nøjagtigt som nedenfor):\n\n@FIELDS@\n\nVejledning til fordeling på felter:\n- Debut, lokalisation, karakter, provokation og lindring, ledsagesymptomer og forløb hører til **Aktuelt › Beskrivelse**.\n- Kendt sygdom og risikofaktorer hører til **Dispositioner › Risikofaktorer**, familiær disposition til **Dispositioner › Familiær**, allergier og andet til **Dispositioner › Supplerende**.\n- Smitte, rejse, kontakt med syge og andre ekspositioner hører til **Ekspositioner › Ekspositioner**.\n- Medicin hører til **Medicinanamnese › Medicinanamnese**. Alkohol, rygning og misbrug har egne felter.\n- Systemgennemgang med negative fund hører til **Øvrige organsystemer** (CNS, Kardiopulmonalt, Gastrointestinalt, Urogenitalt, Bevægeapparat, Andet), når det ikke naturligt hører til Aktuelt.\n- Målet er, at teksten i hvert felt kan stå i journalen uden redigering.\n\n**Spørgsmålstyper** (feltet `k`):\n- `t`: kort fritekst (fx tidspunkt). Valgfrit `ph` er et eksempel i feltet.\n- `c`: ét valg blandt `o` (fx forløb: akut, snigende).\n- `m`: flere valg blandt `o` (fx karakter: trykkende, stikkende).\n- `n`: ja/nej-liste over `o`. Lægen klikker hvert punkt til ja, nej eller tom. Ja skrives som positive fund, nej som negative fund med præfikset `neg` (fx \"Benægter\", \"Ingen\", \"Ikke forværret af\"). **Brug denne type til ledsagesymptomer, alarmsymptomer, risikofaktorer og ekspositioner**, så de negative fund kommer med.\n- `s`: smerteintensitet NRS 0–10. Brug kun ved smertesymptomer.\n\n**Sådan bliver teksten:** `Gruppenavn: label: værdier; label: værdier.` Labels og valg skrives med småt og kort, som journalsprog, så sætningen læses naturligt. Hvis `l` er lig med gruppenavnet, udelades labelen. Eksempel: `Ledsagesymptomer: åndenød, svimmelhed; benægter tunnelsyn, palpitationer.`\n\n**Krav til indholdet:**\n- 4–8 grupper pr. symptom i en naturlig anamnese-rækkefølge, og højst ca. 6–14 valg pr. spørgsmål.\n- Medtag symptomets **alarmsymptomer og differentialdiagnostiske nøglespørgsmål** (de spørgsmål, der adskiller de farlige årsager fra de harmløse), som `n`-lister.\n- Brug ens formuleringer for ens ting på tværs af symptomerne (fx \"tidspunkt\", \"forløb\", \"ledsagesymptomer\", \"tidligere lignende episoder\").\n- Ingen doser, ingen behandlingsanbefalinger og ingen vurderinger i spørgsmålene. De er kun anamnese.\n- Underbyg hvert symptom med `src` (se nedenfor).\n\n**Format på dit svar til Del D.** Svar med ét **gyldigt JSON-array** i ét kodeblok (```json). Højst 6–8 symptomer pr. svar. JSON må ikke indeholde kommentarer eller efterstillede kommaer, alle tekster står i dobbelte anførselstegn, og æ, ø og å skrives som de er. Hvert symptom har:\n- `id`: små bogstaver og tal uden æ, ø, å og mellemrum (a–z, 0–9, `-`, `_`), fx `brystsmerter`. Brug det samme id som i Del 4, når du forbedrer et eksisterende symptom.\n- `name`: symptomets navn på dansk.\n- `src`: liste af tekster i formatet `\"Titel (version/dato) | URL\"`, højst prioriterede først. Tom liste, hvis du ikke kan underbygge.\n- `g`: liste af grupper `{ \"n\": gruppenavn, \"f\": feltnavn (nøjagtigt fra listen), \"q\": spørgsmål }`.\n\nKorteste gyldige eksempel:\n\n```json\n[\n {\"id\":\"eksempel\",\"name\":\"Eksempel\",\"src\":[\"PRI – Titel (godk. 01.01.2025) | https://pri.rn.dk/...\"],\"g\":[\n  {\"n\":\"Debut\",\"f\":\"Aktuelt › Beskrivelse\",\"q\":[\n   {\"k\":\"t\",\"l\":\"tidspunkt\",\"ph\":\"fx i går kl. 14\"},\n   {\"k\":\"c\",\"l\":\"forløb\",\"o\":[\"akut indsættende\",\"snigende\"]}]},\n  {\"n\":\"Ledsagesymptomer\",\"f\":\"Aktuelt › Beskrivelse\",\"q\":[\n   {\"k\":\"n\",\"l\":\"ledsagesymptomer\",\"o\":[\"åndenød\",\"svimmelhed\",\"tunnelsyn\"],\"neg\":\"Benægter\"}]},\n  {\"n\":\"Risikofaktorer\",\"f\":\"Dispositioner › Risikofaktorer\",\"q\":[\n   {\"k\":\"n\",\"l\":\"kendt sygdom\",\"o\":[\"hypertension\",\"diabetes\"],\"neg\":\"Ingen\"}]}]}\n]\n```\n\nEfter JSON-blokken skriver du en kort tabel med **Symptom | Hvad er ændret og hvorfor | Kilde | Forbehold**. Skriv ikke om det, der er i orden.\n\n### Alle svar\n- Skriv ikke om det, der er i orden. Kritiske fund først.\n- Hvor du er i tvivl, så skriv det, og angiv, hvad lægen bør kontrollere.\n- Den endelige vurdering og ansvaret for brugen ligger hos lægen.\n\n".replace('@FIELDS@',anamneseFields().map(f=>'- '+f).join('\n'))+'\n';
   o+='## Del 1 – Normalfund og negative fund (voksne)\n\nOverskrifter med # er felter i klikjournalen. Hver linje er et fund, der kan kopieres ind i journalen.\n\n'+fence(adult)+'\n';
   o+='## Del 2 – Normalfund og negative fund (børn)\n\n'+fence(paed)+'\n';
-  const needs=p=>srcStatus(p)&&p.sub!=='Skabeloner',miss=plans.filter(p=>!(p.src||[]).length&&needs(p)),have=plans.filter(p=>(p.src||[]).length);
+  const needs=p=>srcStatus(p)&&p.cat!=='Skabeloner og procedurer',miss=plans.filter(p=>!(p.src||[]).length&&needs(p)),have=plans.filter(p=>(p.src||[]).length);
   o+='## Del 3 – Fraser og skabeloner\n\nFor hver plan er den bagvedliggende instruks (typisk PRI, pri.rn.dk) angivet. Kontrollér planens indhold mod instruksen, hvor den findes. Hvor der står MANGLER, har planen ingen tilknyttet instruks: vurdér den ud fra almindelig dansk praksis, og angiv hvilket PRI-emne den bør tjekkes mod.\n\n**Planer med instruks ('+have.length+'):** '+(have.map(p=>p.title).join('; ')||'ingen')+'\n\n**Planer uden instruks ('+miss.length+'):** '+(miss.map(p=>p.title).join('; ')||'ingen')+'\n\n';
   let lastCat=null;
   for(const p of plans){
     if(p.cat!==lastCat){lastCat=p.cat;o+='### '+(CATNAME[p.cat]||p.cat)+'\n\n'}
-    const st=srcStatus(p),sl=(p.src||[]).length?(p.src.map(x=>'- Instruks: '+x.t+(x.u?' – '+x.u:'')+(x.pending?' (endnu ikke indarbejdet)':'')).join('\n')):(st&&p.sub!=='Skabeloner'?'- Instruks: MANGLER – planen er ikke tjekket mod en instruks (PRI)':'- Instruks: ikke relevant (skabelon/normalfund)');
-    o+='#### '+p.title+'\n\n'+(p.sub?'Mappe: '+p.sub+' · ':'')+(p.seed&&!p.edited?'Standard':'Egen/redigeret')+(p.fav?' · Favorit':'')+(st&&(p.src||[]).length?' · Status: '+st.txt:'')+'\n\n'+sl+'\n\n'+fence(p.text)+'\n';
+    const st=srcStatus(p),sl=(p.src||[]).length?(p.src.map(x=>'- Instruks: '+x.t+(x.u?' – '+x.u:'')+(x.pending?' (endnu ikke indarbejdet)':'')).join('\n')):(st&&p.cat!=='Skabeloner og procedurer'?'- Instruks: MANGLER – planen er ikke tjekket mod en instruks (PRI)':'- Instruks: ikke relevant (skabelon/normalfund)');
+    o+='#### '+p.title+'\n\n'+'Kategori: '+p.cat+(p.abc?' · ABCDE: '+p.abc:'')+(p.sub?' · Mappe: '+p.sub:'')+' · '+(p.seed&&!p.edited?'Standard':'Egen/redigeret')+(p.fav?' · Favorit':'')+(st&&(p.src||[]).length?' · Status: '+st.txt:'')+'\n\n'+sl+'\n\n'+fence(p.text)+'\n';
   }
   const sj=sjData();
   o+='## Del 4 – Spørge Jørgens nuværende udkast ('+sj.length+' symptomer)\n\nDette er udkast i det format, Spørge Jørgen kan importere. Forbedr dem, og byg flere (se Del D). `f` er det Ghostwriter-felt, gruppens tekst sendes til.\n\n```json\n[\n'+sj.map(x=>JSON.stringify(x)).join(',\n')+'\n]\n```\n';
@@ -3244,21 +3286,29 @@ $('#expBtn').addEventListener('click',exportReview);window.reviewMD=reviewMD;
 /*GWIMP*/
 function parsePlans(raw){
   const lines=String(raw||'').replace(/\r/g,'').split('\n');
-  const katIdx=[];lines.forEach((l,i)=>{if(/^\s*(?:[-*•]\s*)?\**\s*Kategori\s+[A-EXa-ex]\b/.test(l))katIdx.push(i)});
+  const katIdx=[];lines.forEach((l,i)=>{if(/^\s*(?:[-*•]\s*)?\**\s*Kategori\b\s*(?::|[A-EXa-ex]\b)/i.test(l))katIdx.push(i)});
   const clean=t=>t.replace(/^\s*(?:#+\s*)?(?:\d+\s*[.)]\s*)?/,'').replace(/\*+/g,'').trim();
   const titleAt=i=>{for(let j=i-1;j>=0;j--){if(lines[j].trim()&&!/^\s*```/.test(lines[j]))return {t:clean(lines[j]),at:j}}return null};
   const out=[];
   katIdx.forEach((ki,n)=>{const T=titleAt(ki);if(!T||!T.t)return;
     const endAt=n+1<katIdx.length?((titleAt(katIdx[n+1])||{at:lines.length}).at):lines.length;
     const block=lines.slice(ki+1,Math.max(ki+1,endAt));
-    const cat=lines[ki].match(/Kategori\s+([A-EXa-ex])/)[1].toUpperCase();
-    const sm=lines[ki].match(/Mappe\s*:\s*(.+?)\s*$/);let sub=sm?sm[1].replace(/\*+/g,'').trim():'';if(/^(–|-|—|ingen|intet)$/i.test(sub))sub='';
+    /* Ny linje: «Kategori: Elektrolytforstyrrelser · ABCDE: C · Mappe: …». Gammel linje «Kategori C – Kredsløb · Mappe: …» læses også. */
+    const parts=lines[ki].replace(/\*+/g,'').split(/\s*[·|;]\s*/).map(x=>x.trim()).filter(Boolean);
+    let cat='',abc='',sub='';
+    for(const pt of parts){let m;
+      if((m=pt.match(/^Kategori\s*:\s*(.+)$/i))) cat=m[1].trim();
+      else if((m=pt.match(/^Kategori\s+([A-EXa-ex])\b/i))) {abc=m[1].toUpperCase()}
+      else if((m=pt.match(/^(?:ABCDE|ABC|Spor)(?:-spor)?\s*:\s*(.+)$/i))) {const a=m[1].trim().toUpperCase();abc=/^[A-E]\b/.test(a)?a[0]:''}
+      else if((m=pt.match(/^Mappe\s*:\s*(.+)$/i))) sub=m[1].trim()}
+    if(/^(–|-|—|ingen|intet)$/i.test(sub))sub='';
+    if(!cat||/^[A-EX]$/i.test(cat)){const g=toGroup({id:'',cat:cat?cat.toUpperCase():(abc||'X'),abc,sub});cat=g.cat;abc=g.abc||abc;sub=g.sub}
     const fi=block.findIndex(l=>/^\s*```/.test(l));let text='',after=[];
     if(fi>=0){let fj=-1;for(let k=block.length-1;k>fi;k--){if(/^\s*```/.test(block[k])){fj=k;break}}if(fj<0)fj=block.length;
       text=block.slice(fi+1,fj).join('\n').trim();after=block.slice(fj+1)}
     else{const si=block.findIndex(l=>/^\s*Instrukser?\s*\/?\s*kilder/i.test(l));text=(si>=0?block.slice(0,si):block).join('\n').trim();after=si>=0?block.slice(si):[]}
     const src=[];after.forEach(l=>{const t=l.trim().replace(/^[-*•]\s*/,'');const mm=t.match(/^(.+?)\s*\|\s*(https?:\/\/\S+?)\s*$/);if(mm)src.push({t:mm[1].replace(/\*+/g,'').trim(),u:mm[2],pending:false})});
-    if(text)out.push({title:T.t,cat,sub,text,src});
+    if(text)out.push({title:T.t,cat,abc,sub,text,src});
   });
   return out}
 window.__parsePlans=parsePlans;
@@ -3266,15 +3316,15 @@ let impList=[];
 function impPreview(){
   impList=parsePlans($('#gwImpText').value);
   const box=$('#gwImpList');
-  if(!impList.length){box.innerHTML='<p class="hint">Fandt ingen planer. Hver plan skal have en titel, en linje der starter med «Kategori X …», planteksten i en kodeblok (```) og evt. linjer under «Instrukser / kilder» i formatet Titel | URL.</p>';$('#gwImpGo').disabled=true;return}
+  if(!impList.length){box.innerHTML='<p class="hint">Fandt ingen planer. Hver plan skal have en titel, en linje der starter med «Kategori: …», planteksten i en kodeblok (```) og evt. linjer under «Instrukser / kilder» i formatet Titel | URL.</p>';$('#gwImpGo').disabled=true;return}
   box.innerHTML=impList.map((p,i)=>{const dup=S.plans.find(x=>String(x.title).trim().toLowerCase()===p.title.toLowerCase());p.dup=dup?dup.id:null;
-    return `<label class="improw"><input type="checkbox" data-i="${i}" checked> <b>${esc(p.title)}</b> <span class="hint">${esc(CATNAME[p.cat]||p.cat)}${p.sub?' · '+esc(p.sub):''} · ${p.src.length} instruks${p.src.length===1?'':'er'}${dup?' · <u>erstatter eksisterende plan</u>':' · ny'}</span></label>`}).join('');
+    return `<label class="improw"><input type="checkbox" data-i="${i}" checked> <b>${esc(p.title)}</b> <span class="hint">${esc(p.cat)}${p.abc?' · ABCDE: '+p.abc:''}${p.sub?' · '+esc(p.sub):''} · ${p.src.length} instruks${p.src.length===1?'':'er'}${dup?' · <u>erstatter eksisterende plan</u>':' · ny'}</span></label>`}).join('');
   $('#gwImpGo').disabled=false}
 function impGo(){
   const sel=[...document.querySelectorAll('#gwImpList input:checked')].map(x=>impList[+x.dataset.i]);let nNew=0,nUpd=0;
   for(const p of sel){const ex=p.dup?byId(p.dup):null;
-    if(ex){ex.text=p.text;ex.cat=p.cat;ex.sub=p.sub;ex.src=p.src.length?p.src:(ex.src||[]);ex.edited=true;ex.updated=now();nUpd++}
-    else{S.plans.push({id:uid(),title:p.title,cat:p.cat,sub:p.sub,text:p.text,fav:false,uses:0,created:now(),updated:now(),src:p.src,edited:true});nNew++}
+    if(ex){ex.text=p.text;ex.cat=p.cat;ex.abc=p.abc;ex.sub=p.sub;ex.src=p.src.length?p.src:(ex.src||[]);ex.edited=true;ex.updated=now();nUpd++}
+    else{S.plans.push({id:uid(),title:p.title,cat:p.cat,abc:p.abc,sub:p.sub,text:p.text,fav:false,uses:0,created:now(),updated:now(),src:p.src,edited:true});nNew++}
     if(p.sub){S.subs[p.cat]=S.subs[p.cat]||[];if(!S.subs[p.cat].includes(p.sub))S.subs[p.cat].push(p.sub)}}
   save();renderAll();$('#gwImpDlg').close();toast(nNew+' nye'+(nUpd?' · '+nUpd+' erstattet':'')+' plan'+(nNew+nUpd===1?'':'er')+' importeret')}
 $('#impBtn').addEventListener('click',()=>{$('#gwImpText').value='';$('#gwImpList').innerHTML='';$('#gwImpGo').disabled=true;$('#gwImpDlg').showModal()});
@@ -3301,7 +3351,7 @@ $('#themeToggle').addEventListener('click',()=>{const t=document.documentElement
 document.addEventListener('keydown',e=>{
   const tag=(e.target.tagName||'').toLowerCase();
   const typing=tag==='input'||tag==='textarea'||tag==='select'||e.target.isContentEditable;
-  if(e.altKey&&!e.ctrlKey&&/^Digit[0-8]$/.test(e.code)){e.preventDefault();const i=+e.code.slice(5);setCat(i===0?'ALL':i===7?'NF':i===8?'KL':CATS[i-1].k);return}
+  if(e.altKey&&!e.ctrlKey&&/^Digit[0-8]$/.test(e.code)){e.preventDefault();const i=+e.code.slice(5);setCat(i===0?'ALL':i===7?'NF':i===8?'KL':(CATS[i-1]?CATS[i-1].k:ui.cat));return}
   if(ui.cat==='KL') return;
   if(ui.cat==='NF'){if(typing||e.ctrlKey||e.metaKey||e.altKey) return;if(e.key==='/'){e.preventDefault();$('#q').focus()}else if((e.key==='r'||e.key==='R')&&!nfEditing){e.preventDefault();nfEditing=true;renderNF()}else if(e.key==='Escape'&&nfEditing){nfEditing=false;renderNF()}else if((e.key==='n'||e.key==='N')){e.preventDefault();setCat('ALL');newPlan()}return}
   if(e.key==='Escape'&&ui.editing){e.preventDefault();if(confirmLeave()){if(!byId(ui.sel))ui.sel=null;renderAll()}return}
@@ -3393,7 +3443,7 @@ $('#verClose').addEventListener('click',()=>{const d=$('#verDlg');d.close?d.clos
 $('#verDlg').addEventListener('click',e=>{if(e.target.id==='verDlg')e.target.close()});
 
 function myChanges(){
-  const strip=p=>({id:p.id,title:p.title,cat:p.cat,sub:p.sub||'',pin:!!p.pin,fav:!!p.fav,src:p.src||[],text:p.text,updated:p.updated});
+  const strip=p=>({id:p.id,title:p.title,cat:p.cat,abc:p.abc||'',sub:p.sub||'',pin:!!p.pin,fav:!!p.fav,src:p.src||[],text:p.text,updated:p.updated});
   const seedIds=new Set(SEED.map(s=>s.id));
   const added=S.plans.filter(p=>!p.seed&&!seedIds.has(p.id)).map(strip);
   const edited=S.plans.filter(p=>p.seed&&p.edited).map(strip);
@@ -3446,7 +3496,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-xp]'))exportAll
 $('#ipFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)importAll(f);e.target.value=''});
 
 /* ---------- init ---------- */
-loadLocal();loadUi();
+loadLocal();rebuildCats();loadUi();
 if(ui.cat!=='ALL'&&ui.cat!=='NF'&&ui.cat!=='KL'&&!CATNAME[ui.cat]) ui.cat='ALL';
 $('#sort').value=ui.sort;
 paintTheme();
