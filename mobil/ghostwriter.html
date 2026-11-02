@@ -2490,12 +2490,12 @@ function renderKLIns(){
     const ci=k=>CATS.findIndex(c=>c.k===k);
     const tScore=p=>!q?0:(q.split(/\s+/).every(t=>norm(p.title).includes(t))?0:(q.split(/\s+/).every(t=>norm(p.title+' '+p.sub+' '+(p.src||[]).map(x=>x.t).join(' ')).includes(t))?1:2));
     arr.sort((a,b)=>(tScore(a)-tScore(b))||(q?0:((!!b.pin)-(!!a.pin)))||(a.pin&&b.pin&&!q?0:ci(a.cat)-ci(b.cat))||a.title.localeCompare(b.title,'da'));
-    if(!q){const fo=s=>!s.pin&&INS_FOLD.includes(s.sub)?1+INS_FOLD.indexOf(s.sub):0;arr.sort((a,b)=>fo(a)-fo(b)||0)}
+    if(!q){const fo=s=>{if(s.pin)return 0;const i=INS_FOLD.includes(s.sub)?INS_FOLD.indexOf(s.sub):INS_FOLD.indexOf(s.cat);return i>=0?1+i:0};arr.sort((a,b)=>fo(a)-fo(b)||0)}
     let last=null,folded=false;
     for(const p of arr){
       const sc=tScore(p);
-      const isFold=!q&&!p.pin&&INS_FOLD.includes(p.sub);
-      const g=q?(sc<2?'Bedste match':'Nævnt i teksten'):(p.pin?'📌 Fastgjort':isFold?'📁 '+p.sub:p.cat);
+      const isFold=!q&&!p.pin&&(INS_FOLD.includes(p.sub)||INS_FOLD.includes(p.cat));
+      const g=q?(sc<2?'Bedste match':'Nævnt i teksten'):(p.pin?'📌 Fastgjort':isFold?'📁 '+(INS_FOLD.includes(p.sub)?p.sub:p.cat):p.cat);
       if(g!==last){last=g;
         if(isFold){folded=!klInsOpen.has(p.sub);const n=arr.filter(x=>x.sub===p.sub&&!x.pin).length;list+=`<button class="grp grpfold" data-insfold="${esc(p.sub)}" aria-expanded="${!folded}">${folded?'▸':'▾'} ${esc(p.sub)} <span class="c">${n}</span></button>`}
         else{folded=false;list+=`<div class="grp">${esc(g)}</div>`}}
