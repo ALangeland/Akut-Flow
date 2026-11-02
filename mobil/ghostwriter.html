@@ -3211,11 +3211,13 @@ function reviewMD(){
   o+='## Opgave til gennemgangen\n\nDu er en erfaren dansk speciallæge i akutmedicin og intern medicin og samtidig en omhyggelig sprogrevisor. Teksterne nedenfor er skabeloner, som en læge i en dansk akutmodtagelse indsætter i journalen. De indeholder ingen patientdata.\n\nGennemgå dem og find:\n\n1. **Negative fund og normalfund.** Påstår en normalbeskrivelse noget, som ikke nødvendigvis er undersøgt (risiko for at dokumentere en undersøgelse, der ikke er udført)? Mangler der vigtige negative fund for den kliniske problemstilling? Er der fund, der modsiger hinanden?\n2. **Fraserne.** Faglig præcision, entydighed, danske medicinske termer, forkortelser, stavning, tegnsætning og uens stil mellem skabeloner.\n3. **Dubletter og modsigelser** mellem skabeloner, samt forældede eller tvivlsomme doser og grænseværdier. Afgør ikke selv, om en dosis er rigtig. Markér den, og angiv hvilken kilde den bør kontrolleres mod (fx regionale retningslinjer, DSAM, Sundhed.dk).\n\nSvar som en tabel med kolonnerne: **Sted** (overskrift og linje) | **Problem** | **Foreslået formulering** | **Alvorlighed** (kritisk / bør rettes / stilistisk). Sortér med de kritiske først. Skriv ikke om det, der er i orden. Foreslå kun rettelser, du kan begrunde.\n\n';
   o+='## Del 1 – Normalfund og negative fund (voksne)\n\nOverskrifter med # er felter i klikjournalen. Hver linje er et fund, der kan kopieres ind i journalen.\n\n'+fence(adult)+'\n';
   o+='## Del 2 – Normalfund og negative fund (børn)\n\n'+fence(paed)+'\n';
-  o+='## Del 3 – Fraser og skabeloner\n\n';
+  const needs=p=>srcStatus(p)&&p.sub!=='Skabeloner',miss=plans.filter(p=>!(p.src||[]).length&&needs(p)),have=plans.filter(p=>(p.src||[]).length);
+  o+='## Del 3 – Fraser og skabeloner\n\nFor hver plan er den bagvedliggende instruks (typisk PRI, pri.rn.dk) angivet. Kontrollér planens indhold mod instruksen, hvor den findes. Hvor der står MANGLER, har planen ingen tilknyttet instruks: vurdér den ud fra almindelig dansk praksis, og angiv hvilket PRI-emne den bør tjekkes mod.\n\n**Planer med instruks ('+have.length+'):** '+(have.map(p=>p.title).join('; ')||'ingen')+'\n\n**Planer uden instruks ('+miss.length+'):** '+(miss.map(p=>p.title).join('; ')||'ingen')+'\n\n';
   let lastCat=null;
   for(const p of plans){
     if(p.cat!==lastCat){lastCat=p.cat;o+='### '+(CATNAME[p.cat]||p.cat)+'\n\n'}
-    o+='#### '+p.title+'\n\n'+(p.sub?'Mappe: '+p.sub+' · ':'')+(p.seed&&!p.edited?'Standard':'Egen/redigeret')+(p.fav?' · Favorit':'')+'\n\n'+fence(p.text)+'\n';
+    const st=srcStatus(p),sl=(p.src||[]).length?(p.src.map(x=>'- Instruks: '+x.t+(x.u?' – '+x.u:'')+(x.pending?' (endnu ikke indarbejdet)':'')).join('\n')):(st&&p.sub!=='Skabeloner'?'- Instruks: MANGLER – planen er ikke tjekket mod en instruks (PRI)':'- Instruks: ikke relevant (skabelon/normalfund)');
+    o+='#### '+p.title+'\n\n'+(p.sub?'Mappe: '+p.sub+' · ':'')+(p.seed&&!p.edited?'Standard':'Egen/redigeret')+(p.fav?' · Favorit':'')+(st&&(p.src||[]).length?' · Status: '+st.txt:'')+'\n\n'+sl+'\n\n'+fence(p.text)+'\n';
   }
   return o;
 }
@@ -3224,7 +3226,7 @@ async function exportReview(){
     const r=await saveBlobAs(blob,'ghostwriter-til-gennemgang-'+new Date().toISOString().slice(0,10)+'.md','ghostwriter-gennemgang');
     if(r&&r.ok)toast('Eksporteret – indsæt eller upload filen i ChatGPT')}catch(e){toast('Kunne ikke eksportere')}
 }
-$('#expBtn').addEventListener('click',exportReview);window.reviewMD=reviewMD;
+$('#expBtn').addEventListener('click',exportReview);window.reviewMD=reviewMD;window.__gwS=()=>S;
 
 $('#archBtn').addEventListener('click',openArchive);
 $('#backBtn').addEventListener('click',()=>setCat('KL'));
