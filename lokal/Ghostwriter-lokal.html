@@ -2436,6 +2436,7 @@ function klNormalHome(g,r){
 function klGrow(t){t.style.height='auto';t.style.height=Math.max(t.scrollHeight+2,34)+'px'}
 function chGet(sec,id){return ((KL.__ch||{})[sec+'|'+id])}
 function chSet(sec,id,val){KL.__ch=KL.__ch||{};if(val===undefined||val===null||(Array.isArray(val)&&!val.length))delete KL.__ch[sec+'|'+id];else KL.__ch[sec+'|'+id]=val;klSave()}
+function klSysOn(sec){return sec.s==='Øvrige organsystemer'&&(chGet(sec.s,'sys')||[]).length>0}
 function chSummary(sec){if(!sec.ch) return [];const out=[];for(const c of sec.ch){const v=chGet(sec.s,c.id);if(!v) continue;const t=Array.isArray(v)?v.join(', '):v;out.push((c.label?c.label+': ':'')+t)}return out}
 function klFilledCount(){return Object.entries(KL).filter(([k,v])=>!k.startsWith('__')&&typeof v==='string'&&v.trim()).length}
 function klEsc(k){return CSS.escape(k)}
@@ -2467,7 +2468,7 @@ function renderKLDraft(){
     const moreOpen=klOpen.has(sec.s+'|more');
     const hid=(sec.more&&!moreOpen)?sec.f.filter(f=>sec.more.includes(f)&&!(KL[kk(sec.s,f)]||'').trim()):[];
     for(const f of sec.f){
-      if(hid.includes(f)) continue;
+      if(hid.includes(f)||(klSysOn(sec)&&!(KL[kk(sec.s,f)]||'').trim())) continue;
       const k=kk(sec.s,f),v=KL[k]||'',ns=klNormals(sec.s,f);
       const showLbl=sec.f.length>1;
       html+=`<div class="klrow${klDone.has(k)?' done':''}${PHR.test(v)?' hasph':''}${k===klTarget?' target':''}" data-row="${esc(k)}">
@@ -3109,7 +3110,7 @@ $('#kl').addEventListener('click',async e=>{
   const cb=e.target.closest('[data-chs]');
   if(cb){const sec=JOURNAL.find(j=>j.s===cb.dataset.chs);const c=sec&&sec.ch.find(x=>x.id===cb.dataset.chid);if(!c) return;const o=cb.dataset.chv;let v=chGet(sec.s,c.id);
     if(c.type==='radio'){v=v===o?undefined:o}else{v=Array.isArray(v)?v.slice():[];v.includes(o)?v.splice(v.indexOf(o),1):v.push(o)}
-    chSet(sec.s,c.id,v);cb.closest('.chips2').querySelectorAll('.chip2').forEach(b=>{const on=c.type==='radio'?v===b.dataset.chv:Array.isArray(v)&&v.includes(b.dataset.chv);b.setAttribute('aria-pressed',on)});return}
+    chSet(sec.s,c.id,v);cb.closest('.chips2').querySelectorAll('.chip2').forEach(b=>{const on=c.type==='radio'?v===b.dataset.chv:Array.isArray(v)&&v.includes(b.dataset.chv);b.setAttribute('aria-pressed',on)});if(sec.s==='Øvrige organsystemer'){renderKLDraft();toast(klSysOn(sec)?'Øvrige klager skjult – systematisk adspurgt':'Øvrige felter vist')}return}
   const kt=e.target.closest('[data-kltype]');if(kt){klSwitch(kt.dataset.kltype);return}
   const tb=e.target.closest('[data-instab]');if(tb){klInsTab=tb.dataset.instab;renderKLIns();return}
   const ip=e.target.closest('[data-insplan]');
@@ -3130,12 +3131,12 @@ $('#kl').addEventListener('click',async e=>{
   const n=e.target.closest('[data-kln]');
   if(n){const k=n.dataset.kln;const [sn,f]=k.split(' › ');const r=klNormals(sn,f)[0];if(r)klInsert(k,r.body||r.line,{normal:true,label:r.label});return}
   const an=e.target.closest('[data-klallnorm]');
-  if(an){let c=0;for(const sec of JOURNAL){for(const f of sec.f){const k=kk(sec.s,f);if(!isPicked(k))continue;const r=klNormals(sec.s,f)[0];if(r&&!(KL[k]||'').trim()){KL[k]=r.body||r.line;klOpen.add(sec.s);c++}}}klSave();renderKLDraft();toast(c?`Normalfund indsat i ${c} tomme felter`:'Ingen tomme felter med normalfund');return}
+  if(an){let c=0;for(const sec of JOURNAL){if(klSysOn(sec))continue;for(const f of sec.f){const k=kk(sec.s,f);if(!isPicked(k))continue;const r=klNormals(sec.s,f)[0];if(r&&!(KL[k]||'').trim()){KL[k]=r.body||r.line;klOpen.add(sec.s);c++}}}klSave();renderKLDraft();toast(c?`Normalfund indsat i ${c} tomme felter`:'Ingen tomme felter med normalfund');return}
   const sn=e.target.closest('[data-klsecnorm]');
   const pa=e.target.closest('[data-klpickall]');
   if(pa){const sec=JOURNAL.find(j=>j.s===pa.dataset.klpickall);sec.f.forEach(f=>klPick[kk(sec.s,f)]=pa.dataset.v==='1');try{localStorage.setItem('pasteplaner.klPick',JSON.stringify(klPick))}catch(_){}
     const box=pa.closest('.klsec');box.querySelectorAll('.klpick').forEach(c=>c.checked=pa.dataset.v==='1');const pc=box.querySelector('.pc');if(pc)pc.textContent=pickCount(sec);return}
-  if(sn){const sec=JOURNAL.find(j=>j.s===sn.dataset.klsecnorm);klOpen.add(sec.s);let c=0;sec.f.forEach(f=>{const k=kk(sec.s,f);if(!isPicked(k))return;const r=klNormals(sec.s,f)[0];if(r&&!(KL[k]||'').trim()){KL[k]=r.body||r.line;c++}});klSave();renderKLDraft();toast(c?`Normalfund indsat i ${c} tomme felter`:'Ingen tomme felter med normalfund');return}
+  if(sn){const sec=JOURNAL.find(j=>j.s===sn.dataset.klsecnorm);klOpen.add(sec.s);let c=0;if(klSysOn(sec)){toast('Felterne er skjult – systematisk adspurgt');return}sec.f.forEach(f=>{const k=kk(sec.s,f);if(!isPicked(k))return;const r=klNormals(sec.s,f)[0];if(r&&!(KL[k]||'').trim()){KL[k]=r.body||r.line;c++}});klSave();renderKLDraft();toast(c?`Normalfund indsat i ${c} tomme felter`:'Ingen tomme felter med normalfund');return}
   const x=e.target.closest('[data-klx]');
   if(x){const k=x.dataset.klx;const t=document.getElementById('kl-'+k);
     if(x.classList.contains('undo')){KL[k]=x._undo||'';klSave();if(t){t.value=KL[k];klGrow(t)}x.classList.remove('undo');x.textContent='✕';x.title='Ryd feltet (kan fortrydes)';clearTimeout(x._t);klRefreshRow(k);toast('Fortrudt');return}
