@@ -227,6 +227,17 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .chip2 .ck-c::before{content:'☐'}.chip2[aria-pressed="true"] .ck-c::before{content:'☑'}
 .klhr .klnew{margin-left:4px}
 @media (max-width:720px){.klhr{flex-wrap:wrap!important}.nfgrp{width:100%}.nfgrp .seg.nfmode{flex:1 1 auto!important}.klhr .seg.nfmode{flex:1 1 auto!important}.klhr .klnew{flex:0 0 auto;margin-left:auto}}
+.klmode{display:flex;align-items:center;gap:10px;flex-wrap:wrap;width:100%}
+.klmode-r{padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface);flex-direction:column;align-items:stretch}
+.klmode-r .seg.kltype{width:100%}.klmode-r .seg.kltype button{flex:1}
+.klmode-r .nfgrp{width:100%}.klmode-r .nfgrp .seg.nfmode{flex:1 1 auto}.klmode-r .nfgrp .kln{flex:1 1 100%}
+.klmode-r .klhr{display:flex!important;flex-direction:column;align-items:stretch;gap:8px;width:100%}.klmode-r .klnew{align-self:flex-end;margin-left:0}
+.klmode-r .seg.kltype button{padding:6px 2px!important;font-size:.66rem!important;letter-spacing:0!important;gap:3px!important;min-width:0;justify-content:center}
+.klmode-r .seg.kltype button::before{width:18px!important;height:18px!important}
+.klmode-r .nfgrp{flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px}
+.klmode-r .nfgrp .seg.nfmode{width:100%;display:flex}.klmode-r .nfgrp .seg.nfmode button{flex:1;justify-content:center}
+.klmode-hd{display:none!important}
+@media (max-width:1100px){.klmode-r{display:none}.klmode-hd{display:flex!important}}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 
 .btn.jfmail{background:var(--go);border-color:var(--go);color:#fff}:root[data-theme="dark"] .btn.jfmail{color:#2a1c00}
@@ -2466,9 +2477,10 @@ function renderKL(){
   box.innerHTML=`<div class="klwrap"><section class="card" id="kldraft"></section><div class="kright"><aside class="card klins" id="klins"></aside></div></div>`;
   renderKLDraft();renderKLIns();
 }
+function klModeBar(side){return `<div class="klmode klmode-${side}"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr">${klType==='proc'?'':`<span class="nfgrp"><span class="nfml">Normalfund</span>${nfModeSeg()}<button class="btn sm kln" data-klallnorm="1" title="Indsæt normalfund i alle tomme felter i journalen (valgfrie felter som Mammae, Genitalia m.fl. springes over). Felter du har skrevet i, bliver ikke rørt.">✓ Indsæt i alle tomme felter</button></span>`}<button class="btn sm danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button></span></div>`}
 function renderKLDraft(){
   const box=$('#kldraft');
-  let html=`<div class="card-h"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr">${klType==='proc'?'':`<span class="nfgrp"><span class="nfml">Normalfund</span>${nfModeSeg()}<button class="btn sm kln" data-klallnorm="1" title="Indsæt normalfund i alle tomme felter i journalen (valgfrie felter som Mammae, Genitalia m.fl. springes over). Felter du har skrevet i, bliver ikke rørt.">✓ Indsæt i alle tomme felter</button></span>`}<button class="btn sm danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button></span></div>
+  let html=`<div class="card-h klmode-hd">${klModeBar('l')}</div>
   <div class="card-b">
     <div class="actions klact" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
@@ -2554,7 +2566,7 @@ function renderKLIns(){
     }
     if(!list) list='<p class="note" style="padding:12px">Ingen normalfund matcher.</p>';
   }
-  box.innerHTML=`<div class="card-h"><h2>Fraser</h2></div>
+  box.innerHTML=`${klModeBar('r')}<div class="card-h"><h2>Fraser</h2></div>
     <div class="instarget"><label class="insroute"><input type="checkbox" id="klRoute" ${klRoute?'checked':''}> Fordel fraser i journalfelter</label>
       <div>${klInsTab==='norm'?'Normalfund <b>'+(nfMode==='paed'?'børn':'voksne')+'</b> indsættes i deres eget journalfelt.':(klRoute?'Fraser uden struktur indsættes':'Indsættes')+' i: <b id="kltarget">'+esc(klLabel(klTarget))+'</b>'}</div></div>
     <div class="inshead">
