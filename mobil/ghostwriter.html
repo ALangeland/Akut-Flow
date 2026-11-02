@@ -2517,8 +2517,8 @@ function renderKLDraft(){
       <button type="button" class="lnk klmailcfg" id="mailCfgBtn" title="Gem modtageradresse, eller send kladden som tekst i selve mailen">✉ Modtager / send som tekst …</button>
       <button class="btn danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button>
     </div>
-    ${klTipOff?'':`<div class="note kltip"><span class="kltipi">💡</span><span class="kltipt">Vælg en frase i Fraser – den fordeles i journalfelterne. Normalfund sættes ind i deres eget felt. <b>✓ Normal</b> tilføjer feltets normalfund, <b>✕</b> rydder feltet. Kladden gemmes kun i denne browser – ryd den efter brug.</span><button type="button" class="kltipx" data-kltipx="1" aria-label="Luk fif" title="Luk fif">✕</button></div>`}
-    <div class="klsaved">${klTipOff?'<button type="button" class="lnk" data-kltipshow="1">💡 Vis fif</button> · ':''}<span id="klsum">${klSavedTxt()}</span></div>`;
+    
+    <div class="klsaved"><span id="klsum">${klSavedTxt()}</span></div>`;
   for(const sec of JOURNAL){
     const hasN=sec.f.some(f=>klNormals(sec.s,f).length);
     const anyFilled=sec.f.some(f=>(KL[kk(sec.s,f)]||'').trim())||chSummary(sec).length>0;
