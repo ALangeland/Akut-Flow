@@ -2343,8 +2343,8 @@ const JOURNAL_OPT=[
   {s:'Aktuelt',f:['Beskrivelse'],big:true},
   {s:'Øvrige organsystemer',f:['CNS','Kardiopulmonalt','Gastrointestinalt','Urogenitalt','Bevægeapparat','Andet'],fold:true,
     ch:[{id:'sys',type:'check',opts:['Systematisk adspurgt, ingen klager']}]},
-  {s:'Alkohol',f:['Alkohol'],ch:[{id:'alk',type:'radio',opts:['Intet aktuelt forbrug af alkohol','Højst 10 genstande pr. uge, max. 4 genstande på samme dag','Mere end 10 genstande pr. uge eller mere end 4 genstande på samme dag']}]},
-  {s:'Rygning',f:['Supplerende'],ch:[{id:'ryg',type:'radio',opts:['Aldrig røget','Ryger lejlighedsvis','Ryger dagligt','Tidligere ryger']},{id:'tob',type:'check',opts:['Cigaretter eller anden tobak','Snus eller skrå','Nikotin (e-cigaretter eller poser)']}]},
+  {s:'Alkohol',f:['Alkohol'],ch:[{id:'alk',type:'radio',opts:['Intet forbrug','Højst 10 genstande pr. uge, max. 4 samme dag','Mere end 10 genstande pr. uge eller mere end 4 genstande pr. dag']}]},
+  {s:'Rygning',f:['Supplerende'],ch:[{id:'ryg',type:'radio',opts:['Aldrig røget','Lejlighedsvis','Dagligt','Tidligere']},{id:'tob',type:'check',opts:['Cigaretter eller anden tobak','Snus eller skrå','Nikotin (e-cigaretter eller poser)']}]},
   {s:'Misbrug',f:['Beskrivelse'],ch:[{id:'mis',type:'check',opts:['Intet misbrug']}]},
   {s:'Medicinanamnese',f:['Medicinanamnese']},
   {s:'Patientens netværk',f:['Supplerende','Beskrivelse af forhold til netværk/relationer','Kommentar (pårørende)'],fold:true,
@@ -2387,6 +2387,8 @@ let KL={};try{KL=JSON.parse(localStorage.getItem(LSK)||'{}')||{}}catch(e){KL={}}
   const FK='Fritekst / notat › Fritekst';
   if(KL[FK]!==undefined){const v=(KL[FK]||'').trim();if(v){const ak=kk('Aktuelt','Beskrivelse');KL[ak]=((KL[ak]||'').trim()?KL[ak].replace(/\s+$/,'')+'\n\n':'')+v}delete KL[FK];moved=true}
   for(const k of Object.keys(KL)){const m=k.match(/^(\d+)\|(\d+)$/);if(!m) continue;const sec=old[+m[1]];if(sec&&sec.f[+m[2]]!==undefined){KL[kk(sec.s,sec.f[+m[2]])]=KL[k]}delete KL[k];moved=true}
+  const OLDCH={'Intet aktuelt forbrug af alkohol':'Intet forbrug','Højst 10 genstande pr. uge, max. 4 genstande på samme dag':'Højst 10 genstande pr. uge, max. 4 samme dag','Mere end 10 genstande pr. uge eller mere end 4 genstande på samme dag':'Mere end 10 genstande pr. uge eller mere end 4 genstande pr. dag','Ryger lejlighedsvis':'Lejlighedsvis','Ryger dagligt':'Dagligt','Tidligere ryger':'Tidligere'};
+  if(KL.__ch){let ch=false;for(const k in KL.__ch){const v=KL.__ch[k];if(typeof v==='string'&&OLDCH[v]){KL.__ch[k]=OLDCH[v];ch=true}else if(Array.isArray(v)&&v.some(x=>OLDCH[x])){KL.__ch[k]=v.map(x=>OLDCH[x]||x);ch=true}}if(ch)moved=true}
   const pk=Object.keys(KL).filter(k=>k.startsWith('Procedure › '));
   if(pk.some(k=>(KL[k]||'').trim())){let P={};try{P=JSON.parse(localStorage.getItem('pasteplaner.kladde.proc')||'{}')||{}}catch(e){}
     for(const k of pk){if((KL[k]||'').trim()&&!(P[k]||'').trim())P[k]=KL[k]}
