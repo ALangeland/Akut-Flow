@@ -1855,7 +1855,7 @@ function migrate(d){
     if(!p||typeof p.text!=='string') continue;
     const g=toGroup({id:String(p.id||''),cat:p.cat,abc:p.abc,sub:p.sub});
     out.plans.push({id:String(p.id||uid()),title:String(p.title||'Uden titel'),cat:g.cat,abc:g.abc,sub:g.sub,text:p.text,
-      fav:!!p.fav,uses:+p.uses||0,created:p.created||now(),updated:p.updated||now(),lastUsed:p.lastUsed||null,seed:!!p.seed,rev:+p.rev||1,edited:!!p.edited,pin:p.pin===undefined?undefined:!!p.pin,gpt:!!p.gpt,chk:p.chk?String(p.chk):'',src:Array.isArray(p.src)?p.src.filter(x=>x&&x.u).map(x=>({t:String(x.t||x.u),u:String(x.u),pending:!!x.pending})):[]});
+      fav:!!p.fav,uses:+p.uses||0,created:p.created||now(),updated:p.updated||now(),lastUsed:p.lastUsed||null,seed:!!p.seed,rev:+p.rev||1,edited:!!p.edited,pin:p.pin===undefined?undefined:!!p.pin,gpt:!!p.gpt||(!p.seed&&Array.isArray(p.src)&&p.src.length>0),chk:p.chk?String(p.chk):'',src:Array.isArray(p.src)?p.src.filter(x=>x&&x.u).map(x=>({t:String(x.t||x.u),u:String(x.u),pending:!!x.pending})):[]});
   }
   /* gamle undermapper (nøglet på A–E) droppes – undermapper findes via planerne selv */
   const ns={};for(const k in out.subs){if(!/^[A-EX]$/.test(k)&&Array.isArray(out.subs[k])) ns[k]=out.subs[k]}
@@ -2406,7 +2406,7 @@ function isPicked(k){const [s,f]=k.split(' › ');if(s==='Dispositioner')return 
 function pickCount(sec){return sec.f.filter(f=>isPicked(kk(sec.s,f))&&klNormals(sec.s,f).length).length}
 let klInsOpen=new Set();try{klInsOpen=new Set(JSON.parse(localStorage.getItem('pasteplaner.insOpen')||'[]'))}catch(e){}
 const INS_FOLD=['Pædiatri og neonatologi','Parkeret'];
-let klDone=new Set(), klTarget=PLAN_KEY, klInsTab='norm', klInsQ='';
+let klDone=new Set(), klTarget=PLAN_KEY, klInsTab='plans', klInsQ='';
 const PHR=/\{[^{}\n]{1,40}\}/;
 function klSave(){try{localStorage.setItem(KL_TYPES[klType].ls,JSON.stringify(KL))}catch(e){}}
 const NOTAT_DEF=()=>({[FREE_KEY]:'…. indlæggelsesdøgn.\n',[PLAN_KEY]:'Forventes indlagt >/< 48 timer.'});
@@ -2543,8 +2543,7 @@ function renderKLIns(){
     <div class="instarget"><label class="insroute"><input type="checkbox" id="klRoute" ${klRoute?'checked':''}> Fordel fraser i journalfelter</label>
       <div>${klInsTab==='norm'?'Normalfund <b>'+(nfMode==='paed'?'børn':'voksne')+'</b> indsættes i deres eget journalfelt.':(klRoute?'Fraser uden struktur indsættes':'Indsættes')+' i: <b id="kltarget">'+esc(klLabel(klTarget))+'</b>'}</div></div>
     <div class="inshead">
-      <div class="seg mini"><button data-instab="norm" aria-pressed="${klInsTab==='norm'}">Normalfund</button><button data-instab="plans" aria-pressed="${klInsTab==='plans'}">Planer</button></div>
-      <input id="klq" type="search" placeholder="Søg – fx kol, sepsis, abdomen" value="${esc(klInsQ)}" autocomplete="off">
+            <input id="klq" type="search" placeholder="Søg – fx kol, sepsis, abdomen" value="${esc(klInsQ)}" autocomplete="off">
     </div>
     <div class="inslist" id="inslist">${list}</div>`;
 }
