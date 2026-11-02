@@ -692,7 +692,7 @@ if(window.__afmem||!window.showDirectoryPicker)return;
 var LS;try{LS=window.localStorage;LS.length}catch(e){return}
 window.__afmem=1;
 var FILE='akut-flow-hukommelse.json';
-var PRE=['alb-','asaflow.','pasteplaner.','forvagtsfordeling.','fieldnotes.','fordelingshatten.','cetrea-fordeling-','vagtflow-editor-','vagtnoter.'];
+var PRE=['alb-','asaflow.','pasteplaner.','forvagtsfordeling.','fieldnotes.','fordelingshatten.','cetrea-fordeling-','vagtflow-editor-','vagtnoter.','spoerge.'];
 function isSync(k){return typeof k==='string'&&!/\.seenVersion$/.test(k)&&PRE.some(function(p){return k.indexOf(p)===0})}
 var rawSet=Storage.prototype.setItem,dir=null,busy=false,timer=null,lastOk=0,state='off';
 function meta(){try{return JSON.parse(LS.getItem('afmem.meta')||'{}')}catch(e){return{}}}

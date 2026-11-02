@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spørge Jørgen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Samme palet og typografi som ASA-Fordelingshatten */
+:root{
+  --bar:#1d2744; --bar-2:#2a3560; --bar-fg:#ffffff; --bar-muted:#b4c0e0;
+  --bg:#f1e9d8; --surface:#fcf8ee; --fg:#1c2233; --muted:#5d5a52; --line:#cfc3a6;
+  --accent:#2a3560; --accent-soft:#e8dfc6; --go:#2457c5; --hit:#c8361f; --warn:#a65a00; --warn-soft:#f6e4c4;
+  --done:#1f7a3f; --done-soft:#dcebd8;
+  --p1:#d6201f;--p2:#ffd400;--p3:#2e9e44;--p4:#2e9e44;--p5:#2e9e44;
+  --p1t:#fff;--p2t:#1e2a35;--p3t:#fff;--p4t:#fff;--p5t:#fff;
+  --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
+  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
+  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
+.topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px}
+.topbar-in{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.topbar .sub{color:var(--bar-muted);font-size:.95rem}
+.topbtns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.topbtns button{font-size:.82rem;padding:6px 12px;background:transparent;color:var(--bar-fg);border-color:var(--bar-muted)}
+.topbtns button:hover{border-color:var(--bar-fg)}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px}
+h2{font-size:.85rem;font-weight:700;margin:0;letter-spacing:.06em;text-transform:uppercase}
+button{font:600 .9rem var(--sans);padding:8px 14px;border-radius:5px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:2px solid var(--go);outline-offset:2px}
+button.primary{background:var(--bar);border-color:var(--bar);color:var(--bar-fg)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+
+/* Filbjælke */
+.filebar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-radius:6px;border:1px solid var(--line);background:var(--surface);border-left:4px solid var(--warn)}
+.filebar.ok{border-left-color:var(--go)}
+#status{font-size:.92rem;font-weight:600;flex:1 1 240px}
+.filebar.err #status{color:var(--warn)}
+.filebtns{display:flex;gap:8px;flex-wrap:wrap}
+.filebtns button{font-size:.85rem;padding:6px 11px;background:var(--bg)}
+.filebtns button.primary{background:var(--bar);color:var(--bar-fg);border-color:var(--bar)}
+
+/* Formular */
+.sec-head{background:var(--bar-2);color:var(--bar-fg);padding:9px 14px;display:flex;justify-content:space-between;align-items:baseline}
+.sec-head .sum{font:500 .8rem var(--mono);color:var(--bar-muted)}
+.form-body{padding:14px}
+.grid{display:grid;grid-template-columns:1.8fr 1fr 1.2fr 1.3fr 1.3fr;gap:10px}
+label{display:block;font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:4px}
+input,textarea,select{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--fg)}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--go);outline-offset:-2px}
+textarea{min-height:70px;resize:vertical}
+#roomhint{font-size:.78rem;color:var(--go);margin-top:3px;min-height:16px;font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:10px}
+.prio{display:flex;gap:4px}
+.prio button{width:44px;height:36px;padding:0;border:2px solid transparent;font-weight:700;opacity:.4}
+.prio button.sel{opacity:1;border-color:var(--fg)}
+.prio button[data-p="1"],.badge[data-p="1"],.fchip[data-p="1"].on{background:var(--p1);color:var(--p1t)}
+.prio button[data-p="2"],.badge[data-p="2"],.fchip[data-p="2"].on{background:var(--p2);color:var(--p2t)}
+.prio button[data-p="3"],.badge[data-p="3"],.fchip[data-p="3"].on{background:var(--p3);color:var(--p3t)}
+.prio button[data-p="4"],.badge[data-p="4"],.fchip[data-p="4"].on{background:var(--p4);color:var(--p4t)}
+.prio button[data-p="5"],.badge[data-p="5"],.fchip[data-p="5"].on{background:var(--p5);color:var(--p5t)}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+
+/* Værktøjslinje */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.tabs button{border:0;border-radius:0;padding:7px 12px;font-size:.85rem}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button.sel{background:var(--bar);color:var(--bar-fg)}
+.toolbar select{width:auto}
+#search{flex:1;min-width:150px;width:auto}
+.fchip{width:28px;height:28px;padding:0;border-radius:50%;font:700 .78rem var(--mono);color:var(--muted)}
+#btnClearDone{font-size:.85rem;padding:6px 11px;border-color:var(--warn);color:var(--warn)}
+
+/* Noter */
+#list{display:flex;flex-direction:column;gap:8px}
+.note{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.note .bar{width:6px;flex:none}
+.note[data-p="1"] .bar{background:var(--p1)}.note[data-p="2"] .bar{background:var(--p2)}
+.note[data-p="3"] .bar{background:var(--p3)}.note[data-p="4"] .bar{background:var(--p4)}
+.note[data-p="5"] .bar{background:var(--p5)}
+.note.done{background:var(--done-soft);border-color:var(--done)}
+.note.done .bar{background:var(--done)!important}
+.note.done .pt,.note.done .txt{color:var(--muted)}
+.note.done .badge{opacity:.45}
+.donemark{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--done);color:#fff;letter-spacing:.04em;text-transform:uppercase}
+.body{padding:10px 14px;flex:1;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.badge{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px}
+.pt{font-weight:700;font-size:1rem}
+.id{color:var(--muted);font:500 .85rem var(--mono)}
+.zone{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--bar-2);color:var(--bar-fg);letter-spacing:.04em;text-transform:uppercase}
+.room{font:600 .95rem var(--mono)}
+.tag{font-size:.7rem;padding:2px 7px;border-radius:4px;background:var(--accent-soft);color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.txt{margin:6px 0 0;white-space:pre-wrap;word-wrap:break-word}
+.actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.actions button{font-size:.82rem;padding:5px 10px;background:var(--bg)}
+.actions button[data-a=done]{border-color:var(--done);color:var(--done)}
+.actions .meta{margin-left:auto;font:500 .78rem var(--mono);color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:30px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+@media (max-width:760px){.grid{grid-template-columns:1fr 1fr}}
+:root[data-theme="light"]{color-scheme:light}
+.verbtn{font:500 .74rem var(--mono);background:transparent;color:var(--bar-muted);border:1px solid var(--bar-muted);border-radius:999px;padding:2px 9px;cursor:pointer;position:relative}
+.verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
+dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
+dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
+#verDlg .dh{display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff}
+#verDlg .dh h2{margin:0}#verDlg .dh button{margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem;padding:0 4px}
+#verDlg .db{padding:12px 16px;max-height:70vh;overflow:auto}
+.ver{margin-bottom:12px}.ver b{font-size:.9rem}.ver .d{font:500 .75rem var(--mono);color:var(--muted);margin-left:8px}
+.ver ul{margin:4px 0 0;padding-left:18px;font-size:.88rem}
+.cur{font-size:.68rem;font-weight:700;background:var(--done-soft);color:var(--done);border-radius:4px;padding:1px 6px;margin-left:6px}
+@media (max-width:760px){input,select,textarea{font-size:16px}.topbtns{margin-left:0}}
+.afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
+.prio button{width:auto!important;min-width:84px;padding:0 12px!important;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:8px}
+#prioFilter .fchip{min-width:64px}
+</style>
+<script>
+/* Gem: vælg selv mappe og filnavn (Edge/Chrome på PC). true = gemt, false = annulleret, null = ikke muligt -> almindelig hentning */
+async function pickSave(blob,name,id){
+  if(typeof window.showSaveFilePicker!=='function') return null;
+  try{const ext='.'+name.split('.').pop();const h=await window.showSaveFilePicker({id:id||'akutflow',suggestedName:name,types:[{description:ext.slice(1).toUpperCase()+'-fil',accept:{[blob.type||'application/octet-stream']:[ext]}}]});
+    const w=await h.createWritable();await w.write(blob);await w.close();return true}
+  catch(e){if(e&&e.name==='AbortError')return false;return null}
+}
+</script>
+<style>/*EMPTYMASC*/.empty::before{content:"";display:block;width:52px;height:52px;margin:0 auto 8px;background:url(data:image/webp;base64,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) center/contain no-repeat;opacity:.9}.log .empty{text-align:center;padding:14px}</style><style>.sjhero{display:flex;align-items:center;gap:14px;margin:6px 0 14px}
+.sjhero img{width:64px;height:64px;display:block;flex:none}
+.sjhero h2{margin:0;font-size:1.35rem}.sjhero p{margin:2px 0 0;color:var(--muted);font-size:.9rem}
+#picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.sym{font:600 .92rem var(--sans);text-align:left;padding:12px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.sym:hover{border-color:var(--go)}.sym.on{background:var(--go);color:#1b1500;border-color:var(--go)}
+#pickwrap.compact .sjhero{display:none}
+#pickwrap.compact #picker{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+#pickwrap.compact .sym{padding:6px 10px;font-size:.8rem}
+.sj{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;margin-top:14px;align-items:start}
+.sj .side{position:sticky;top:12px;display:flex;flex-direction:column;gap:10px}
+@media (max-width:900px){.sj{grid-template-columns:1fr}.sj .side{position:static}.wrap{padding-bottom:90px}}
+.grp{margin-bottom:12px}.grp .tick{margin-left:auto;color:var(--done,#2e9e44);font-weight:700;opacity:0}.grp.done .tick{opacity:1}
+.grp.done{border-color:color-mix(in srgb,var(--done,#2e9e44) 55%,var(--line))}
+.q{margin-bottom:12px}.q:last-child{margin-bottom:0}
+.ql{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:600 .84rem var(--sans);padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;line-height:1.2}
+.chip:hover{border-color:var(--go)}
+.chip.on{background:var(--go);color:#1b1500;border-color:var(--go)}
+.chip.yes{background:var(--done,#2e9e44);color:#fff;border-color:var(--done,#2e9e44)}
+.chip.no{background:transparent;color:var(--hit,#e5534b);border-color:var(--hit,#e5534b);text-decoration:line-through}
+.nrs .chip{min-width:34px;text-align:center;padding:6px 8px}
+.nact{display:flex;align-items:center;gap:12px;margin-top:6px}
+.lnk{background:none;border:0;padding:0;color:var(--go);font:600 .78rem var(--sans);cursor:pointer;text-decoration:underline}
+.legend{margin-left:auto;font-size:.72rem;color:var(--muted)}
+.outcard pre{white-space:pre-wrap;word-wrap:break-word;margin:0;font:.88rem/1.5 var(--mono);min-height:80px}
+.outcard .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.outcard .prog{font-size:.78rem;color:var(--muted);margin-bottom:8px}
+#empty{padding:30px;text-align:center;color:var(--muted)}
+#outempty{color:var(--muted);font-size:.88rem}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--bar);color:#fff;padding:9px 16px;border-radius:6px;font-weight:600;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:80}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.afmob .toast{bottom:calc(84px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 24px)}
+.sj[hidden]{display:none}
+.jump{display:none}
+@media (max-width:900px){.jump:not([hidden]){display:block;margin:8px 2px 0}}
+</style><style>/*AFMEM*/.afmem-btn{margin-left:auto;flex:none;align-self:center;display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--bar-muted,var(--muted));border-radius:6px;padding:3px 10px;font:600 .78rem var(--sans,system-ui,sans-serif);cursor:pointer;white-space:nowrap}
+.afmem-btn::before{content:"";width:18px;height:18px;background:url(data:image/webp;base64,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) center/contain no-repeat}
+.afmem-btn.ok{color:var(--go)}.afmem-btn.warn{color:var(--warn,#e8a317);border-color:var(--warn,#e8a317)}
+.afmem-fixed{position:fixed;left:10px;bottom:10px;z-index:40;background:var(--bar,#0a1226);margin:0}
+.afmem-pop{position:fixed;right:12px;top:60px;z-index:60;background:var(--surface,#162447);color:var(--fg,#fff);border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px;min-width:230px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.afmem-pop button{font:600 .85rem var(--sans,system-ui,sans-serif);padding:7px 10px;border-radius:6px;border:1px solid var(--line);background:var(--bar-2,#111c3a);color:inherit;cursor:pointer;text-align:left}
+</style></head>
+<body>
+<div class="topbar"><div class="topbar-in"><h1>Spørge Jørgen</h1><span class="edtag">LOKAL</span><span class="sub">Anamnese ud fra symptom</span><div class="topbtns"><button id="themeToggle" type="button" title="Skift mellem lys og mørk tilstand"></button></div></div></div>
+<div class="wrap">
+<div id="pickwrap">
+<div class="sjhero"><img src="data:image/webp;base64,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" alt=""><div><h2>Hvad er problemet?</h2><p>Vælg symptomet, så spørger Jørgen. Klik svarene af, og få anamnesen som færdig tekst.</p></div></div>
+<div id="picker"></div>
+<p class="jump" id="jump" hidden><a class="lnk" href="#outcard">Se journalteksten ↓</a></p>
+</div>
+<div id="empty" class="card" hidden></div>
+<div class="sj" id="formwrap" hidden>
+ <div id="form"></div>
+ <aside class="side">
+  <div class="card outcard" id="outcard"><div class="sec-head"><h2>Journaltekst</h2><span class="sum" id="prog"></span></div>
+   <div class="form-body"><pre id="out"></pre><p id="outempty">Svar på spørgsmålene, så bygger teksten sig selv.</p>
+    <div class="q" style="margin-top:12px"><div class="ql">Tilføj afsluttende tekst</div><input type="text" id="ex" placeholder="fx Vurderes ud fra anamnesen …" autocomplete="off"></div>
+    <div class="acts"><button type="button" id="btnCopy" class="primary">Kopiér</button><button type="button" id="btnSend">Send til Ghostwriter</button><button type="button" id="btnReset">Nulstil svar</button><button type="button" id="btnChange">Skift symptom</button></div>
+    <p class="gwl"><a id="gwlink" href="Ghostwriter-lokal.html" hidden>Åbn Ghostwriter ▸</a></p>
+   </div></div>
+ </aside>
+</div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>const T=(l,ph)=>({k:'t',l,ph}),C=(l,o)=>({k:'c',l,o}),M=(l,o)=>({k:'m',l,o}),N=(l,o,neg)=>({k:'n',l,o,neg:neg||'Benægter'}),S=l=>({k:'s',l}),G=(n,q)=>({n,q});
+const SYM=[
+{id:'brystsmerter',name:'Brystsmerter',g:[
+ G('Debut',[T('tidspunkt','fx i går kl. 14, for 3 timer siden'),C('forløb',['akut indsættende','snigende','anfaldsvis','vedvarende']),M('situation ved debut',['i hvile','ved anstrengelse','ved psykisk belastning','under søvn','efter måltid','efter traume'])]),
+ G('Lokalisation',[M('sted',['retrosternalt','venstre side','højre side','epigastrielt','diffust','punktuelt']),M('udstråling',['venstre arm','højre arm','begge arme','kæbe','hals','ryg','epigastriet','ingen udstråling'])]),
+ G('Karakter',[M('karakter',['trykkende','knugende','brændende','stikkende','dolkende','jagende','pressende']),S('smerteintensitet (NRS 0–10)'),C('aktuelt',['smertefri nu','aktuelle smerter','aftagende','tiltagende','uændret'])]),
+ G('Provokation og lindring',[N('forværres af',['anstrengelse','dyb inspiration','bevægelse af thorax/arm','tryk på brystvæggen','liggende stilling','fødeindtagelse'],'Ikke forværret af'),N('lindres af',['hvile','nitroglycerin','foroverbøjet stilling','syrehæmmende','ændret stilling'],'Ikke lindret af')]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['åndenød','svimmelhed','tunnelsyn','palpitationer','kvalme','opkastning','svedtendens','præsynkope/synkope','hoste','feber','hæmoptyse'])]),
+ G('Tidligere',[C('tidligere lignende episoder',['nej','ja']),T('tidligere udredning/behandling','fx koronarangiografi 2022 uden signifikante stenoser')]),
+ G('Risikofaktorer',[N('kardiovaskulær sygdom og risikofaktorer',['hypertension','hyperkolesterolæmi','diabetes','rygning','familiær disposition til iskæmisk hjertesygdom','kendt iskæmisk hjertesygdom','tidligere PCI/CABG','kendt hjertesvigt'],'Ingen'),N('risikofaktorer for lungeemboli/aortadissektion',['tidligere VTE','nylig immobilisation eller operation','langvarig rejse','aktiv cancer','østrogenbehandling','kendt bindevævssygdom'],'Ingen'),T('medicin af betydning','fx antikoagulantia, hjertemedicin')])]},
+{id:'aandenod',name:'Åndenød',g:[
+ G('Debut',[T('tidspunkt','fx siden i går aftes'),C('forløb',['akut indsættende','over timer','over dage','over uger','kronisk med forværring']),M('situation ved debut',['i hvile','ved anstrengelse','liggende','natlig opvågnen','ved allergen/røg','efter fødeindtagelse','efter traume'])]),
+ G('Karakter og funktionsniveau',[M('karakter',['tung vejrtrækning','hurtig/anstrengt vejrtrækning','trykken for brystet','hvæsende/pibende','stakåndet i hvile']),C('funktionsniveau (MRC)',['MRC 1','MRC 2','MRC 3','MRC 4','MRC 5']),T('gangdistance/trapper','fx 50 m, én etage')]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['hoste','opspyt','hæmoptyse','feber','brystsmerter','pleurale smerter','palpitationer','svimmelhed','ankelødemer','vægtøgning','ortopnø','natlig åndenød (PND)','hvæsen','hævelse af læber/tunge','nyopstået udslæt'])]),
+ G('Provokation og lindring',[N('forværres af',['anstrengelse','liggende stilling','kulde','allergen/røg','infektion'],'Ikke forværret af'),N('lindres af',['hvile','inhalationer','siddende stilling','ilt'],'Ikke lindret af')]),
+ G('Baggrund og risikofaktorer',[N('kendt sygdom',['KOL','astma','hjertesvigt','iskæmisk hjertesygdom','atrieflimren','lungefibrose','tidligere VTE'],'Ingen'),N('risikofaktorer',['nylig immobilisation/operation','aktiv cancer','langvarig rejse','rygning','nylig luftvejsinfektion','udsættelse for røg/kemikalier'],'Ingen'),T('hjemmebehandling og medicin','fx inhalator, ilt, diuretika')])]},
+{id:'svimmelhed',name:'Svimmelhed',g:[
+ G('Debut',[T('tidspunkt','fx i morges ved opstart'),C('forløb',['akut indsættende','gradvist','anfaldsvis','konstant']),T('varighed af anfald','fx sekunder, minutter, timer')]),
+ G('Karakter',[C('type',['drejesvimmelhed','usikkerhed/ustabil','præsynkopal (sort for øjnene)','uspecifik uklarhed']),M('udløses af',['hovedets lejeændring','at rejse sig','hoste/nys/Valsalva','anstrengelse','spontant','stress/hyperventilation'])]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['kvalme','opkastning','tinnitus','nedsat hørelse','ørefylde','hovedpine','nakkesmerter','dobbeltsyn','synsudfald/tunnelsyn','sløret tale','føleforstyrrelse','kraftnedsættelse','gangbesvær','palpitationer','brystsmerter','åndenød','synkope','svedtendens'])]),
+ G('Baggrund',[N('kendt sygdom og udløsende forhold',['hypertension','atrieflimren','diabetes','tidligere apopleksi/TCI','migræne','hovedtraume','nylig infektion','ændret medicin (antihypertensiva/diuretika)','nedsat væskeindtag','blødning/melæna','alkohol/misbrug'],'Ingen'),C('tidligere lignende episoder',['nej','ja']),T('medicin og tidligere udredning','fx BPPV, Menières')])]},
+{id:'synkope',name:'Besvimelse (synkope)',g:[
+ G('Før besvimelsen',[T('situation og aktivitet','fx stod op fra sengen, under vandladning'),M('udløsende situation',['stående','siddende','liggende','under anstrengelse','efter anstrengelse','vandladning/afføring','hoste','at rejse sig','smerte/blodprøve','varme/lang tids stående','hovedrotation/tryk på hals']),N('prodromer',['svimmelhed','kvalme','svedtendens','varmefornemmelse','tunnelsyn/synsforstyrrelser','palpitationer','brystsmerter','åndenød','ingen varsel'])]),
+ G('Selve besvimelsen',[T('varighed af bevidsthedstab','fx under 1 minut'),C('fald',['faldt omkuld','blev grebet/lagt ned']),N('iagttaget af vidne',['kramper/rykninger','bleg/blålig','tungebid','urinafgang','afføringsafgang','skade ved fald','hovedtraume'],'Ingen')]),
+ G('Efter besvimelsen',[C('opvågning',['hurtigt klar og orienteret','konfus/døsig i flere minutter','fokale neurologiske udfald']),N('efterfølgende',['hovedpine','muskelømhed','brystsmerter','palpitationer','kvalme'])]),
+ G('Baggrund',[N('kendt sygdom',['hjertesygdom/hjertesvigt','arytmi/pacemaker/ICD','tidligere synkope','epilepsi','diabetes','anæmi/blødning','dehydrering/opkast/diaré'],'Ingen'),N('familiær',['pludselig uventet død under 50 år','arvelig arytmisygdom'],'Ingen'),N('medicin og stoffer',['nye eller ændrede antihypertensiva','diuretika','alkohol','stoffer'],'Ingen')])]},
+{id:'hovedpine',name:'Hovedpine',g:[
+ G('Debut',[T('tidspunkt','fx for 2 timer siden'),C('forløb',['torden-/eksplosiv (maksimum på under 1 min)','over minutter til timer','over dage','gradvist tiltagende over uger']),C('sammenlignet med tidligere',['første gang/værste nogensinde','som tidligere hovedpiner','nyt mønster/forværring'])]),
+ G('Karakter',[M('lokalisation',['hele hovedet','ensidig','frontalt','occipitalt','retroorbitalt','temporalt','nakke']),M('karakter',['pulserende','trykkende/bånd','stikkende','borende/brændende','jagende']),S('smerteintensitet (NRS 0–10)')]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['kvalme','opkastning','lys- og lydfølsomhed','aura','synsforstyrrelse','dobbeltsyn','feber','nakkestivhed','udslæt/petekkier','kramper','forvirring/bevidsthedspåvirkning','fokale udfald','røde øjne/tåreflåd','kæbeklaudikation','synstab'])]),
+ G('Provokation og lindring',[N('forværres af',['hoste/Valsalva','liggende','forover bøjning','lys/lyd','anstrengelse','stress'],'Ikke forværret af'),N('lindres af',['hvile','mørkt rum','smertestillende','siddende'],'Ikke lindret af')]),
+ G('Baggrund',[N('risikofaktorer',['hovedtraume','antikoagulantia','immunsuppression','kendt cancer','HIV','graviditet/postpartum','debut efter 50 år','nylig infektion','kendt migræne','hyppig brug af smertestillende'],'Ingen'),T('medicin og tidligere udredning','fx migræneprofylakse')])]},
+{id:'mavesmerter',name:'Mavesmerter',g:[
+ G('Debut',[T('tidspunkt','fx i går aftes'),C('forløb',['akut indsættende','snigende','kolikagtigt','vedvarende','vekslende']),M('situation ved debut',['efter måltid','fastende','natlig','efter alkohol','efter traume'])]),
+ G('Lokalisation',[M('sted',['epigastrium','højre øvre kvadrant','venstre øvre kvadrant','periumbilikalt','højre fossa','venstre fossa','suprapubisk','højre flanke','venstre flanke','diffust']),M('udstråling',['ryg','højre skulder','lyske/genitalia','ingen udstråling'])]),
+ G('Karakter',[M('karakter',['kolikagtig','konstant','brændende','borende','krampagtig','dolkende']),S('smerteintensitet (NRS 0–10)')]),
+ G('Gastrointestinale symptomer',[N('symptomer',['kvalme','opkastning','hæmatemese','melæna/blod i afføring','diaré','obstipation','luft- og afføringsstop','nedsat appetit','vægttab','ikterus','mørk urin/lys afføring','feber/kulderystelser'])]),
+ G('Urogenitale og andre symptomer',[N('symptomer',['dysuri','hyppig vandladning','hæmaturi','flankesmerter','vaginal blødning/udflåd','mulig graviditet','testikelsmerter','brystsmerter','åndenød'])]),
+ G('Provokation og lindring',[N('forværres af',['fødeindtagelse','bevægelse/rystelser','hoste','liggende'],'Ikke forværret af'),N('lindres af',['hvile','foroverbøjet stilling','afføring','opkastning','smertestillende'],'Ikke lindret af')]),
+ G('Baggrund',[N('kendt sygdom og tidligere',['abdominalkirurgi','galdesten','nyresten','ulcus','inflammatorisk tarmsygdom','divertikulose','pancreatitis','atrieflimren','kendt aortaaneurisme'],'Ingen'),N('medicin og forbrug',['NSAID','steroid','antikoagulantia','alkoholoverforbrug'],'Ingen'),T('seneste afføring og vandladning','fx afføring i går, normal'),T('seneste menstruation (kvinder)','')])]},
+{id:'hjertebanken',name:'Hjertebanken (palpitationer)',g:[
+ G('Debut',[T('tidspunkt','fx i går kl. 20'),C('forløb',['pludseligt start/stop','gradvist','anfaldsvis','vedvarende']),T('varighed og hyppighed','fx 10 min, 2 gange ugentligt'),M('situation',['i hvile','ved anstrengelse','under søvn','efter koffein/alkohol','ved stress','ved lejeændring'])]),
+ G('Karakter',[C('rytme',['regelmæssig og hurtig','uregelmæssig','enkelte ekstraslag','uregelmæssig og hurtig']),T('pulsfrekvens (hvis målt)','fx 150'),C('afbrydes af',['spontant','vagale manøvrer','kan ikke afbrydes'])]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['svimmelhed','tunnelsyn','præsynkope','synkope','brystsmerter','åndenød','svedtendens','kvalme','angst/uro','tremor','vægttab','varmeintolerance'])]),
+ G('Udløsende forhold',[N('udløsere',['koffein','alkohol','nikotin','energidrikke','stoffer (fx kokain/amfetamin)','ny medicin (fx salbutamol/thyroxin)','feber/infektion','dehydrering','søvnmangel'],'Ingen')]),
+ G('Baggrund',[N('kendt sygdom',['atrieflimren','anden arytmi','hjertesygdom/hjertesvigt','klapsygdom','hypertension','hypertyreose','diabetes','lungesygdom','tidligere ablation/pacemaker'],'Ingen'),N('familiær',['pludselig død/arytmisygdom'],'Ingen'),T('medicin og antikoagulation','')])]},
+{id:'feber',name:'Feber / mistanke om infektion',g:[
+ G('Debut og forløb',[T('tidspunkt','fx siden for 3 dage siden'),T('højeste temperatur målt','fx 39,2'),C('forløb',['akut indsættende','over dage','remitterende','vedvarende'])]),
+ G('Fokussøgning',[N('symptomer',['hoste','opspyt','åndenød','dysuri','hyppig vandladning','flankesmerter','mavesmerter','diaré','opkastning','halssmerter','ørepine','bihulesmerter','hovedpine','nakkestivhed','udslæt','hudinfektion/sår/rødme','led- eller muskelsmerter','rygsmerter','tandpine','nattesved','vægttab'])]),
+ G('Almenpåvirkning',[N('tegn på alvorlig infektion',['kulderystelser/rigor','forvirring','nedsat væskeindtag','nedsat urinproduktion','svimmelhed ved at rejse sig','åndenød','brystsmerter'],'Ingen')]),
+ G('Ekspositioner',[N('ekspositioner',['udlandsrejse','flåtbid','kontakt til syge','dyrekontakt','mistænkelig mad','nylig operation/indlæggelse','i.v.-adgang/kateter/implantat','i.v.-stofmisbrug','seksuel eksponering'],'Ingen'),T('rejseland og tidspunkt','')]),
+ G('Disposition',[N('disponerende forhold',['immunsuppression','steroidbehandling','kemoterapi/cancer','splenektomi','diabetes','KOL','nyreinsufficiens','alkoholoverforbrug','klapprotese','ledprotese'],'Ingen'),T('seneste antibiotika og medicin','')])]},
+{id:'udfald',name:'Akutte neurologiske udfald',g:[
+ G('Tidspunkter',[T('sidst set rask (tidspunkt)','fx i går kl. 22'),T('symptomdebut (tidspunkt)','fx i dag kl. 07:30'),C('forløb',['pludseligt','trinvist','forbigående og helt aftaget','vågnede med symptomer']),C('aktuelt',['uændret','bedring','forværring','helt remitteret'])]),
+ G('Udfald',[M('side',['højre','venstre','bilateralt/ingen lateralisering']),N('udfald',['halvsidig kraftnedsættelse','ansigtslammelse','afasi/sprogforstyrrelse','sløret tale','synsudfald','dobbeltsyn','halvsidig føleforstyrrelse','svimmelhed/ataksi','neglect','forvirring','synkebesvær','gangbesvær'],'Ingen')]),
+ G('Ledsagesymptomer',[N('ledsagesymptomer',['hovedpine','kvalme','opkastning','nakkesmerter','kramper','bevidsthedspåvirkning','brystsmerter','palpitationer','feber','hovedtraume','nylig nakketraume/manipulation'])]),
+ G('Risikofaktorer og baggrund',[N('kendt sygdom og risikofaktorer',['atrieflimren','hypertension','diabetes','tidligere apopleksi/TCI','hyperkolesterolæmi','rygning','nylig hjerteinfarkt','carotisstenose','nylig operation/blødning','aktiv cancer','graviditet/postpartum'],'Ingen'),N('medicin',['antikoagulantia','trombocythæmmende'],'Ingen'),T('medicin og præmorbid funktion','fx selvhjulpen, mRS 0')])]},
+{id:'ryg',name:'Rygsmerter',g:[
+ G('Debut',[T('tidspunkt','fx siden i går'),C('forløb',['akut indsættende','snigende','kronisk med forværring']),M('situation ved debut',['efter løft/belastning','efter traume','spontant','natlig','i hvile'])]),
+ G('Lokalisation og karakter',[M('sted',['cervikalt','thorakalt','lumbalt','sakralt','ensidigt','diffust']),M('udstråling',['højre ben','venstre ben','lyske','flanke','abdomen','bryst']),M('karakter',['stikkende','murrende/dyb','jagende','brændende']),S('smerteintensitet (NRS 0–10)')]),
+ G('Neurologiske alarmsymptomer',[N('symptomer',['føleforstyrrelse i skridtet','vandladnings- eller afføringsbesvær/inkontinens','ny kraftnedsættelse i benene','gangbesvær','føleforstyrrelse i benene','bilaterale udstrålende smerter','impotens'],'Ingen')]),
+ G('Generelle alarmsymptomer',[N('symptomer og forhold',['feber','vægttab','natlige hvilesmerter','kendt cancer','immunsuppression','i.v.-stofmisbrug','nylig infektion','osteoporose/steroid','traume','antikoagulantia','kendt aortaaneurisme','kolik/hæmaturi','brystsmerter'],'Ingen')]),
+ G('Provokation og lindring',[N('forværres af',['bevægelse','hoste/nys/Valsalva','siddende','stående','liggende'],'Ikke forværret af'),N('lindres af',['hvile','bevægelse','ændret stilling','smertestillende'],'Ikke lindret af'),T('medicin og tidligere rygproblemer','')])]}
+];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const SKEY='spoerge.state',GWKEY='pasteplaner.kladde',GWFIELD='Aktuelt › Beskrivelse';
+let ST={sym:null,a:{},ex:''};
+(function(){try{const j=JSON.parse(localStorage.getItem(SKEY)||'null');if(j&&typeof j==='object'&&j.a)ST=Object.assign(ST,j)}catch(e){}})();
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(ST))}catch(e){}}
+let tT=null;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2200)}
+const curSym=()=>SYM.find(s=>s.id===ST.sym);
+const qid=(s,gi,qi)=>s.id+'.'+gi+'.'+qi;
+function hasAns(v,q){if(v==null)return false;if(q.k==='t')return !!String(v).trim();if(q.k==='m')return v.length>0;if(q.k==='n')return Object.keys(v).length>0;return true}
+function groupDone(s,gi){const g=s.g[gi];return g.q.some((q,qi)=>hasAns(ST.a[qid(s,gi,qi)],q))||!!(ST.a[s.id+'.'+gi+'.f']||'').trim()}
+function renderPicker(){
+  $('picker').innerHTML=SYM.map(s=>`<button type="button" class="sym${s.id===ST.sym?' on':''}" data-sym="${s.id}">${esc(s.name)}</button>`).join('');
+  $('pickwrap').classList.toggle('compact',!!ST.sym);
+}
+function chip(cls,act,id,o,label){return `<button type="button" class="chip ${cls}" data-act="${act}" data-id="${esc(id)}" data-o="${esc(o)}" aria-pressed="${cls.includes('on')||cls.includes('yes')||cls.includes('no')}">${esc(label==null?o:label)}</button>`}
+function qHTML(s,gi,qi,q){
+  const id=qid(s,gi,qi),v=ST.a[id];let h=`<div class="q"><div class="ql">${esc(cap(q.l))}</div>`;
+  if(q.k==='t')h+=`<input type="text" data-t="${esc(id)}" value="${esc(v||'')}" placeholder="${esc(q.ph||'')}" autocomplete="off">`;
+  else if(q.k==='c')h+=`<div class="chips">${q.o.map(o=>chip(v===o?'on':'','c',id,o)).join('')}</div>`;
+  else if(q.k==='m')h+=`<div class="chips">${q.o.map(o=>chip((v||[]).includes(o)?'on':'','m',id,o)).join('')}</div>`;
+  else if(q.k==='s')h+=`<div class="chips nrs">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>chip(v===n?'on':'','s',id,n,String(n))).join('')}</div>`;
+  else if(q.k==='n'){h+=`<div class="chips">${q.o.map(o=>{const x=v&&v[o];return chip(x===1?'yes':x===-1?'no':'','n',id,o,(x===1?'✓ ':x===-1?'✕ ':'')+o)}).join('')}</div>
+    <div class="nact"><button type="button" class="lnk" data-act="nall" data-id="${esc(id)}">Resten benægtet</button><button type="button" class="lnk" data-act="nclr" data-id="${esc(id)}">Ryd</button><span class="legend">tryk: ✓ ja · ✕ nej · tom</span></div>`}
+  return h+'</div>';
+}
+function renderForm(){
+  const s=curSym();
+  $('formwrap').hidden=!s;$('jump').hidden=!s;
+  if(!s){$('form').innerHTML='';renderOut();return}
+  $('form').innerHTML=s.g.map((g,gi)=>`<section class="grp card${groupDone(s,gi)?' done':''}"><div class="sec-head"><h2>${esc(g.n)}</h2><span class="tick">✓</span></div><div class="form-body">${g.q.map((q,qi)=>qHTML(s,gi,qi,q)).join('')}<div class="q"><div class="ql">Egen tekst</div><input type="text" data-t="${esc(s.id+'.'+gi+'.f')}" value="${esc(ST.a[s.id+'.'+gi+'.f']||'')}" placeholder="Tilføj frit" autocomplete="off"></div></div></section>`).join('');
+  $('ex').value=ST.ex||'';renderOut();
+}
+function genText(){
+  const s=curSym();if(!s)return '';const L=[cap(s.name)+'.'];const strip=x=>String(x).trim().replace(/\.+$/,''),lc=x=>x.charAt(0).toLowerCase()+x.slice(1);
+  s.g.forEach((g,gi)=>{const P=[],lab=q=>q.l.toLowerCase()===g.n.toLowerCase()?'':q.l+': ';
+    g.q.forEach((q,qi)=>{const v=ST.a[qid(s,gi,qi)];
+      if(q.k==='t'){if(v&&v.trim())P.push(lab(q)+strip(v))}
+      else if(q.k==='c'){if(v)P.push(lab(q)+v)}
+      else if(q.k==='m'){if(v&&v.length)P.push(lab(q)+q.o.filter(o=>v.includes(o)).join(', '))}
+      else if(q.k==='s'){if(v!=null)P.push('smerteintensitet NRS '+v+'/10')}
+      else if(q.k==='n'){const pos=q.o.filter(o=>v&&v[o]===1),neg=q.o.filter(o=>v&&v[o]===-1);
+        if(pos.length)P.push(lab(q)+pos.join(', '));if(neg.length)P.push(lc(q.neg)+' '+neg.join(', '))}
+    });
+    const f=(ST.a[s.id+'.'+gi+'.f']||'').trim();if(f)P.push(strip(f));
+    if(P.length)L.push(g.n+': '+P.join('; ')+'.');
+  });
+  if((ST.ex||'').trim())L.push(ST.ex.trim());
+  return L.join('\n');
+}
+function renderOut(){
+  const t=genText(),s=curSym();
+  $('out').textContent=s?t:'';$('outempty').hidden=!!s;
+  ['btnCopy','btnSend','btnReset'].forEach(i=>$(i).disabled=!s);
+  if(s){const n=s.g.filter((g,gi)=>groupDone(s,gi)).length;$('prog').textContent=n+' af '+s.g.length+' emner berørt'}else $('prog').textContent='';
+  document.querySelectorAll('#form .grp').forEach((el,gi)=>el.classList.toggle('done',!!s&&groupDone(s,gi)));
+}
+function choose(id){ST.sym=id;ST.a={};ST.ex='';save();renderPicker();renderForm();window.scrollTo({top:0,behavior:'smooth'})}
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-sym]');if(sb){const id=sb.dataset.sym;if(ST.sym&&ST.sym!==id&&Object.keys(ST.a).length&&!confirm('Skift symptom? De nuværende svar nulstilles.'))return;choose(id);return}
+  const b=e.target.closest('[data-act]');if(!b)return;const s=curSym();if(!s)return;
+  const id=b.dataset.id,act=b.dataset.act,o=b.dataset.o;
+  const q=(()=>{const p=(id||'').split('.');return s.g[+p[1]]&&s.g[+p[1]].q[+p[2]]})();
+  if(act==='c'){ST.a[id]===o?delete ST.a[id]:ST.a[id]=o}
+  else if(act==='m'){const a=ST.a[id]||[],i=a.indexOf(o);i<0?a.push(o):a.splice(i,1);a.length?ST.a[id]=a:delete ST.a[id]}
+  else if(act==='s'){const n=+o;ST.a[id]===n?delete ST.a[id]:ST.a[id]=n}
+  else if(act==='n'){const m=ST.a[id]||{},x=m[o];if(!x)m[o]=1;else if(x===1)m[o]=-1;else delete m[o];Object.keys(m).length?ST.a[id]=m:delete ST.a[id]}
+  else if(act==='nall'&&q){const m=ST.a[id]||{};q.o.forEach(x=>{if(!m[x])m[x]=-1});ST.a[id]=m}
+  else if(act==='nclr'){delete ST.a[id]}
+  save();renderForm();
+});
+document.addEventListener('input',e=>{
+  if(e.target.dataset&&e.target.dataset.t){const v=e.target.value;v.trim()?ST.a[e.target.dataset.t]=v:delete ST.a[e.target.dataset.t];save();renderOut()}
+  else if(e.target.id==='ex'){ST.ex=e.target.value;save();renderOut()}
+});
+$('btnReset').onclick=()=>{if(!curSym())return;ST.a={};ST.ex='';save();renderForm();toast('Svar nulstillet')};
+$('btnChange').onclick=()=>{ST.sym=null;ST.a={};ST.ex='';save();renderPicker();renderForm()};
+$('btnCopy').onclick=async()=>{const t=genText();if(!t)return;
+  try{await navigator.clipboard.writeText(t)}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove()}
+  toast('Kopieret')};
+$('btnSend').onclick=()=>{const t=genText();if(!t)return;let o={};try{o=JSON.parse(localStorage.getItem(GWKEY)||'{}')||{}}catch(e){o={}}
+  const cur=typeof o[GWFIELD]==='string'?o[GWFIELD].replace(/\s+$/,''):'';o[GWFIELD]=(cur?cur+'\n\n':'')+t;
+  try{localStorage.setItem(GWKEY,JSON.stringify(o))}catch(e){toast('Kunne ikke gemme');return}
+  toast('Lagt i Ghostwriter-kladden under Aktuelt');$('gwlink').hidden=false};
+(function(){const tb=$('themeToggle');function lab(){tb.textContent=document.documentElement.dataset.theme==='light'?'☾ Mørk':'☀ Lys'}
+  tb.onclick=()=>{const n=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(e){}lab()};lab()})();
+renderPicker();renderForm();
+</script>
+<script>(function(){
+'use strict';
+if(window.__afmem||!window.showDirectoryPicker)return;
+var LS;try{LS=window.localStorage;LS.length}catch(e){return}
+window.__afmem=1;
+var FILE='akut-flow-hukommelse.json';
+var PRE=['alb-','asaflow.','pasteplaner.','forvagtsfordeling.','fieldnotes.','fordelingshatten.','cetrea-fordeling-','vagtflow-editor-','vagtnoter.','spoerge.'];
+function isSync(k){return typeof k==='string'&&!/\.seenVersion$/.test(k)&&PRE.some(function(p){return k.indexOf(p)===0})}
+var rawSet=Storage.prototype.setItem,dir=null,busy=false,timer=null,lastOk=0,state='off';
+function meta(){try{return JSON.parse(LS.getItem('afmem.meta')||'{}')}catch(e){return{}}}
+function setMeta(m){rawSet.call(LS,'afmem.meta',JSON.stringify(m))}
+Storage.prototype.setItem=function(k,v){
+  rawSet.apply(this,arguments);
+  if(this===LS&&isSync(k)){var m=meta();m[k]=Date.now();setMeta(m);if(dir)dirty()}
+};
+function idb(mode,fn){return new Promise(function(res,rej){try{var r=indexedDB.open('akutflow-mem',1);
+  r.onupgradeneeded=function(){r.result.createObjectStore('h')};
+  r.onsuccess=function(){try{var tx=r.result.transaction('h',mode),q=fn(tx.objectStore('h'));tx.oncomplete=function(){res(q&&q.result)};tx.onerror=function(){rej(tx.error)};tx.onabort=function(){rej(tx.error)}}catch(e){rej(e)}};
+  r.onerror=function(){rej(r.error)}}catch(e){rej(e)}})}
+async function perm(h,ask){
+  try{var o={mode:'readwrite'};if(await h.queryPermission(o)==='granted')return true;
+    if(ask&&await h.requestPermission(o)==='granted')return true}catch(e){}
+  return false}
+async function readRemote(){
+  try{var fh=await dir.getFileHandle(FILE);var t=await (await fh.getFile()).text();if(!t.trim())return null;
+    var j=JSON.parse(t);return j&&j.keys?j:null}
+  catch(e){if(e&&e.name==='NotFoundError')return null;return undefined}}
+async function writeRemote(o){
+  var fh=await dir.getFileHandle(FILE,{create:true});var w=await fh.createWritable();await w.write(JSON.stringify(o));await w.close()}
+function reloadSoon(){
+  var last=0;try{last=+sessionStorage.getItem('afmem.rl')||0}catch(e){}
+  if(Date.now()-last<8000)return;
+  var go=function(){try{sessionStorage.setItem('afmem.rl',Date.now())}catch(e){}location.reload()};
+  var a=document.activeElement;
+  if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){a.addEventListener('blur',function(){setTimeout(go,300)},{once:true});return}
+  go()}
+async function syncNow(ask){
+  if(!dir||busy)return;busy=true;
+  try{
+    if(!await perm(dir,ask)){ui('perm');return}
+    var remote=await readRemote();
+    if(remote===undefined){ui('err');return}
+    var m=meta(),rk=(remote&&remote.keys)||{},out={},apply=[],now=Date.now(),need=!remote,k,i;
+    Object.keys(rk).forEach(function(k){if(rk[k]&&typeof rk[k].v==='string')out[k]={v:rk[k].v,t:rk[k].t||0}});
+    Object.keys(out).forEach(function(k){
+      if(!isSync(k))return;
+      var lt=m[k],lv=LS.getItem(k);
+      if(lt==null||out[k].t>lt){
+        if(lv!==out[k].v){apply.push(k);if(lv!=null)rawSet.call(LS,'afmem.bak.'+k,lv)}
+        m[k]=out[k].t;
+      }else if(lt>out[k].t&&lv!=null&&lv!==out[k].v){out[k]={v:lv,t:lt};need=true}
+    });
+    var keys=[];for(i=0;i<LS.length;i++)keys.push(LS.key(i));
+    keys.forEach(function(k){if(!isSync(k)||out[k])return;out[k]={v:LS.getItem(k),t:m[k]||(m[k]=now)};need=true});
+    apply.forEach(function(k){rawSet.call(LS,k,out[k].v)});
+    setMeta(m);
+    if(need)await writeRemote({v:1,updated:now,keys:out});
+    lastOk=Date.now();ui('ok');
+    if(apply.length)reloadSoon();
+  }catch(e){ui('err')}finally{busy=false}}
+function dirty(){clearTimeout(timer);timer=setTimeout(function(){syncNow(false)},1500)}
+async function connect(){
+  try{var h=await window.showDirectoryPicker({id:'akutflow',mode:'readwrite'});dir=h;
+    try{await idb('readwrite',function(s){return s.put(h,'dir')})}catch(e){}
+    await syncNow(true)}catch(e){if(!e||e.name!=='AbortError')ui('err')}}
+async function disconnect(){dir=null;try{await idb('readwrite',function(s){return s.delete('dir')})}catch(e){}ui('off')}
+// UI
+var btn=document.createElement('button');btn.type='button';btn.className='afmem-btn';btn.id='afmem-btn';
+var pop=null;
+function hhmm(t){var d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function ui(s){state=s;
+  btn.className='afmem-btn'+(s==='ok'?' ok':s==='off'?'':' warn')+(btn.dataset.fixed?' afmem-fixed':'');
+  btn.textContent=s==='ok'?'Hukommelse · gemt kl. '+hhmm(lastOk):s==='perm'?'Hukommelse · tryk for at genoptage':s==='err'?'Hukommelse · fejl, prøver igen':'Forbind hukommelse';
+  btn.title=s==='off'?'Gem alt i en mappe på din computer (fx i OneDrive), så du kan fortsætte på en anden computer.':'Gemmer alt i filen '+FILE+' i mappen «'+(dir?dir.name:'')+'».'}
+function closePop(){if(pop){pop.remove();pop=null}}
+function openPop(){
+  closePop();pop=document.createElement('div');pop.className='afmem-pop';
+  var t=document.createElement('div');t.textContent='Mappe: '+(dir?dir.name:'–');t.style.cssText='font-size:.8rem;color:var(--muted)';pop.appendChild(t);
+  [['Synk nu',function(){syncNow(true)}],['Skift mappe',connect],['Afbryd forbindelse',disconnect]].forEach(function(a){
+    var b=document.createElement('button');b.type='button';b.textContent=a[0];b.onclick=function(){closePop();a[1]()};pop.appendChild(b)});
+  document.body.appendChild(pop);
+  setTimeout(function(){document.addEventListener('click',function f(e){if(pop&&!pop.contains(e.target)&&e.target!==btn){closePop()}document.removeEventListener('click',f)},{once:false})},0)}
+btn.addEventListener('click',function(){
+  if(state==='off')connect();else if(state==='perm')syncNow(true);else if(pop)closePop();else openPop()});
+var host=document.querySelector('.afnav-in');
+if(host)host.appendChild(btn);else{btn.dataset.fixed='1';document.body.appendChild(btn)}
+ui('off');
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')syncNow(false)});
+setInterval(function(){if(document.visibilityState==='visible')syncNow(false)},45000);
+(async function(){
+  try{var h=await idb('readonly',function(s){return s.get('dir')});
+    if(h){dir=h;if(await perm(h,false))syncNow(false);else ui('perm')}}catch(e){}
+})();
+window.__afmemSync=function(){return syncNow(true)};
+})();
+</script>
+</body>
+</html>
