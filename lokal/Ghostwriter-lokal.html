@@ -238,6 +238,8 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .klmode-r .nfgrp .seg.nfmode{width:100%;display:flex}.klmode-r .nfgrp .seg.nfmode button{flex:1;justify-content:center}
 .klmode-hd{display:none!important}
 @media (max-width:1100px){.klmode-r{display:none}.klmode-hd{display:flex!important}}
+.klins .actions.klact{flex-direction:column;flex-wrap:nowrap;margin:0!important;padding:10px 12px;border-bottom:1px solid var(--line);gap:8px}
+.klins .actions.klact .btn{flex:none;width:100%}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 .savebar{grid-template-columns:1fr 1fr 1fr!important}.savebar .sbtn{font-size:.82rem;padding:11px 6px}.sbtn.smail{background:#6f5bab}body.dropping::after{content:"Slip filen for at indlæse kladden";position:fixed;inset:12px;border:3px dashed var(--go);border-radius:10px;background:color-mix(in srgb,var(--bg) 85%,transparent);display:grid;place-items:center;font-size:1.3rem;font-weight:800;color:var(--go);z-index:999;pointer-events:none}
 .btn.jfin{border-color:var(--go);color:var(--go);font-weight:700}
@@ -2445,6 +2447,18 @@ function renderKL(){
   box.innerHTML=`<div class="klwrap"><section class="card" id="kldraft"></section><div class="kright"><aside class="card klins" id="klins"></aside></div></div>`;
   renderKLDraft();renderKLIns();
 }
+const klWide=window.matchMedia('(min-width:1101px)');
+function klPlaceActions(){
+  const d=$('#kldraft'),r=$('#klins');if(!d||!r) return;
+  const dn=d.querySelector('.actions.klact'),rn=r.querySelector('.actions.klact'),bar=r.querySelector('.klmode-r');
+  if(klWide.matches){
+    if(dn&&bar){if(rn)rn.remove();bar.after(dn)}
+  }else if(rn){
+    const note=d.querySelector('.card-b > .note');
+    if(dn)dn.remove();
+    if(note)note.before(rn);else d.querySelector('.card-b').prepend(rn)}
+}
+klWide.addEventListener('change',klPlaceActions);
 function klModeBar(side){return `<div class="klmode klmode-${side}"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr">${klType==='proc'?'':`<span class="nfgrp"><span class="nfml">Normalfund</span>${nfModeSeg()}<button class="btn sm kln" data-klallnorm="1" title="Indsæt normalfund i alle tomme felter i journalen (valgfrie felter som Mammae, Genitalia m.fl. springes over). Felter du har skrevet i, bliver ikke rørt.">✓ Indsæt i alle tomme felter</button></span>`}<button class="btn sm danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button></span></div>`}
 function renderKLDraft(){
   const box=$('#kldraft');
@@ -2491,7 +2505,7 @@ function renderKLDraft(){
   box.classList.toggle('noLbl',false);
   box.querySelectorAll('textarea').forEach(klGrow);
   renderVit();renderAgas();if(klActiveRow)renderRowPh(klActiveRow);
-  klPhBar();renderXfer();
+  klPhBar();renderXfer();klPlaceActions();
 }
 function renderXfer(){
   const b=$('#klxfer');if(!b) return;b.hidden=true;b.innerHTML='';return;
@@ -2506,6 +2520,7 @@ function renderXfer(){
 }
 function renderKLIns(){
   const box=$('#klins');if(!box) return;
+  const keepAct=box.querySelector('.actions.klact');
   const q=norm(klInsQ.trim());
   const match=h=>!q||q.split(/\s+/).every(t=>norm(h).includes(t));
   let list='';
@@ -2541,6 +2556,7 @@ function renderKLIns(){
             <input id="klq" type="search" placeholder="Søg – fx kol, sepsis, abdomen" value="${esc(klInsQ)}" autocomplete="off">
     </div>
     <div class="inslist" id="inslist">${list}</div>`;
+  if(keepAct){const b=box.querySelector('.klmode-r');if(b)b.after(keepAct)}
 }
 function klSetTarget(k){
   if(!k||k===klTarget) return;
