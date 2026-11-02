@@ -126,6 +126,7 @@ kbd{font-family:var(--mono);font-size:.7rem;border:1px solid var(--line);border-
 .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:.8rem;font-weight:600;cursor:pointer;color:var(--muted)}
 .chip[aria-pressed="true"]{background:var(--bar-2);border-color:var(--bar-2);color:#fff}
 .chip .c{font-family:var(--mono);font-size:.72rem;margin-left:5px;opacity:.8}
+.sbadge.s-chk{background:transparent;color:var(--go);border-color:var(--go)}
 .sbadge.s-gpt{background:#10a37f;color:#fff;border-color:#10a37f}
 .abcl{font-size:.68rem;font-weight:800;letter-spacing:.08em;color:var(--muted);align-self:center;margin:0 2px 0 4px}
 .sepv{width:1px;align-self:stretch;background:var(--line);margin:0 6px}
@@ -1827,7 +1828,7 @@ function migrate(d){
     if(!p||typeof p.text!=='string') continue;
     const g=toGroup({id:String(p.id||''),cat:p.cat,abc:p.abc,sub:p.sub});
     out.plans.push({id:String(p.id||uid()),title:String(p.title||'Uden titel'),cat:g.cat,abc:g.abc,sub:g.sub,text:p.text,
-      fav:!!p.fav,uses:+p.uses||0,created:p.created||now(),updated:p.updated||now(),lastUsed:p.lastUsed||null,seed:!!p.seed,rev:+p.rev||1,edited:!!p.edited,pin:p.pin===undefined?undefined:!!p.pin,gpt:!!p.gpt,src:Array.isArray(p.src)?p.src.filter(x=>x&&x.u).map(x=>({t:String(x.t||x.u),u:String(x.u),pending:!!x.pending})):[]});
+      fav:!!p.fav,uses:+p.uses||0,created:p.created||now(),updated:p.updated||now(),lastUsed:p.lastUsed||null,seed:!!p.seed,rev:+p.rev||1,edited:!!p.edited,pin:p.pin===undefined?undefined:!!p.pin,gpt:!!p.gpt,chk:p.chk?String(p.chk):'',src:Array.isArray(p.src)?p.src.filter(x=>x&&x.u).map(x=>({t:String(x.t||x.u),u:String(x.u),pending:!!x.pending})):[]});
   }
   /* gamle undermapper (nøglet på A–E) droppes – undermapper findes via planerne selv */
   const ns={};for(const k in out.subs){if(!/^[A-EX]$/.test(k)&&Array.isArray(out.subs[k])) ns[k]=out.subs[k]}
@@ -2037,7 +2038,7 @@ function srcStatus(p){
   if(old) return {k:'old',txt:'⚠ instruks over 3 år',tip:'Instruksen er over 3 år gammel – tjek om der er en ny version:\n'+list};
   return {k:'ok',txt:'✓ instruks',tip:'Tjekket mod:\n'+list};
 }
-function gptBadge(p){return p.gpt?'<span class="sbadge s-gpt" title="Indlæst fra ChatGPT – læs den igennem, før du bruger den">ChatGPT</span>':''}
+function gptBadge(p){if(p.chk)return `<span class="sbadge s-chk" title="Tjekket af dig ${esc(String(p.chk).slice(0,10))}${p.gpt?' (kom fra ChatGPT)':''}">✓ Tjekket</span>`;return p.gpt?'<span class="sbadge s-gpt" title="Indlæst fra ChatGPT – læs den igennem, før du bruger den">ChatGPT</span>':''}
 function srcBadge(p){const s=srcStatus(p);return s?`<span class="sbadge s-${s.k}" title="${esc(s.tip)}">${esc(s.txt)}</span>`:''}
 let toastT=null;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800)}
@@ -2118,6 +2119,7 @@ function renderPreview(){
         <span class="warnline" id="missing"></span>
         <span class="spacer"></span>
         <button class="btn sm" data-act="pin" title="Vis øverst under Alle">${p.pin?'📌 Fastgjort':'Fastgør øverst'}</button>
+        <button class="btn sm" data-act="chk" title="Markér, at du selv har læst planen igennem">${p.chk?'✓ Tjekket':'Markér som tjekket'}</button>
         <button class="btn sm" data-act="fav" title="Favorit (F)">${p.fav?'★ Favorit':'☆ Favorit'}</button>
         <button class="btn sm" data-act="edit" title="Redigér (R)">Redigér</button>
         <button class="btn sm" data-act="dup">Duplikér</button>
@@ -3243,6 +3245,7 @@ $('#pv').addEventListener('click',e=>{
   else if(a==='del') delPlan();
   else if(a==='dup') dupPlan();
   else if(a==='fav') toggleFav();
+  else if(a==='chk'){const p=byId(ui.sel);if(p){p.chk=p.chk?'':now();save();renderList();renderPreview();toast(p.chk?'Markeret som tjekket':'Tjek fjernet')}}
   else if(a==='pin'){const p=byId(ui.sel);if(p){p.pin=!p.pin;save();renderList();renderPreview();toast(p.pin?'Fastgjort øverst under Alle':'Ikke længere fastgjort')}}
   else if(a==='new') newPlan();
   else if(a==='clearvals'){vals={};document.querySelectorAll('#fields input').forEach(i=>i.value='');updateText()}
