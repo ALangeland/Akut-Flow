@@ -214,8 +214,15 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .actions.klact .btn{flex:1 1 150px}
 .actions.klact .btn{width:100%;min-height:42px;padding:8px 10px;font-size:.9rem;display:inline-flex;align-items:center;justify-content:center}
 .actions.klact .spacer{display:none}
+#klsum{display:none!important}
+.nfgrp{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid color-mix(in srgb,var(--done) 45%,var(--line));border-radius:8px;padding:4px 6px 4px 10px;background:color-mix(in srgb,var(--done) 7%,transparent)}
+.nfgrp .nfml{color:var(--done)!important}
+.klch:has(.kllbl:empty){grid-template-columns:minmax(0,1fr)}
+.klch .kllbl:empty{display:none}
+.klch:has(.kllbl:empty){padding:8px 10px}
+.klch .chip2{padding:5px 12px}
 .klhr .klnew{margin-left:4px}
-@media (max-width:720px){.klhr{flex-wrap:wrap!important}.klhr .seg.nfmode{flex:1 1 auto!important}.klhr .klnew{flex:0 0 auto;margin-left:auto}}
+@media (max-width:720px){.klhr{flex-wrap:wrap!important}.nfgrp{width:100%}.nfgrp .seg.nfmode{flex:1 1 auto!important}.klhr .seg.nfmode{flex:1 1 auto!important}.klhr .klnew{flex:0 0 auto;margin-left:auto}}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 .savebar{grid-template-columns:1fr 1fr 1fr!important}.savebar .sbtn{font-size:.82rem;padding:11px 6px}.sbtn.smail{background:#6f5bab}body.dropping::after{content:"Slip filen for at indlæse kladden";position:fixed;inset:12px;border:3px dashed var(--go);border-radius:10px;background:color-mix(in srgb,var(--bg) 85%,transparent);display:grid;place-items:center;font-size:1.3rem;font-weight:800;color:var(--go);z-index:999;pointer-events:none}
 .btn.jfin{border-color:var(--go);color:var(--go);font-weight:700}
@@ -2414,7 +2421,7 @@ function renderKL(){
 }
 function renderKLDraft(){
   const box=$('#kldraft');
-  let html=`<div class="card-h"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr"><span class="nfml">Normalfund</span>${nfModeSeg()}<span class="sum" id="klsum">${klFilledCount()} felter udfyldt</span><button class="btn sm danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button></span></div>
+  let html=`<div class="card-h"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr"><span class="nfgrp"><span class="nfml">Normalfund</span>${nfModeSeg()}<button class="btn sm kln" data-klallnorm="1" title="Indsæt normalfund i alle tomme felter i journalen (valgfrie felter som Mammae, Genitalia m.fl. springes over). Felter du har skrevet i, bliver ikke rørt.">✓ Indsæt i alle tomme felter</button></span><span class="sum" id="klsum">${klFilledCount()} felter udfyldt</span><button class="btn sm danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button></span></div>
   <div class="card-b">
     <div class="actions klact" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
@@ -2758,7 +2765,7 @@ function agasText(){
 }
 function renderAgas(){const b=$('#agasbox');if(!b) return;const v=agasVals();
   b.innerHTML=AGAS.map(([id,l,u])=>`<label class="vit"><span>${l}</span><input data-agas="${id}" value="${esc(v[id]||'')}" inputmode="decimal" autocomplete="off" title="${l}${u?' ('+u+')':''}"></label>`).join('')+
-   `<label class="vit"><span>Ilt</span><input data-agas="ilt" value="${esc(v.ilt||'')}" placeholder="atm." autocomplete="off" style="width:58px"></label>`}
+   `<label class="vit"><span>Ilt</span><input data-agas="ilt" value="${esc(v.ilt||'')}" placeholder="atm." autocomplete="off" style="width:58px"></label>`+`<button type="button" class="btn sm" data-agasclear="1" title="Fjern A-gas fra kladden">✕ Fjern A-gas</button>`}
 function applyAgas(){
   const txt=agasText();let cur=KL[PARA_KEY]||'';
   // fjern eksisterende A-gas-blok (A-gas:-linje + efterfølgende "- "-linjer)
@@ -3031,7 +3038,7 @@ $('#kl').addEventListener('input',e=>{
   const vi=e.target.closest('[data-vit]');if(vi){KL.__vit={...vitVals(),[vi.dataset.vit]:vi.value.trim()};applyVit({fill:false});return}
   if(e.target.id==='klq'){klInsQ=e.target.value;const pos=e.target.selectionStart;renderKLIns();const q=$('#klq');q.focus();q.setSelectionRange(pos,pos);return}
   const t=e.target.closest('textarea[data-k]');if(!t) return;
-  KL[t.dataset.k]=t.value;klDone.delete(t.dataset.k);klGrow(t);klRefreshRow(t.dataset.k);clearTimeout(renderRowPh.t);renderRowPh.t=setTimeout(()=>renderRowPh(t.dataset.k),400);
+  KL[t.dataset.k]=t.value;if(t.dataset.k===PARA_KEY&&!/^\s*A-gas\s*:/im.test(t.value)&&(KL.__agasTxt||Object.values(agasVals()).some(Boolean))){delete KL.__agas;delete KL.__agasTxt;delete KL.__agasOpen;const ab=$('#agasbox');if(ab){ab.hidden=true;renderAgas()}}klDone.delete(t.dataset.k);klGrow(t);klRefreshRow(t.dataset.k);clearTimeout(renderRowPh.t);renderRowPh.t=setTimeout(()=>renderRowPh(t.dataset.k),400);
   clearTimeout(klSave.t);klSave.t=setTimeout(klSave,250);
 });
 $('#kl').addEventListener('keydown',e=>{
@@ -3089,11 +3096,14 @@ $('#kl').addEventListener('click',async e=>{
   if(ed){editPlanInline(ed.dataset.editplan);return}
   const en=e.target.closest('[data-editnorm]');if(en){editNormalRow(en.dataset.editnorm);return}
   const pb=e.target.closest('[data-parab]');
+  if(e.target.closest('[data-agasclear]')){delete KL.__agas;delete KL.__agasOpen;applyAgas();delete KL.__agasTxt;const ab=$('#agasbox');if(ab){ab.hidden=true;renderAgas()}klSave();return}
   if(pb){const v=pb.dataset.parab;if(v==='agas'){const b=$('#agasbox');KL.__agasOpen=true;klSave();if(b){b.hidden=false;const i=b.querySelector('input');if(i)i.focus()}}else paraInsert(v);return}
   if(e.target.closest('[data-nihss]')){openNihss();return}
   const pen=e.target.closest('[data-klpen]');if(pen){editFieldNormals(pen.dataset.klpen);return}
   const n=e.target.closest('[data-kln]');
   if(n){const k=n.dataset.kln;const [sn,f]=k.split(' › ');const r=klNormals(sn,f)[0];if(r)klInsert(k,r.body||r.line,{normal:true,label:r.label});return}
+  const an=e.target.closest('[data-klallnorm]');
+  if(an){let c=0;for(const sec of JOURNAL){for(const f of sec.f){const k=kk(sec.s,f);if(!isPicked(k))continue;const r=klNormals(sec.s,f)[0];if(r&&!(KL[k]||'').trim()){KL[k]=r.body||r.line;klOpen.add(sec.s);c++}}}klSave();renderKLDraft();toast(c?`Normalfund indsat i ${c} tomme felter`:'Ingen tomme felter med normalfund');return}
   const sn=e.target.closest('[data-klsecnorm]');
   const pa=e.target.closest('[data-klpickall]');
   if(pa){const sec=JOURNAL.find(j=>j.s===pa.dataset.klpickall);sec.f.forEach(f=>klPick[kk(sec.s,f)]=pa.dataset.v==='1');try{localStorage.setItem('pasteplaner.klPick',JSON.stringify(klPick))}catch(_){}
@@ -3102,7 +3112,7 @@ $('#kl').addEventListener('click',async e=>{
   const x=e.target.closest('[data-klx]');
   if(x){const k=x.dataset.klx;const t=document.getElementById('kl-'+k);
     if(x.classList.contains('undo')){KL[k]=x._undo||'';klSave();if(t){t.value=KL[k];klGrow(t)}x.classList.remove('undo');x.textContent='✕';x.title='Ryd feltet (kan fortrydes)';clearTimeout(x._t);klRefreshRow(k);toast('Fortrudt');return}
-    x._undo=KL[k]||'';KL[k]='';klDone.delete(k);klSave();if(t){t.value='';klGrow(t)}
+    x._undo=KL[k]||'';KL[k]='';if(k===PARA_KEY){delete KL.__agas;delete KL.__agasTxt;delete KL.__agasOpen;const ab=$('#agasbox');if(ab){ab.hidden=true;renderAgas()}}klDone.delete(k);klSave();if(t){t.value='';klGrow(t)}
     klRefreshRow(k);x.disabled=false;x.classList.add('undo');x.textContent='↶';x.title='Fortryd rydning';
     clearTimeout(x._t);x._t=setTimeout(()=>{if(x.isConnected){x.classList.remove('undo');x.textContent='✕';x.title='Ryd feltet (kan fortrydes)';x.disabled=!(KL[k]||'').trim()}},5000);
     const cb=document.querySelector(`#kldraft [data-klc="${klEsc(k)}"]`);if(cb){cb.textContent='Kopiér';cb.closest('.klrow').classList.remove('done')}
