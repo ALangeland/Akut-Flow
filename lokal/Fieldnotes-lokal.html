@@ -11,25 +11,25 @@
 <style>
 /* Samme palet og typografi som ASA-Fordelingshatten */
 :root{
-  --bar:#2c3844; --bar-2:#3b4855; --bar-fg:#ffffff; --bar-muted:#a7b7c7;
-  --bg:#eceff2; --surface:#ffffff; --fg:#1e2a35; --muted:#66737f; --line:#d2d8de;
-  --accent:#41505f; --accent-soft:#e2e7ec; --go:#2f6f8f; --hit:#c8462e; --warn:#a35a00; --warn-soft:#fbefdd;
-  --done:#2e8a6b; --done-soft:#e3f2ec;
+  --bar:#1d2744; --bar-2:#2a3560; --bar-fg:#ffffff; --bar-muted:#b4c0e0;
+  --bg:#f1e9d8; --surface:#fcf8ee; --fg:#1c2233; --muted:#5d5a52; --line:#cfc3a6;
+  --accent:#2a3560; --accent-soft:#e8dfc6; --go:#2457c5; --hit:#c8361f; --warn:#a65a00; --warn-soft:#f6e4c4;
+  --done:#1f7a3f; --done-soft:#dcebd8;
   --p1:#d6201f;--p2:#f07d00;--p3:#ffd400;--p4:#2e9e44;--p5:#1f6fc5;
   --p1t:#fff;--p2t:#fff;--p3t:#1e2a35;--p4t:#fff;--p5t:#fff;
   --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
-  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
-  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --warn:#f0a85a; --warn-soft:#3b2d1a;
-  --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}}
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
+  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
-  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
-  --accent:#9fb3c6; --accent-soft:#35424f; --go:#7cc0e0; --hit:#ff7a5c; --warn:#f0a85a; --warn-soft:#3b2d1a;
-  --done:#5cc79f; --done-soft:#1f3a31; color-scheme:dark}
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
+  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
 .topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px}
@@ -438,7 +438,7 @@ $('btnClearDone').onclick=()=>{
 /* ---------- versionshistorik ---------- */
 const APP_VERSION='2';
 const CHANGELOG=[
- {v:'2',d:'01.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
+ {v:'2',d:'02.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
  {v:'1',d:'31.10.2026',items:['Noter med patient, zone og stue (rullemenuer), CPR/tlf., afdeling og 5 prioriteter.','Færdig-markering, filtre, søgning, Kopiér overlevering, Skjul CPR og datafil (fieldnotes.json). Henter noter fra Vagtnoter første gang.']}
 ];
 (function(){const vb=$('verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;let seen='';try{seen=localStorage.getItem('fieldnotes.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');

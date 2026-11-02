@@ -10,7 +10,7 @@
 <style>
 /* Layout: værktøjslinje øverst, editor med faneblade til venstre, live forhåndsvisning til højre (stables på mobil) */
 :root{
-  --bg:#f5f7f7; --surface:#ffffff; --sunk:#eef2f1; --fg:#17201f; --muted:#5b6866; --line:#d8dfde; --accent:#1f6f66;
+  --bg:#f5f7f7; --surface:#fcf8ee; --sunk:#eef2f1; --fg:#17201f; --muted:#5b6866; --line:#d8dfde; --accent:#1f6f66;
   --sans:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -135,13 +135,13 @@ body.present .toolbar,body.present .grid,body.present #confirm-slot{display:none
 @media (prefers-reduced-motion:reduce){.sum .chev{transition:none}}
 
 /* ---------- Akut-Flow-design (designguide) ---------- */
-:root{--bg:#eceff2;--surface:#ffffff;--sunk:#e2e7ec;--fg:#1e2a35;--muted:#66737f;--line:#d2d8de;--accent:#2f6f8f;
-  --bar:#2c3844;--bar-2:#3b4855;--bar-fg:#fff;--bar-muted:#a7b7c7;--hit:#c8462e;--done:#2e8a6b;--done-soft:#e3f2ec;
+:root{--bg:#f1e9d8;--surface:#fcf8ee;--sunk:#e2e7ec;--fg:#1c2233;--muted:#5d5a52;--line:#cfc3a6;--accent:#2f6f8f;
+  --bar:#1d2744;--bar-2:#2a3560;--bar-fg:#fff;--bar-muted:#b4c0e0;--hit:#c8361f;--done:#1f7a3f;--done-soft:#dcebd8;
   --sans:"Open Sans","Segoe UI",system-ui,-apple-system,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#202932;--surface:#2b3641;--sunk:#252f39;--fg:#e7ecf0;--muted:#9dadbb;--line:#3e4c59;--accent:#7cc0e0;
-  --bar:#1b232b;--bar-2:#28323c;--bar-muted:#93a6b8;--hit:#ff7a5c;--done:#5cc79f;--done-soft:#1f3a31;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#202932;--surface:#2b3641;--sunk:#252f39;--fg:#e7ecf0;--muted:#9dadbb;--line:#3e4c59;--accent:#7cc0e0;
-  --bar:#1b232b;--bar-2:#28323c;--bar-muted:#93a6b8;--hit:#ff7a5c;--done:#5cc79f;--done-soft:#1f3a31;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1830;--surface:#162447;--sunk:#252f39;--fg:#eaf0ff;--muted:#9aa9cc;--line:#2a3d6e;--accent:#7cc0e0;
+  --bar:#0a1226;--bar-2:#111c3a;--bar-muted:#9aa9cc;--hit:#ff7a5c;--done:#6fdc9a;--done-soft:#16372b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1830;--surface:#162447;--sunk:#252f39;--fg:#eaf0ff;--muted:#9aa9cc;--line:#2a3d6e;--accent:#7cc0e0;
+  --bar:#0a1226;--bar-2:#111c3a;--bar-muted:#9aa9cc;--hit:#ff7a5c;--done:#6fdc9a;--done-soft:#16372b;color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
 /* arket printes altid lyst */
 .sheet{--bg:#f5f7f7;--surface:#fff;--sunk:#eef2f1;--fg:#17201f;--muted:#5b6866;--line:#d8dfde;color:#17201f}
@@ -161,7 +161,7 @@ html,body{margin:0!important}body{padding:0!important}
 .hsub{margin:0;color:var(--muted);font-size:.88rem}
 button{border-radius:5px;font-weight:600}
 button.primary{background:var(--bar);border-color:var(--bar);color:#fff}
-:root[data-theme="dark"] button.primary{background:var(--accent);border-color:var(--accent);color:#10202b}
+:root[data-theme="dark"] button.primary{background:var(--accent);border-color:var(--accent);color:#2a1c00}
 .label{font-size:.72rem!important;font-weight:700!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:var(--muted)!important}
 dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
 dialog#verDlg::backdrop{background:rgba(0,0,0,.45)}
@@ -786,8 +786,8 @@ renderAll(false);snap();
 (function(){
 const APP_VERSION='3';
 const CHANGELOG=[
- {v:'3',d:'01.11.2026',items:['Hedder nu Vagtflows.','+ Nyt flow står øverst i rullemenuen Flow.','Gem flow-fil og PDF spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
- {v:'2',d:'01.11.2026',items:['Vagtflow-editoren er en del af Akut-Flow (web, mobil og lokal fil).','Samme design som de andre værktøjer: mørk topbjælke, Open Sans, mørk tilstand som standard og fælles lys/mørk-knap.','Versionshistorik. PDF\'en ser ud som før og er altid lys.']},
+ {v:'3',d:'02.11.2026',items:['Hedder nu Vagtflows.','+ Nyt flow står øverst i rullemenuen Flow.','Gem flow-fil og PDF spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
+ {v:'2',d:'02.11.2026',items:['Vagtflow-editoren er en del af Akut-Flow (web, mobil og lokal fil).','Samme design som de andre værktøjer: mørk topbjælke, Open Sans, mørk tilstand som standard og fælles lys/mørk-knap.','Versionshistorik. PDF\'en ser ud som før og er altid lys.']},
  {v:'1',d:'30.10.2026',items:['Editor til tidslinjer for vagtfunktioner med faser og trin, ikoner og farver, træk-og-slip, fortryd/gendan, visningstilstand og PDF i A4/A5 eller 2 × A5 på ét ark. Starter med ASA-vagten som eksempel.']}
 ];
 const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
