@@ -466,11 +466,11 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .afbot{display:none}
 .afmob .afnav{display:none}
 .afmob .afbot{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:40;grid-template-columns:repeat(6,1fr);background:var(--bar);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-.afbot a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;color:var(--bar-muted);text-decoration:none;font:600 .62rem var(--sans);border-top:3px solid transparent;min-width:0}
-.afbot a img{width:30px;height:30px;display:block}
+.afbot a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:46px;color:var(--bar-muted);text-decoration:none;font:600 .6rem var(--sans);border-top:3px solid transparent;min-width:0}
+.afbot a img{width:24px;height:24px;display:block}
 .afbot a.on{color:#fff;border-top-color:#ffc933}
-.afmob body{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
-@media (max-width:720px){.afmob .jfbar{bottom:calc(62px + env(safe-area-inset-bottom))!important;padding-bottom:8px!important}.afmob .toast{bottom:calc(84px + env(safe-area-inset-bottom))!important;width:max-content;max-width:calc(100vw - 24px)}}
+.afmob body{padding-bottom:calc(52px + env(safe-area-inset-bottom))}
+@media (max-width:720px){.afmob .jfbar{bottom:calc(48px + env(safe-area-inset-bottom))!important;padding-bottom:8px!important}.afmob .toast{bottom:calc(70px + env(safe-area-inset-bottom))!important;width:max-content;max-width:calc(100vw - 24px)}}
 /*GWNAV*/
 #klnav{display:none;position:sticky;top:12px;align-self:start;flex-direction:column;gap:2px;max-height:calc(100vh - 24px);overflow:auto}
 #klnav .h{font:700 .7rem var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:2px 10px 6px}
@@ -511,7 +511,16 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
     <button id="newBtn" title="Ny plan (N)">+ Ny plan</button>
     <button id="expBtn" title="Gem normalfund, negative fund og alle fraser som én Markdown-fil med en færdig opgavetekst til ChatGPT (gennemgang, underbyggelse og forslag til nye fraser)">Eksportér til gennemgang</button>
     <button id="impBtn" title="Indsæt planer fra ChatGPT og læg dem ind i arkivet">Importér planer</button>
-<style>.improw{display:block;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}.improw .hint{display:block;margin:2px 0 0 24px}</style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
+<style>.improw{display:block;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer}.improw .hint{display:block;margin:2px 0 0 24px}/*UX11*/
+@media (max-width:720px){
+.topbar{position:relative}
+.topbar-in{padding-right:52px}
+#themeToggle{position:absolute!important;top:10px;right:12px;order:0!important;width:40px;height:40px;min-width:0!important;padding:0!important;margin:0!important;font-size:0!important;line-height:1;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important}
+#themeToggle::before{content:"\2600";font-size:1.2rem;color:var(--bar-fg,#fff)}
+:root[data-theme="light"] #themeToggle::before{content:"\263E"}
+}
+@media (max-width:720px) and (prefers-color-scheme:light){:root:not([data-theme]) #themeToggle::before{content:"\263E"}}
+</style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
 <textarea id="gwImpText" rows="12" style="width:100%;font:.8rem/1.4 var(--mono)" spellcheck="false" placeholder="15. Akutte abdominalsmerter – ukendt årsag&#10;Kategori: Mave-tarm · ABCDE: C · Mappe: Akut abdomen&#10;```&#10;…&#10;```"></textarea>
@@ -558,7 +567,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
       <div class="st" id="fileSt"></div>
       <button class="btn sm block" id="fContinue" hidden></button>
       <button class="btn sm block" id="fOpen">Åbn datafil …</button>
-      <button class="btn sm block" id="fNew">Ny datafil …</button>
+      <button class="btn sm block" id="fNew">Gem datafil …</button>
       <button class="btn sm block" id="fExport">Eksportér (.json)</button>
       <button class="btn sm block" id="fImport">Importér (.json / .txt)</button>
       <input type="file" id="fileIn" accept=".json,.txt,application/json,text/plain" multiple hidden>
@@ -2181,7 +2190,7 @@ function renderEditor(p){
 function renderSide(){
   try{renderChanges()}catch(e){}
   const fb=$('#filebar'),st=$('#fileSt');
-  const cont=$('#fContinue');
+  const cont=$('#fContinue');$('#fExport').hidden=!!FS;$('#fImport').hidden=!!FS;
   if(!FS){
     $('#fOpen').hidden=true;$('#fNew').hidden=true;cont.hidden=true;
     $('#fExport').textContent='Hent fil (.json)';$('#fImport').textContent='Indlæs fil (.json / .txt)';
