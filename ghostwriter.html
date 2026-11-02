@@ -241,6 +241,11 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 @media (max-width:1100px){.klmode-r{display:none}.klmode-hd{display:flex!important}}
 .klins .actions.klact{flex-direction:column;flex-wrap:nowrap;margin:0!important;padding:10px 12px;border-bottom:1px solid var(--line);gap:8px}
 .klins .actions.klact .btn{flex:none;width:100%}
+.kltip{display:flex;align-items:flex-start;gap:8px;margin:0 0 12px!important;padding:8px 10px;border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:6px;background:var(--surface)}
+.kltip .kltipt{flex:1;font-size:.84rem;color:var(--muted)}
+.kltip .kltipx{flex:none;background:none;border:0;color:var(--muted);cursor:pointer;font-size:.95rem;line-height:1;padding:2px 4px}
+.kltip .kltipx:hover{color:var(--fg)}
+.klsaved .lnk{font-size:inherit}
 .afhome{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid var(--bar-muted);border-radius:6px;color:var(--bar-fg,#fff);text-decoration:none;font-size:1rem;line-height:1;margin-right:4px;flex:none}.afhome:hover{border-color:#fff}.edtag{font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.08em;border:1px solid var(--bar-muted);color:var(--bar-muted);border-radius:4px;padding:1px 6px;margin-left:2px}
 
 .klmailcfg{flex:1 1 100%;text-align:center;padding:2px;font-size:.8rem;background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer}
@@ -2434,6 +2439,7 @@ let klInsOpen=new Set();try{klInsOpen=new Set(JSON.parse(localStorage.getItem('p
 const INS_FOLD=['Pædiatri og neonatologi','Parkeret'];
 let klDone=new Set(), klTarget=PLAN_KEY, klInsTab='plans', klInsQ='';
 const PHR=/\{[^{}\n]{1,40}\}/;
+let klTipOff=false;try{klTipOff=localStorage.getItem('pasteplaner.tipKl')==='1'}catch(e){}
 let klSavedAt=null;
 function klSavedTxt(){return klSavedAt?'Gemmes automatisk · senest gemt kl. '+klSavedAt.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'Gemmes automatisk i denne browser'}
 function klSavedShow(){const e=$('#klsum');if(e)e.textContent=klSavedTxt()}
@@ -2506,8 +2512,8 @@ function renderKLDraft(){
       <button type="button" class="lnk klmailcfg" id="mailCfgBtn" title="Gem modtageradresse, eller send kladden som tekst i selve mailen">✉ Modtager / send som tekst …</button>
       <button class="btn danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button>
     </div>
-    <p class="note" style="margin:0 0 12px">Vælg en frase i Fraser – den fordeles i journalfelterne. Normalfund sættes ind i deres eget felt. <b>✓ Normal</b> tilføjer feltets normalfund, <b>✕</b> rydder feltet. Kladden gemmes kun i denne browser – ryd den efter brug.</p>
-    <div class="klsaved" id="klsum">${klSavedTxt()}</div>`;
+    ${klTipOff?'':`<div class="note kltip"><span class="kltipi">💡</span><span class="kltipt">Vælg en frase i Fraser – den fordeles i journalfelterne. Normalfund sættes ind i deres eget felt. <b>✓ Normal</b> tilføjer feltets normalfund, <b>✕</b> rydder feltet. Kladden gemmes kun i denne browser – ryd den efter brug.</span><button type="button" class="kltipx" data-kltipx="1" aria-label="Luk fif" title="Luk fif">✕</button></div>`}
+    <div class="klsaved">${klTipOff?'<button type="button" class="lnk" data-kltipshow="1">💡 Vis fif</button> · ':''}<span id="klsum">${klSavedTxt()}</span></div>`;
   for(const sec of JOURNAL){
     const hasN=sec.f.some(f=>klNormals(sec.s,f).length);
     const anyFilled=sec.f.some(f=>(KL[kk(sec.s,f)]||'').trim())||chSummary(sec).length>0;
@@ -3165,6 +3171,7 @@ $('#kl').addEventListener('click',async e=>{
   if(cb){const sec=JOURNAL.find(j=>j.s===cb.dataset.chs);const c=sec&&sec.ch.find(x=>x.id===cb.dataset.chid);if(!c) return;const o=cb.dataset.chv;let v=chGet(sec.s,c.id);
     if(c.type==='radio'){v=v===o?undefined:o}else{v=Array.isArray(v)?v.slice():[];v.includes(o)?v.splice(v.indexOf(o),1):v.push(o)}
     chSet(sec.s,c.id,v);cb.closest('.chips2').querySelectorAll('.chip2').forEach(b=>{const on=c.type==='radio'?v===b.dataset.chv:Array.isArray(v)&&v.includes(b.dataset.chv);b.setAttribute('aria-pressed',on)});if(sec.s==='Øvrige organsystemer'){renderKLDraft();toast(klSysOn(sec)?'Øvrige klager skjult – systematisk adspurgt':'Øvrige felter vist')}return}
+  if(e.target.closest('[data-kltipx]')||e.target.closest('[data-kltipshow]')){klTipOff=!!e.target.closest('[data-kltipx]');try{localStorage.setItem('pasteplaner.tipKl',klTipOff?'1':'0')}catch(_){}renderKLDraft();return}
   const kt=e.target.closest('[data-kltype]');if(kt){klSwitch(kt.dataset.kltype);return}
   const tb=e.target.closest('[data-instab]');if(tb){klInsTab=tb.dataset.instab;renderKLIns();return}
   const ip=e.target.closest('[data-insplan]');
