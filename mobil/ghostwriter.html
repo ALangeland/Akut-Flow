@@ -3292,7 +3292,8 @@ $('#expBtn').addEventListener('click',exportReview);window.reviewMD=reviewMD;
 function parsePlans(raw){
   const lines=String(raw||'').replace(/\r/g,'').split('\n');
   const katIdx=[];lines.forEach((l,i)=>{if(/^\s*(?:[-*•]\s*)?\**\s*Kategori\b\s*(?::|[A-EXa-ex]\b)/i.test(l))katIdx.push(i)});
-  const clean=t=>t.replace(/^\s*(?:#+\s*)?(?:\d+\s*[.)]\s*)?/,'').replace(/\*+/g,'').trim();
+  const clean=t=>t.replace(/^\s*(?:#+\s*)?(?:\d+\s*[.)]\s*)?/,'').replace(/\*+/g,'').replace(/\\+\s*$/,'').trim();
+  const cleanUrl=u=>u.replace(/[?&]utm_[a-z_]+=[^&\s)]*/gi,'').replace(/[?&]$/,'');
   const titleAt=i=>{for(let j=i-1;j>=0;j--){if(lines[j].trim()&&!/^\s*```/.test(lines[j]))return {t:clean(lines[j]),at:j}}return null};
   const out=[];
   katIdx.forEach((ki,n)=>{const T=titleAt(ki);if(!T||!T.t)return;
@@ -3312,7 +3313,7 @@ function parsePlans(raw){
     if(fi>=0){let fj=-1;for(let k=block.length-1;k>fi;k--){if(/^\s*```/.test(block[k])){fj=k;break}}if(fj<0)fj=block.length;
       text=block.slice(fi+1,fj).join('\n').trim();after=block.slice(fj+1)}
     else{const si=block.findIndex(l=>/^\s*Instrukser?\s*\/?\s*kilder/i.test(l));text=(si>=0?block.slice(0,si):block).join('\n').trim();after=si>=0?block.slice(si):[]}
-    const src=[];after.forEach(l=>{const t=l.trim().replace(/^[-*•]\s*/,'');const mm=t.match(/^(.+?)\s*\|\s*(https?:\/\/\S+?)\s*$/);if(mm)src.push({t:mm[1].replace(/\*+/g,'').trim(),u:mm[2],pending:false})});
+    const src=[];after.forEach(l=>{let t=l.trim().replace(/^[-*•]\s*/,'').replace(/\\+\s*$/,'');t=t.replace(/\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,'$2');const mm=t.match(/^(.+?)\s*\|\s*<?(https?:\/\/[^\s>]+?)>?\s*$/);if(mm)src.push({t:mm[1].replace(/\*+/g,'').trim(),u:cleanUrl(mm[2]),pending:false})});
     if(text)out.push({title:T.t,cat,abc,sub,text,src});
   });
   return out}
