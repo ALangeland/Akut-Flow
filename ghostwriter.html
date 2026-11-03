@@ -489,6 +489,31 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
   #toast{bottom:84px}
 }
 .seg.nfmode button{flex:none;white-space:nowrap;min-width:auto}
+/*ARKSIDE*/
+@media(min-width:1101px){
+.main{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:16px;row-gap:14px;align-items:start}
+.toolbar{display:contents}
+.toolbar[hidden]{display:none}
+#tabs{grid-column:1;grid-row:1/span 3;position:sticky;top:12px;flex-direction:column;flex-wrap:nowrap;gap:1px;padding:6px;border:1px solid var(--line);border-radius:10px;background:var(--surface);max-height:calc(100vh - 24px);overflow-y:auto}
+#tabs button{width:100%;flex:none;justify-content:flex-start;border:0!important;border-radius:6px;padding:6px 8px;background:transparent}
+#tabs button:hover:not([aria-pressed="true"]){background:var(--accent-soft)}
+#tabs button[aria-pressed="true"]{background:var(--bar);color:#fff}
+#tabs button[aria-pressed="true"] .c,#tabs button[aria-pressed="true"] .n{color:var(--bar-muted)}
+#tabs .k{flex:1;min-width:0;text-align:left;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tabs .c{flex:none}
+#tabs .k i{flex:none}
+#tabs .k{font-size:.84rem}
+.layout{max-width:1480px}
+.main{grid-template-columns:220px minmax(0,1fr)}
+#tabs .c{margin-left:auto}
+#tabs .n{display:none}
+#searchrow{grid-column:2;grid-row:1}
+#subs{grid-column:2;grid-row:2}
+#subs:empty{display:none}
+#split,#nf{grid-column:2;grid-row:3}
+#kl{grid-column:1/-1;grid-row:1}
+#arcSt{display:none}
+}
 .ico{display:inline-flex;align-items:center;vertical-align:middle}
 .px{image-rendering:pixelated;image-rendering:crisp-edges;display:block;flex:none}
 .ico .px,.ico .emo{display:none}
