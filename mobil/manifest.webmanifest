@@ -1,7 +1,7 @@
 {
   "name": "Akut-Flow",
   "short_name": "Akut-Flow",
-  "description": "Ghostwriter, Fieldnotes, Specialefordelingshatten, Forvagtsfordelingshatten og Vagtflows – arbejdsværktøjer til Alb Akut- og Traumecenter.",
+  "description": "Ghostwriter, Fieldnotes, Specialefordelingshatten, Patientdirigenten og Vagtflows – arbejdsværktøjer til Alb Akut- og Traumecenter.",
   "lang": "da",
   "start_url": "./index.html",
   "scope": "./",
@@ -41,7 +41,7 @@
       "url": "./specialefordelingshatten.html"
     },
     {
-      "name": "Forvagtsfordelingshatten",
+      "name": "Patientdirigenten",
       "url": "./forvagtsfordelingshatten.html"
     },
     {
