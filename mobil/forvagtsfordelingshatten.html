@@ -696,6 +696,26 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .doc.folded .case.open{border-radius:0!important}
 .cdet{left:0!important;right:0!important;border-radius:0!important;border-left:0!important;border-right:0!important}
 .doc-f{margin-top:3px!important}
+/*FV53*/
+.arrseg{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;width:100%;text-transform:none;letter-spacing:0}
+.arrseg button{height:26px;padding:0 6px;border:0;background:var(--surface);color:var(--muted);font:700 .76rem var(--sans);cursor:pointer}
+.arrseg button[aria-pressed="true"]{background:var(--go);color:#1c2233}
+.arrseg button[data-an="enroute"][aria-pressed="true"]{background:#7cb7ff}
+.qgrp-h{font:800 .7rem var(--sans);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 6px;padding-bottom:3px;border-bottom:2px solid var(--line);color:var(--muted)}
+.qgrp-h:first-child{margin-top:0}
+.qgrp-h.arrived{color:var(--done);border-color:var(--done)}
+.qgrp-h.enroute{color:#7cb7ff;border-color:#7cb7ff}
+#qList .qcase{margin-bottom:6px}
+.qarr{height:22px;padding:0 9px;border-radius:999px;font:800 .66rem var(--sans);text-transform:uppercase;letter-spacing:.05em;cursor:pointer;background:transparent}
+.qarr.arrived{border:2px solid var(--done);color:var(--done)}
+.qarr.enroute{border:2px dashed #7cb7ff;color:#7cb7ff}
+/*FV54*/
+.doc .doc-h .nm{display:inline-flex;align-items:center;gap:9px;background:none!important;padding:0!important;border-radius:0;font:800 1.3rem/1 var(--sans);letter-spacing:.005em;color:inherit!important;text-shadow:0 1px 0 rgba(0,0,0,.18)}
+.doc .doc-h .nm::before{content:attr(data-i);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.24);box-shadow:inset 0 0 0 2px rgba(255,255,255,.55);font:800 1rem var(--sans);text-shadow:none}
+.doc .doc-h:has(.load.l2) .nm::before{background:rgba(0,0,0,.12);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.doc .doc-h .lv,.doc .doc-h:has(.load.l2) .lv{border:0!important;box-shadow:none!important;padding:3px 10px!important;font-size:.7rem!important;letter-spacing:.07em;border-radius:6px!important}
+#docs[data-lay="cols"] .doc .doc-h .nm{font-size:1.15rem}
+#docs[data-lay="cols"] .doc .doc-h .nm::before{width:28px;height:28px;font-size:.9rem}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -917,7 +937,7 @@ function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l
   document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent=(Date.now()-(+e.dataset.qw)<60000?'venter under 1 min':'venter '+dur(Date.now()-(+e.dataset.qw)))})}
 $('#queueAdd').addEventListener('click',()=>{const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
   if(/\d{6}\s*-?\s*\d{4}/.test(note)){toast('Noten ligner et CPR-nummer – fjern det');$('#caseNote').focus();return}
-  const before=JSON.stringify(S);(S.queue=S.queue||[]).push({id:uid(),zone,room,pb:curPb,note,ty:curTy,tr:curTr,q:Date.now()});save();
+  const before=JSON.stringify(S);(S.queue=S.queue||[]).push({id:uid(),zone,room,pb:curPb,note,ty:curTy,tr:curTr,arr:window.qArrNew||'arrived',q:Date.now()});save();
   $('#caseRoom').value='';$('#roomHint').textContent='';setPb('');setTy('m');setTr('');$('#caseNote').value='';render();toast('Patient lagt i ufordelte',true);undoState=before});
 $('#qList').addEventListener('click',e=>{const g=e.target.closest('[data-qgo]'),x=e.target.closest('[data-qdel]');const q=S.queue||[];
   if(g){const it=q.find(y=>y.id===g.dataset.qgo);if(!it)return;const sel=document.querySelector('[data-qto="'+it.id+'"]');const d=(sel&&sel.value&&S.doctors.find(y=>y.id===sel.value))||next();
@@ -968,6 +988,7 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
    a.querySelectorAll('.case').forEach(li=>{const op=fold&&O.has(cid(li));li.classList.toggle('open',op);let dt=li.querySelector(':scope>.cdet');
      if(op&&!dt){dt=document.createElement('div');dt.className='cdet';[...li.querySelectorAll(':scope>.ct,:scope>.cnote,:scope>.acts')].forEach(x=>dt.appendChild(x));li.appendChild(dt)}
      else if(!op&&dt){while(dt.firstChild)li.appendChild(dt.firstChild);dt.remove()}});
+   {const nm=a.querySelector('.doc-h .nm');if(nm&&!nm.dataset.i)nm.dataset.i=(nm.textContent.trim()[0]||'?').toUpperCase()}
    if(!a.querySelector('.hd-r')){const dh=a.querySelector('.doc-h'),ld=dh&&dh.querySelector('.load');if(ld){const r=document.createElement('div');r.className='hd-r';const bt=document.createElement('button');bt.type='button';bt.className='hd-add';bt.dataset.assign=id;bt.title='Tildel patienten fra opretteren til '+((a.querySelector('.nm')||{}).textContent||'');bt.textContent='＋ Tildel';ld.before(r);r.append(bt,ld)}}
    let b=a.querySelector('.fold-b');if(!b&&h){b=document.createElement('button');b.type='button';b.className='fold-b';b.title='Fold kortet ind/ud';b.setAttribute('aria-label','Fold kortet ind/ud');h.insertBefore(b,h.firstChild)}
    if(b){b.textContent=fold?'▸':'▾';b.setAttribute('aria-expanded',String(!fold))}});
@@ -1017,6 +1038,21 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
   const q=b.dataset.trk==='q',list=q?(S.queue||[]):S.cases,it=list.find(x=>x.id===b.dataset.trcyc);if(!it)return;
   const ord=[''].concat(TRI.map(x=>x[0])),i=ord.indexOf(it.tr||'');it.tr=ord[(i+1)%ord.length];
   if(q)_qSig='';save();render()},true)}
+{const LS=()=>{try{return localStorage.getItem('fv.arrnew')||'arrived'}catch(e){return 'arrived'}};
+ window.qArrNew=LS();
+ {const holder=document.querySelector('.a-q .lbl');if(holder){holder.innerHTML='<span class="arrseg" role="group" aria-label="Status for ny patient"><button type="button" data-an="arrived">Ankommet</button><button type="button" data-an="enroute">På vej</button></span>';
+  const sync=()=>holder.querySelectorAll('[data-an]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.an===window.qArrNew)));sync();
+  holder.addEventListener('click',e=>{const b=e.target.closest('[data-an]');if(!b)return;window.qArrNew=b.dataset.an;try{localStorage.setItem('fv.arrnew',b.dataset.an)}catch(_){}sync()})}}
+ const arrOf=c=>c.arr==='enroute'?'enroute':'arrived';
+ const group=()=>{const L=$('#qList');if(!L||L.querySelector('.qgrp-h')||!L.querySelector('.qcase'))return;
+  const q=S.queue||[],cards=[...L.querySelectorAll(':scope>.qcase')],by={arrived:[],enroute:[]};
+  cards.forEach(el=>{const it=q.find(x=>x.id===el.dataset.q);const k=it?arrOf(it):'arrived';by[k].push(el);
+   const qin=el.querySelector('.qin');if(qin&&it){const b=document.createElement('button');b.type='button';b.className='qarr '+k;b.dataset.qarr=it.id;b.title='Klik for at skifte mellem ankommet og på vej';b.textContent=k==='arrived'?'Ankommet':'På vej';qin.insertBefore(b,qin.firstChild)}});
+  L.innerHTML='';[['arrived','Ankommet'],['enroute','På vej']].forEach(([k,t])=>{if(!by[k].length)return;const h=document.createElement('div');h.className='qgrp-h '+k;h.textContent=t+' · '+by[k].length;L.appendChild(h);by[k].forEach(x=>L.appendChild(x))})};
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-qarr]');if(!b)return;e.stopPropagation();const it=(S.queue||[]).find(x=>x.id===b.dataset.qarr);if(!it)return;
+  it.arr=arrOf(it)==='arrived'?'enroute':'arrived';_qSig='';save();render()},true);
+ {const _r=render;render=function(){_r.apply(this,arguments);try{group()}catch(e){console.error(e)}}}
+ group()}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);{const rc=document.createElement('div');rc.id='rightCol';lc.after(rc);rc.appendChild($('#qSec'));const mq=matchMedia('(min-width:1500px)');const place=()=>{if(mq.matches)rc.insertBefore(rb,rc.firstChild);else lc.insertBefore(rb,sh)};mq.addEventListener('change',place);place()}}
 function postRender(){
