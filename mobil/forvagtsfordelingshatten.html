@@ -793,6 +793,63 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .doc .case,.doc.folded .case{padding-left:14px!important;padding-right:14px!important}
 .doc .doc-h{padding-left:14px!important;padding-right:14px!important}
 .doc .cdet{padding-left:14px!important;padding-right:14px!important}
+/*FV67*/
+#panBtns{display:none}
+#panBack{display:none}
+.panX{display:none}
+@media(min-width:1500px){
+.topbar-in{gap:10px!important}
+#panBtns{display:flex;gap:4px}
+#panBtns button{height:31px;padding:0 10px;font-size:.82rem;white-space:nowrap}
+#panBtns button[aria-pressed="true"]{background:var(--go)!important;color:#1e2a35!important;border-color:var(--go)!important}
+#sleepToggle{display:none!important}
+.topbar #docSum{display:flex!important;flex-wrap:nowrap!important;flex-direction:row!important;gap:6px;margin:0!important;grid-template-columns:none!important}
+.topbar #docSum .kpi{flex:none!important;padding:3px 10px!important;font-size:.78rem!important;border-radius:8px!important;white-space:nowrap;display:flex;align-items:baseline;gap:5px}
+.topbar #docSum .kpi b{font-size:1.05rem!important}
+.wrap.fv67:not(:has(#docsEmpty:not([hidden]))){grid-template-columns:minmax(0,1fr) 340px!important}
+.wrap.fv67.fv67:not(:has(#docsEmpty:not([hidden]))) > :not(#leftCol):not(#rightCol){grid-column:1!important}
+.wrap.fv67:not(:has(#docsEmpty:not([hidden]))) > #rightCol{grid-column:2!important;top:8px!important;max-height:calc(100vh - 16px)!important;overflow-y:auto!important;gap:10px!important;padding:2px}
+#rightCol > #leftCol{display:block!important;position:static!important;max-height:none!important;overflow:visible!important;padding:0!important;grid-row:auto!important}
+#rightCol #leftCol .shot{padding:12px 14px!important}
+#rightCol #leftCol .shot .assign{gap:9px 8px!important}
+#rightCol #leftCol .shot .assign :is(.cdd-b,.fsel,input,select){height:36px!important;font-size:.9rem}
+#rightCol #leftCol .shot .assign .lbl{margin-bottom:3px!important;font-size:.64rem}
+#rightCol #leftCol #queueAdd{height:40px!important}
+#rightCol #leftCol .arrseg button{padding-top:6px!important;padding-bottom:6px!important}
+#rightCol #recBox{display:flex!important;align-items:center;gap:8px;padding:6px 12px!important;border-width:1px!important;border-radius:10px;cursor:help}
+#rightCol #recBox .hat{font-size:1.2rem;grid-row:auto}
+#rightCol #recBox .hat .avs,#rightCol #recBox .hat img{width:26px!important;height:26px!important}
+#rightCol #recBox > div{display:flex;align-items:center;gap:8px;min-width:0}
+#rightCol #recBox #shotLabel{font-size:0!important}
+#rightCol #recBox #shotLabel::before{content:"Næste";font:700 .68rem var(--sans);letter-spacing:.08em}
+#rightCol #recBox .who{font-size:1.05rem!important}
+#rightCol #recBox #shotWhy{display:none!important}
+#docs{min-height:0!important}
+#vTabs{display:none!important}
+.wrap.fv67:not(:has(#docsEmpty:not([hidden]))):not(.pan) :is(#rosterCard,#sleepCard,#logCard,#fileCard){display:none!important}
+.wrap.fv67.pan :is(#rosterCard,#sleepCard,#logCard,#fileCard){position:fixed!important;top:56px;left:50%;transform:translateX(-50%);width:min(1100px,90vw);max-height:calc(100vh - 80px);overflow:auto;z-index:70;margin:0!important;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#panBack:not([hidden]){display:block;position:fixed;inset:0;background:rgba(5,10,20,.55);z-index:65}
+.wrap.fv67.pan .panX{display:block;position:absolute;top:6px;right:8px;width:30px;height:30px;padding:0;border-radius:8px;font-size:1rem;z-index:2}
+.wrap.fv67.pan :is(#rosterCard,#sleepCard,#logCard,#fileCard) .card-h{padding-right:48px!important}
+}
+@media(min-width:1500px) and (max-width:1859px){
+.topbar .sub,.topbar .edtag{display:none!important}
+#viewCtl label>span:first-child,#viewCtl .lbl{display:none!important}
+#panBtns button{font-size:0!important;padding:0 8px!important}
+#panBtns button span{font-size:.95rem}
+#verBtn{font-size:.62rem!important;max-width:96px}
+}
+/* 4 neutral header + belastningsstribe */
+.doc .doc-h{background:color-mix(in srgb,var(--fg) 5%,var(--surface))!important;color:var(--fg)!important;box-shadow:inset 0 -4px 0 var(--dc,var(--line))}
+.doc .doc-h .hd-add{background:color-mix(in srgb,var(--fg) 10%,transparent)!important;color:var(--fg)!important}
+/* 5 ufordelte */
+#qList .qcase,#qList .qcase[style*="--trc"]{border-left:1px solid var(--line)!important;border-color:color-mix(in srgb,var(--fg) 18%,var(--surface))!important}
+#qList .qin{flex-wrap:wrap!important;gap:4px!important}
+#qList .qin>:not(.qnote){flex:none;white-space:nowrap}
+#qList .qin>:is(.qarr,.trp,.pbt,.typ){font-size:.62rem!important;padding-left:6px!important;padding-right:6px!important}
+#qList .qin>.qnote{flex:1 1 100%!important;font-size:.88rem!important;color:var(--fg)!important;padding:2px 0 0!important;white-space:normal}
+/* 6 ens højde */
+#docs[data-lay="rows"]{align-items:stretch!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1143,6 +1200,23 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  group()}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);{const rc=document.createElement('div');rc.id='rightCol';lc.after(rc);rc.appendChild($('#qSec'));const mq=matchMedia('(min-width:1500px)');const place=()=>{if(mq.matches)rc.insertBefore(rb,rc.firstChild);else lc.insertBefore(rb,sh)};mq.addEventListener('change',place);place()}}
+{const mq=matchMedia('(min-width:1500px)'),W=document.querySelector('.wrap'),lc=document.getElementById('leftCol'),rc=document.getElementById('rightCol'),ds=document.getElementById('docSum'),rb=document.getElementById('recBox'),qs=document.getElementById('qSec'),tb=document.querySelector('.topbtns');
+ if(W&&lc&&rc&&tb){W.classList.add('fv67');
+  const pan=document.createElement('div');pan.id='panBtns';pan.setAttribute('role','group');pan.setAttribute('aria-label','Paneler');
+  [['roster','👥','Forvagter'],['sleep','🌙','Soveplan'],['log','📋','Log'],['file','📁','Fil']].forEach(([k,i,t])=>{const b=document.createElement('button');b.type='button';b.dataset.pan=k;b.innerHTML='<span aria-hidden="true">'+i+'</span> '+t;b.title=t;pan.appendChild(b)});
+  tb.parentNode.insertBefore(pan,tb);
+  const back=document.createElement('div');back.id='panBack';document.body.appendChild(back);
+  const syncPan=()=>{const o=W.classList.contains('pan');pan.querySelectorAll('[data-pan]').forEach(b=>b.setAttribute('aria-pressed',String(o&&W.dataset.vt===b.dataset.pan)));back.hidden=!o};
+  const close=()=>{W.classList.remove('pan');syncPan()};window.panClose=close;
+  pan.addEventListener('click',e=>{const b=e.target.closest('[data-pan]');if(!b)return;if(W.classList.contains('pan')&&W.dataset.vt===b.dataset.pan){close();return}setVt(b.dataset.pan);if(b.dataset.pan==='sleep'){try{sleepShow=true;render()}catch(_){}}W.classList.add('pan');syncPan()});
+  back.addEventListener('click',close);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&W.classList.contains('pan'))close()});
+  ['rosterCard','sleepCard','logCard','fileCard'].forEach(id=>{const c=document.getElementById(id);if(!c)return;const x=document.createElement('button');x.type='button';x.className='panX';x.setAttribute('aria-label','Luk');x.textContent='✕';x.addEventListener('click',close);c.appendChild(x)});
+  syncPan();
+  const place=()=>{if(mq.matches){rc.insertBefore(lc,rc.firstChild);if(ds)tb.parentNode.insertBefore(ds,pan);if(rb&&qs)rc.insertBefore(rb,qs)}else{W.insertBefore(lc,W.firstChild);if(ds)lc.insertBefore(ds,lc.firstChild);if(rb){const sh=document.getElementById('shot');lc.insertBefore(rb,sh)}close()}};
+  mq.addEventListener('change',place);place();
+  const _r=render;render=function(){_r.apply(this,arguments);try{const w=document.getElementById('shotWhy');if(rb)rb.title=w?w.textContent:''}catch(e){}};
+ }}
+
 function postRender(){
   const ds=onDuty(),n=next(),el=$('#teamStrip');
   if(el){el.hidden=!ds.length;
