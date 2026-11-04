@@ -682,6 +682,9 @@ body{padding-bottom:0!important}
 .qcase .qto,.qcase .qgo,.qcase .qdel{order:2}
 .qcase .qto{flex:1 1 110px;min-width:0;max-width:none}
 .qcase{gap:6px 6px}
+/*FV49*/
+.qcase .qzr{flex-basis:100%;display:flex;gap:5px}
+#qPick .qp-row .zp{flex-basis:100%}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -898,7 +901,7 @@ function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l
   const sig=q.map(x=>x.id).join(',')+'|'+ds.map(d=>d.id+':'+active(d.id).length).join(',');
   if(sig!==_qSig){_qSig=sig;
     $('#qList').innerHTML=q.slice().sort((a,b)=>(trRank(a)-trRank(b))||(tyOf(b)[2]-tyOf(a)[2])||a.q-b.q).map(c=>{const p=pbOf(c);
-      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${c.tr?trPill(c.tr):''}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?(c.zone?'<span class="zp">Zone '+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St. '+esc(c.room)+'</span>':''):''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
+      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${c.tr?trPill(c.tr):''}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
   $('#qCount').textContent=q.length+(q.length===1?' venter':' venter');
   document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent=(Date.now()-(+e.dataset.qw)<60000?'venter under 1 min':'venter '+dur(Date.now()-(+e.dataset.qw)))})}
 $('#queueAdd').addEventListener('click',()=>{const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
