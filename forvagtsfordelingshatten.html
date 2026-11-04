@@ -963,7 +963,7 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  {const _r=render;render=function(){_r.apply(this,arguments);try{apply()}catch(e){console.error(e)}}}
  apply()}
 {const LS=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}},SS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
- let sortM=LS('fv.sort','fast'),lay=LS('fv.lay','cols');if(!['fast','tung','let'].includes(sortM))sortM='fast';if(!['cols','rows'].includes(lay))lay='cols';
+ let sortM=LS('fv.sort2','tung'),lay=LS('fv.lay2','rows');if(!['fast','tung','let'].includes(sortM))sortM='fast';if(!['cols','rows'].includes(lay))lay='cols';
  const ctl=document.createElement('div');ctl.id='viewCtl';
  ctl.innerHTML='<label>Sortér<select id="sortSel"><option value="fast">Fast rækkefølge</option><option value="tung">Mest belastet først</option><option value="let">Mindst belastet først</option></select></label><label>Layout<select id="laySel"><option value="cols">Kolonner</option><option value="rows">Rækker</option></select></label>';
  const nav=document.createElement('div');nav.id='navCtl';nav.append($('#foldAll'),ctl);document.querySelector('.topbtns').before(nav);
@@ -974,8 +974,8 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
   const cmp={fast:(a,b)=>idx(a)-idx(b),   tung:(a,b)=>wl(b)-wl(a)||ac(b)-ac(a)||idx(a)-idx(b),let:(a,b)=>wl(a)-wl(b)||ac(a)-ac(b)||idx(a)-idx(b)}[sortM];
   [...box.querySelectorAll(':scope>.doc[data-did]')].sort((a,b)=>cmp(a.dataset.did,b.dataset.did)).forEach(x=>box.appendChild(x));
   nav.hidden=!box.querySelector(':scope>.doc[data-did]')};
- sS.addEventListener('change',()=>{sortM=sS.value;SS('fv.sort',sortM);order()});
- lS.addEventListener('change',()=>{lay=lS.value;SS('fv.lay',lay);order()});
+ sS.addEventListener('change',()=>{sortM=sS.value;SS('fv.sort2',sortM);order()});
+ lS.addEventListener('change',()=>{lay=lS.value;SS('fv.lay2',lay);order()});
  {const _r=render;render=function(){_r.apply(this,arguments);try{order()}catch(e){console.error(e)}}}
  order()}
 {const pop=document.createElement('div');pop.id='qPick';pop.hidden=true;document.body.appendChild(pop);
