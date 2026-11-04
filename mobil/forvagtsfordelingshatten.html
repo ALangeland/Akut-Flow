@@ -741,6 +741,15 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .doc .doc-h .hd-l{gap:4px 10px!important;align-items:center}
 .fold-b{width:24px;height:24px}
 #docs[data-lay="cols"] .doc .doc-h .nm{font-size:1.3rem}
+/*FV58*/
+.doc .doc-h .lv{display:none!important}
+.doc:has(.load.l0){--dc:color-mix(in srgb,var(--done) 70%,var(--surface))}
+.doc:has(.load.l1){--dc:#2e9e44}
+.doc:has(.load.l2){--dc:#f0b000}
+.doc:has(.load.l3){--dc:var(--hit)}
+.doc{border:3px solid var(--dc,var(--line))!important;border-radius:10px!important;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.doc.next{box-shadow:0 0 0 3px var(--go),0 4px 14px rgba(0,0,0,.35)}
+.doc .doc-h{border-radius:0!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
