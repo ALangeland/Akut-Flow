@@ -364,6 +364,20 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .case .acts .stsel[data-st="start"]{--sc:var(--hit)}.case .acts .stsel[data-st="recv"]{--sc:var(--warn)}.case .acts .stsel[data-st="plan"]{--sc:var(--go)}
 .case .acts .fin{height:40px;padding:0 14px!important}
 }
+/*FV18*/
+.case .acts .st{display:none!important}
+.case .acts .stsel{display:block!important;flex:1 1 0;min-width:0;height:32px;font:700 .82rem var(--sans);border-radius:6px;padding:0 6px;border:2px solid var(--sc,var(--line));background:var(--surface);color:var(--fg)}
+.case .acts .stsel[data-st="start"]{--sc:var(--hit)}.case .acts .stsel[data-st="recv"]{--sc:var(--warn)}.case .acts .stsel[data-st="plan"]{--sc:var(--go)}
+.case .acts .fin{height:32px;padding:0 12px!important;font-size:.82rem!important}
+.case .ct{display:none!important}
+.case{grid-template-columns:minmax(0,1fr) auto!important;gap:5px 8px!important;padding:7px 9px!important}
+.case .cl{grid-column:1;grid-row:1}
+.case .el{grid-column:2!important;grid-row:1!important;font-size:1rem!important;align-self:start}
+.case .el small{display:none}
+.case .cnote{grid-column:1/-1;font-size:.78rem!important}
+.case .acts{grid-column:1/-1!important;grid-row:auto!important}
+.case .cl .cnote{flex:1 1 100%;font-size:.78rem!important;margin-top:1px}
+.docs{gap:8px!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -740,7 +754,7 @@ function render(){
     return `<article class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
-        <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
+        <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
         <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<select class="stsel" data-st="${stOf(c)[0]}" data-case="${c.id}" aria-label="Status">${ST.map(x=>`<option value="${x[0]}"${stOf(c)[0]===x[0]?' selected':''}>${x[2]}</option>`).join('')}</select><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats"><span class="donec">✓ ${dn.length} afsluttet</span><span class="sm">gns. ${avg}</span>${la?`<span class="sm">sidst tildelt ${hm(la)}</span>`:''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
