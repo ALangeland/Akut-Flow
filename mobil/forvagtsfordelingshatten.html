@@ -480,6 +480,23 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .doc:has(.nocase){display:flex!important}
 .doc:has(.nocase) .doc-f{display:none}
 .doc:has(.nocase) .nocase{padding:8px 12px;color:var(--done);font-weight:700}
+/*FV25*/
+.doc-h .load{margin-left:auto;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:1px!important;min-width:68px;padding:5px 10px 6px!important;border-radius:12px!important;background:var(--lb)!important;color:#fff!important;line-height:1}
+.doc-h .load b{display:block!important;min-width:0!important;height:auto!important;padding:0!important;background:none!important;color:inherit!important;font:800 2rem var(--sans)!important;border-radius:0!important}
+.doc-h .load span{font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:inherit}
+.doc-h .load.l0{--lb:var(--done)}
+.doc-h .load.l1{--lb:#f0c419;color:#1e2a35!important}
+.doc-h .load.l2{--lb:#ef8a17;color:#1e2a35!important}
+.doc-h .load.l3{--lb:var(--hit)}
+:root[data-theme="dark"] .doc-h .load.l0{color:#10202b!important}
+.lbar{display:flex;gap:3px;flex-basis:100%;order:4}
+.lbar i{flex:1;height:8px;border-radius:4px;background:var(--t-m)}
+.lbar i.t-l{background:var(--t-l)}.lbar i.t-t{background:var(--t-t)}
+.lbar i.pl{opacity:.3}
+.kpis{gap:8px!important}
+.kpi{padding:6px 16px!important;font-size:.88rem!important;border-radius:10px!important}
+.kpi b{font:800 1.6rem var(--sans)!important;line-height:1}
+.kpi.act{border-color:var(--go);background:color-mix(in srgb,var(--go) 14%,var(--surface))}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -912,7 +929,7 @@ function render(){
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
     const zz=sleepOf(d.id);
     return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
-      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
+      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${c.tr?trPill(c.tr):''}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
