@@ -729,6 +729,11 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 #leftCol #queueAdd{height:48px!important;font-size:1.02rem!important}
 #leftCol .shot{padding:18px!important}
 }
+/*FV56*/
+.qcase .qzs{flex-basis:100%;display:flex;gap:6px;order:1}
+.qcase .qzs select{height:32px;font:600 .8rem var(--sans);min-width:0}
+.qcase .qzs .qz{flex:0 0 92px}
+.qcase .qzs .qs{flex:1 1 auto}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1057,10 +1062,19 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
   const sync=()=>{w.querySelectorAll('[data-an]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.an===window.qArrNew)));if(sh)sh.dataset.arr=window.qArrNew};sync();
   w.addEventListener('click',e=>{const b=e.target.closest('[data-an]');if(!b)return;window.qArrNew=b.dataset.an;try{localStorage.setItem('fv.arrnew',b.dataset.an)}catch(_){}sync()})}}
  const arrOf=c=>c.arr==='enroute'?'enroute':'arrived';
+ const zoneOpts=z=>'<option value="">Zone</option>'+Object.keys(ZONES).map(k=>'<option value="'+k+'"'+(k===z?' selected':'')+'>Zone '+k+'</option>').join('');
+ const stueOpts=(z,r)=>{const keep=z&&r?z+'|'+r:'';let h='<option value="">Stue</option>';if(z&&ZONES[z])h+=ZONES[z].map(x=>roomOpt(z,x,keep===z+'|'+x)).join('');else h+=Object.entries(ZONES).map(([zz,l])=>'<optgroup label="Zone '+zz+'">'+l.map(x=>roomOpt(zz,x,keep===zz+'|'+x)).join('')+'</optgroup>').join('');return h};
+ $('#qList').addEventListener('change',e=>{const zsel=e.target.closest('.qz'),ssel=e.target.closest('.qs');if(!zsel&&!ssel)return;
+  const id=(zsel||ssel).dataset.qzf||(zsel||ssel).dataset.qsf,it=(S.queue||[]).find(x=>x.id===id);if(!it)return;const box=(zsel||ssel).closest('.qzs'),zS=box.querySelector('.qz'),sS=box.querySelector('.qs');
+  if(zsel){it.zone=zsel.value;it.room='';sS.innerHTML=stueOpts(it.zone,'')}
+  else{const v=ssel.value;if(v){const [z,r]=v.split('|');it.zone=z;it.room=r;zS.value=z;sS.innerHTML=stueOpts(z,r)}else{it.room=''}}
+  save()});
  const group=()=>{const L=$('#qList');if(!L||L.querySelector('.qgrp-h')||!L.querySelector('.qcase'))return;
   const q=S.queue||[],cards=[...L.querySelectorAll(':scope>.qcase')],by={arrived:[],enroute:[]};
   cards.forEach(el=>{const it=q.find(x=>x.id===el.dataset.q);const k=it?arrOf(it):'arrived';by[k].push(el);
-   const qin=el.querySelector('.qin');if(qin&&it){const b=document.createElement('button');b.type='button';b.className='qarr '+k;b.dataset.qarr=it.id;b.title='Klik for at skifte mellem ankommet og på vej';b.textContent=k==='arrived'?'Ankommet':'På vej';qin.insertBefore(b,qin.firstChild)}});
+   const qin=el.querySelector('.qin');if(qin&&it){const b=document.createElement('button');b.type='button';b.className='qarr '+k;b.dataset.qarr=it.id;b.title='Klik for at skifte mellem ankommet og på vej';b.textContent=k==='arrived'?'Ankommet':'På vej';qin.insertBefore(b,qin.firstChild);
+    if(k==='arrived'){const old=qin.querySelector('.qzr');if(old)old.remove();const zs=document.createElement('div');zs.className='qzs';
+     zs.innerHTML='<select class="qz" data-qzf="'+it.id+'" aria-label="Zone">'+zoneOpts(it.zone)+'</select><select class="qs" data-qsf="'+it.id+'" aria-label="Stue">'+stueOpts(it.zone,it.room)+'</select>';qin.after(zs)}}});
   L.innerHTML='';[['arrived','Ankommet'],['enroute','På vej']].forEach(([k,t])=>{if(!by[k].length)return;const h=document.createElement('div');h.className='qgrp-h '+k;h.textContent=t+' · '+by[k].length;L.appendChild(h);by[k].forEach(x=>L.appendChild(x))})};
  document.addEventListener('click',e=>{const b=e.target.closest('[data-qarr]');if(!b)return;e.stopPropagation();const it=(S.queue||[]).find(x=>x.id===b.dataset.qarr);if(!it)return;
   it.arr=arrOf(it)==='arrived'?'enroute':'arrived';_qSig='';save();render()},true);
