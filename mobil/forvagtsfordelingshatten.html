@@ -313,7 +313,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .shot .pbseg button[aria-pressed="true"]{background:var(--pc)!important}
 .pbseg button .em{font-size:1.15rem!important}
 .pbseg button b{font-size:.92rem!important}
-@media(max-width:700px){.shot .assign{grid-template-areas:"to to" "zone stue" "pb pb" "ty ty" "note note" "btn btn"!important}}
+@media(max-width:700px){.shot .assign{grid-template-areas:"to to" "zone stue" "pb pb" "ty ty" "note note" "q q" "btn btn"!important}}
 .wrap{max-width:1320px!important;gap:16px!important}
 .wrap:has(#docsEmpty:not([hidden])) #shot,.wrap:has(#docsEmpty:not([hidden])) #sleepCard,.wrap:has(#docsEmpty:not([hidden])) section:has(#log){display:none!important}
 .wrap:has(#docsEmpty:not([hidden])) > section:has(#docs) > div:first-child{display:none!important}
@@ -332,7 +332,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .shot .hat{font-size:1.6rem}
 .shot > div:nth-of-type(1){display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
 .shot .who{font-size:1.15rem}
-.shot .assign{grid-template-columns:200px 110px 170px minmax(0,1fr) minmax(0,1fr) 180px!important;grid-template-areas:"to zone stue pb pb pb" "ty ty ty note note btn"!important;gap:8px 10px!important;align-items:end!important}
+.shot .assign{grid-template-columns:200px 110px 170px minmax(0,1fr) minmax(0,1fr) 140px 170px!important;grid-template-areas:"to zone stue pb pb pb pb" "ty ty ty note note q btn"!important;gap:8px 10px!important;align-items:end!important}
 .shot .assign select,.shot .assign input,.shot .assign .tyseg,.shot .assign .pbseg button,.shot .assign #assignNext{height:40px!important}
 .shot .assign .lbl{height:14px!important;line-height:14px!important;margin-bottom:3px!important;font-size:.64rem}
 }
@@ -378,6 +378,34 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .case .acts{grid-column:1/-1!important;grid-row:auto!important}
 .case .cl .cnote{flex:1 1 100%;font-size:.78rem!important;margin-top:1px}
 .docs{gap:8px!important}
+/*FV19*/
+.shot .assign .a-q{grid-area:q}
+#qSec{border:1px dashed var(--warn);border-radius:8px;padding:10px 12px;background:color-mix(in srgb,var(--warn) 7%,transparent)}
+#qSec .qh{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#qSec .qn{font:700 .78rem var(--sans);padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn)}
+#qList{display:grid;grid-template-columns:repeat(auto-fill,minmax(440px,1fr));gap:8px}
+.qcase{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:6px;background:var(--surface)}
+.qcase.t-t{border-left-color:var(--t-t)}.qcase.t-m{border-left-color:var(--t-m)}.qcase.t-l{border-left-color:var(--t-l)}
+.qcase .qin{display:flex;flex-wrap:wrap;align-items:center;gap:5px;flex:1 1 200px;min-width:0}
+.qcase .qnote{flex:1 1 100%;font-size:.78rem;color:var(--muted)}
+.qcase .qw{font:700 .8rem var(--sans);color:var(--warn);white-space:nowrap}
+.qcase .qto{height:32px;font:600 .8rem var(--sans);max-width:170px}
+.qcase .qgo{height:32px;padding:0 14px}
+.qcase .qdel{height:32px;width:32px;padding:0;color:var(--hit)}
+#queueAdd{height:40px;width:100%;white-space:nowrap;font-weight:700}
+/*FV20*/
+.vtabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid var(--line);padding-bottom:0}
+.vtabs button{border:0;background:transparent;font:700 .9rem var(--sans);color:var(--muted);padding:9px 16px;border-radius:8px 8px 0 0;cursor:pointer;margin-bottom:-2px;border-bottom:3px solid transparent}
+.vtabs button .n{display:inline-block;min-width:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:color-mix(in srgb,var(--muted) 22%,transparent);font-size:.74rem;text-align:center}
+.vtabs button[aria-pressed="true"]{color:var(--fg);border-bottom-color:var(--go);background:color-mix(in srgb,var(--go) 10%,transparent)}
+.vtabs button:hover:not([aria-pressed="true"]){color:var(--fg)}
+.wrap[data-vt="roster"] :is(#sleepCard,#logCard,#fileCard){display:none!important}
+.wrap[data-vt="sleep"] :is(#rosterCard,#logCard,#fileCard){display:none!important}
+.wrap[data-vt="log"] :is(#rosterCard,#sleepCard,#fileCard){display:none!important}
+.wrap[data-vt="file"] :is(#rosterCard,#sleepCard,#logCard){display:none!important}
+.wrap[data-vt="sleep"] #sleepCard[hidden]{display:block!important}
+.wrap:has(#docsEmpty:not([hidden])) #vTabs{display:none}
+.wrap:has(#docsEmpty:not([hidden])) :is(#rosterCard,#fileCard){display:block!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -396,16 +424,21 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
       <div class="zs a-stue"><label class="lbl" for="caseRoom">Stue <span id="roomHint" class="rh"></span></label><select id="caseRoom"></select></div>
       <div class="zs pb a-pb"><span class="lbl">Problematik</span><div class="pbseg" id="pbSeg" role="group" aria-label="Problematik A–E"></div></div>
       <div class="zs ty a-ty"><span class="lbl">Tyngde</span><div class="tyseg" id="tySeg" role="group" aria-label="Estimeret tyngde"><button type="button" data-ty="l"><span class="ico"><img class="px v5" src="data:image/webp;base64,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" width="24" height="24" alt=""><span class="emo"></span></span>Let</button><button type="button" data-ty="m" aria-pressed="true"><span class="ico"><img class="px v5" src="data:image/webp;base64,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" width="24" height="24" alt=""><span class="emo"></span></span>Middel</button><button type="button" data-ty="t"><span class="ico"><img class="px v5" src="data:image/webp;base64,UklGRvYMAABXRUJQVlA4WAoAAAAQAAAAbwAAbwAAQUxQSIYEAAABoEZtkyHJ+iJi99q2bdu2bdu2bdu2bdu2bd9BRHwXg+6qyss/ETEBqKcpejRFEU2A0adec5pxBVCTxjMBZr3ky1/4y3e3rTgOAFVpMhVg/ouTZJDkp2cvOyIAk6ZSAxa+iaRnMjOC5LvHzzUooCYNpAoscGMyPdlrepLxxPpjATBtGDVghlOC6exnOskvzlpxBEBMm0MNmOKMLtLZygiSbxw+EwA1aQRRYPKTviM92eL0IDtu2WJCAKZSNzFg8pN/ID3ZznCS31yw0lAArFZiwEgH/0B6st3pTvKlY2YGtD5iwIi7vE16spLpQXbevSi0LgYMXONt0pPVDSd9f2gtRGGrPER6sNrpmStAayDA/I+QEax+8L0RIJUTjHJ2FyNYS+fqsKqJjPgsw1lTz8tFq6Y4nl3JugafNFRcMdlPkazRo5Uz7EBnnR6rwWFZmv1YFsFVhQEeYRTm/uI88Lfn/tIMeKwsinG+ZpZl/O+K8+3/fSYszAAd45uSiAGL/Jr1enxglQwY56wfmazVw1CTiqhipH0+Zs2T704JwLQCYsBar5Ge9SL53XVrjQiotcuA6W8ku5O1T5Lv7DMFAJM2GDD84d8zgk2YHuQP5ywigGmLVGGrvUE6GzOc5F0bjwqoSQsMWPx+0pNNmp7kR0dMCMCkHyoY94JgBBs3gvz60qUHACZ9EAPW+pDpbOR0kg9vMgygPYkB091MOhs7PcjXdhkZ+icFRj/lJ2ay0SPItxaEAoqBG79POhs/uvnd9IBi+ntJT5awmzcMqpjnS3qwkJGLyoSfsZvFDB6GU9nNktw35EsZRbl/pp+ZZZmzqzSzdpRmwe7S7MxgWXYrzq5/e3Yuzr7Fuas4DxTn/v9c3Fech4pzfHF2LM5uxdn1Pxe7lOa+3Uvz8BaFyQtm72QWJLn+nEWJfHOM0T/McnhyPeBqeiHS6YcPMMzWEVGEIB+fDxDFrqRH46Wz48AhoYAoNv2MDM9Gc/KxuQHDnwXjbPMSSY+KRA0i+M22Q8AEPRsw5NK3/UqGZ/siGVVLJ2+ZGlD0UQ3A9Ie/Q9KzPdHNfJURlQryjbUBE/RdTIAR177pVzIiW5ZOvrTy8FeR4VGVdPpxIwKKFqoBmP74j0h6tiSdfG/34YEB6z9HMiKr4OT98wGGFosJMOpq9wcZ0b8gv99zFMAEGGLpM94j6dGuDP685yAwQRtVAZ39wq9IevYpnB2nTwGYAGIARtnw3l/I9GyHk3fMChjaLAZgrE0fSNI9e4ogH5sbMEGPYgrI1Ie8TDI8WxTBLzYVmKD9ogroPKd/Q9L/HOQLGw8GU/RVDMAQ85/5AUn37F86ed0kEEVFxQBMuMttHezx+Y2HBBT9VgMwyrq3fErSox9BvrUaYKiyKoDp9739jruuWm8owAStFFMAY2x+y69kePaW3ew8eTSIouJqgl5N0HIxATDrSa+TDE+S6eTT8wOGOqqJiJqgvWICDLvmFZ+TTA/y2/2GhgkaXQ3AWGtf8SnJby6aGjA0vpgCGHXR9ZYdGzBBEdUUf1ZFWwFWUDggSggAADAkAJ0BKnAAcAA+YSiRRaQiIZbYxpBABgS2AGXOCcQH6XzbbB/avxrxtZpO0POL6Jvzv7AH6j/3zqv+YD+Wf3f9n/dk/2Xq7/3HqEf63qdPQA/ZD02fZR/cX91fau//9632DNqr+58GKAD8j/sfFB/q61Oaj5Evrb2C2JZR6wrB+o8yiMfpMS+nLnySaqqaviKMditn3s0sHYECxemENjviLrbZ9d9lcgpXox+DAwVDltqcvPKpwf+jcpWnt0eJVag0V7wdyZzJM5CKVkgyvDZaruUt9EzNptnUJJvBE7AlZ1tN/QU7sHU840j//v5Md+4cp60HZRI8eXt4+e11QskGQsIhvvIa28xql7vu0niapYGFUzXz/vaT9pE8oH+9jtpBZLXWADEbwAAA/v6lNrz1sSqRRbqOJmr1FW9ZUEXJzvl2tLdyQSLxt+3Lfa4JHenjp1PTHb9ZU6wwM3t/kkb1cTjviySCYjXhh6qCHlMfmVwAQnn29EUHILZs8JVxC8JnR/W+n9StSzQytEZlm7C/NIl0zXO+QAoThzTbcmBV3lIE+1wsVyWhahl8WzJA7NNJ3wUKgFeegicchdSjCP2XjZaUzRbVAGdQNBrj6OXvvqnz3louj7q1t5KNHwgLoX9NDo44v9t7PfTQAmCJpLxORFWctClzQ6n73aaN1aETAYBhEPTIgJnnGP0LRreUz7XSB2IJJ2gzAmv+JIXLFK5900jvI/2lTV9sZ7F9mnc7fMRwICJxjNS4G5jxAl7WPwCLUpA7WvFsrvdVdyfRFmvUQ0OZHPi97BUumIUmT6CL61fdyj/dHEfBF39zecOdsrqy+pbLcf+qBCbuBajKVocy2M+jRxYdrbQHwPz3vrmvS2gVIzA6uiUUEPmIi1fsr3XgixuxV1BOCRFqA6N1GRVdng9Ejc4lJHUhHHt48zBspvVfqJNUfG7WzOt+dVlh7azkfOveHmZ2K3r922S3oHBLcVpgmzfBIZ3sIghzpaIMjslt9NMSLmI4z1OsjQmh7ZnpstxZobskGvn/4Y06WEsb+iKwVQau8NCeRAUNWFjZrLjYZTeCf8rnWKp/83oUZzPVh5GGq4Xj6dAD1tOqU5wSPk5tn4xdgUwwGjyaC13Z60Ijsn12MAi3p44vvuWVMj0IEzK+tlLqZ+zHbmwOU4hS87Pqk2McgR/qhk4feebcfsshs2zZ8llnKJT2T/+wrc5b/nOy4/BVDkP5l0M/IELccc8Cp8mPnRIGPysiFIczq45qYdeH575P7bqhclaHVHTHZuvffOmYlaN5b9MZRGPjBxGybsj84ATpDnBoBU7FuPzzIf+WSOXhbixYqNkc09z0WPOxLu3wCJbtKF1esrGvq20e4UQIPLEqJ6QEviYVOcvf9G4j6SxekBwnJJZ9GE5bFPJur6OVKlgwttYH8n7Mfn8GtCsDpJQvzONuTxuxIxG8fXh6e7aze2CDKmm0YgiAXpBwSpv3PK9O8Ar04SRbb4pXSMF6nSIzN2WKuaYUx4pWBneAO4/DhOLgbGqwFMxw2wkyhGjSkOIV3euj/07/h0O5TeI+2F+HIM0ZEDo376ST1G/jHDTY2+Gp0R45sWakGhehVpmrrKfNoT/ZsqEt/wtCJbgwcPlOO2355+ivUEBYdRqbQdy8/2ueWYieC+uWd/2lPIT8VAs1k0QxOTQBfope6XlnH2YsF/8uYkHeRR7GpGc+ybMsh2ddgEXy6u8i8Rr8u0kirPUxVX77cl6hH9IrEBEv7FNh1HIgojaHwWFpSOjUDZDym558EsHce/x8aho506rf2LoSlXHNtZJwApfk+kyW2FBCfRvp5H+8x2KBTBkrRrvVmieJuKj3B8PLJqVwX54hgnlq/zBB/hf7ngopCM0vA6ZVxBkQ9YTO7K1P10mjoghQ9X/R06OHCtOUjr3EvTo9rUl1eiNxEDjzDN0g3nbFewO4MQNroJ2Oa2HCVo+oz850bwnJdzCZVNvl15ppfCm7Vp2D0oGgkJOQ+3EaU2SjStFg4taH8qRHj39mir1Hf6U9m43ThjlVPNf+UnlY886ZPp+19T1EIbI0pSQp91eaTyqm0bV5i9oL3b1aCfwKgtIu6MfHfJfP92vmDOf7G/ffnPoU1rdQFyPcyFY6ZxoXkN2Up7T6JCn0swsxXd/pOeqJMhl6r3RIFqw+Y74/3m/O/jrXDGhrw5dCq65+Gndx3bVPHS55q4g9XozH5I3PK34x+jBKJspD7lHXG0ceTO9kacto5PJcq6rfJUg9G+TxJmXi9fIWzsWgNBF5WD9ceYHmxejOMnVpPxP29hGOcpcy1uH/rZlf+67mUtN7bybdRp03vUu1Di0oKqM6GgECnBlWDOuEChlNS0ESy7RxdBtC1qqXq3r2IroRH/jiOUru3dxo0F532CP7wMGiqpwH0/J4EiTaKGNuj8JmUtLVMpOjOHOsxjjsyW6m1u4jzjHZRqRzetxSTcppjptEHi82/Wb82qhcw3ZwC5OQtJrr5BFM4WvmHIjZLm5jvucq4Lvg5QCG+q8aIzt7itu8WlIAf4N1ZVxKKIGUkOsSjJBwl3VVIEkBhoYlju+4gQx4nHDi2/DOi9TS1DNwIKgOwqA75xzr/8czebsIW/ptShFB1fk/ixFcKLJzvhqRskgZn4sM8PHealrci+zmPjO+ijjJVrnq4cTSGJgMY9mEEh01R7DW373mcsKyBCjTLEPLG3w2u0GO8sLlr+n/jHe4bg/aAH5mfc7xiA5KpQjWYe2TDxyk8TVa2xgR322+aTlcIanG5On9wP6H4/cB0Ur5rn4syLbgyAP5JGlObEXhTBlW9ACAAAA=" width="24" height="24" alt=""><span class="emo"></span></span>Tung</button></div></div>
+      <div class="zs a-q"><span class="lbl">&nbsp;</span><button type="button" id="queueAdd" title="Opret patienten uden forvagt – tildel senere">+ Ufordelt</button></div>
       <div class="zs a-note"><label class="lbl" for="caseNote">Note</label><input id="caseNote" placeholder="Kortnote" autocomplete="off" maxlength="60"></div>
       <div class="zs a-btn"><span class="lbl">&nbsp;</span><button class="primary" id="assignNext" type="button">Tildel patient</button></div>
     </div>
   </section>
+
+  <section id="qSec" hidden><div class="qh"><h2>Ufordelte patienter</h2><span class="qn" id="qCount"></span></div><div id="qList"></div></section>
 
   <section>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><h2>Forvagter</h2><div class="kpis" id="docSum"></div></div>
     <div class="docs" id="docs"></div>
     <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem ovenfor, eller <button type="button" class="exbtn" data-example="1">indlæs eksempeldata</button> for at se, hvordan det ser ud.</p>
   </section>
+
+  <div class="vtabs" id="vTabs" role="tablist"><button type="button" data-vt="roster" aria-pressed="true">Forvagter på arbejde<span class="n" id="vtR">0</span></button><button type="button" data-vt="sleep" aria-pressed="false">Soveplan</button><button type="button" data-vt="log" aria-pressed="false">Log over afsluttede<span class="n" id="vtL">0</span></button><button type="button" data-vt="file" aria-pressed="false">Fil</button></div>
 
   <section class="card" id="sleepCard">
     <div class="card-h"><h2>Soveplan</h2><span class="sum" id="sleepSum"></span></div>
@@ -420,7 +453,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="rosterCard">
     <div class="card-h"><h2>Forvagter på arbejde</h2><span class="sum" id="rosterSum"></span></div>
     <div class="card-b">
       <form class="addrow" id="addForm" autocomplete="off">
@@ -434,13 +467,13 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
     </div>
   </section>
 
-  <section class="card">
+  <section class="card" id="logCard">
     <div class="card-h"><h2>Log over afsluttede</h2><span class="sum" id="logSum"></span></div>
     <ol class="log" id="log"></ol>
     <p class="empty" id="logEmpty">Ingen afsluttede patienter endnu.</p>
   </section>
 
-  <section class="card">
+  <section class="card" id="fileCard">
     <div class="card-h"><h2>Fil</h2></div>
     <div class="card-b">
       <div class="files"><button type="button" data-example="1" title="Erstatter vagten med 4 forvagter og opdigtede patienter – kan fortrydes">🧪 Indlæs eksempeldata</button><button id="saveFile" type="button">⇩ Gem vagten som fil</button><button id="loadFile" type="button">📂 Indlæs fil</button><input type="file" id="fileIn" accept=".json,application/json" hidden></div>
@@ -578,6 +611,30 @@ function renderSleep(){
 }
 $('#sleepMake').addEventListener('click',makePlan);
 $('#docs').addEventListener('change',e=>{const sel=e.target.closest('.stsel');if(!sel)return;const c=S.cases.find(x=>x.id===sel.dataset.case);if(c&&c.st!==sel.value){c.st=sel.value;c.stAt=Date.now();save();render()}});
+let _qSig='';
+function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l=$('#vtL');if(l)l.textContent=S.cases.filter(c=>c.end).length}const q=S.queue||[];const sec=$('#qSec');if(!sec)return;sec.hidden=!q.length;if(!q.length){_qSig='';$('#qList').innerHTML='';return}
+  const ds=onDuty(),n=next();
+  const sig=q.map(x=>x.id).join(',')+'|'+ds.map(d=>d.id+':'+active(d.id).length).join(',');
+  if(sig!==_qSig){_qSig=sig;
+    $('#qList').innerHTML=q.slice().sort((a,b)=>(tyOf(b)[2]-tyOf(a)[2])||a.q-b.q).map(c=>{const p=pbOf(c);
+      return `<div class="qcase t-${tyOf(c)[0]}" data-q="${c.id}"><div class="qin">${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?(c.zone?'<span class="zp">Zone '+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St. '+esc(c.room)+'</span>':''):''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">Anbefalet${n?': '+esc(n.name):''}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
+  $('#qCount').textContent=q.length+(q.length===1?' venter':' venter');
+  document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent='venter '+dur(Date.now()-(+e.dataset.qw))})}
+$('#queueAdd').addEventListener('click',()=>{const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
+  if(/\d{6}\s*-?\s*\d{4}/.test(note)){toast('Noten ligner et CPR-nummer – fjern det');$('#caseNote').focus();return}
+  const before=JSON.stringify(S);(S.queue=S.queue||[]).push({id:uid(),zone,room,pb:curPb,note,ty:curTy,q:Date.now()});save();
+  $('#caseRoom').value='';$('#roomHint').textContent='';setPb('');setTy('m');$('#caseNote').value='';render();toast('Patient lagt i ufordelte',true);undoState=before});
+$('#qList').addEventListener('click',e=>{const g=e.target.closest('[data-qgo]'),x=e.target.closest('[data-qdel]');const q=S.queue||[];
+  if(g){const it=q.find(y=>y.id===g.dataset.qgo);if(!it)return;const sel=document.querySelector('[data-qto="'+it.id+'"]');const d=(sel&&sel.value&&S.doctors.find(y=>y.id===sel.value))||next();
+    if(!d){toast('Tilføj først de forvagter, der er på arbejde');return}
+    const before=JSON.stringify(S);S.cases.push({id:uid(),doc:d.id,zone:it.zone,room:it.room,pb:it.pb,note:it.note,start:Date.now(),end:null,st:'start',stAt:Date.now(),ty:it.ty,queuedAt:it.q});
+    S.queue=q.filter(y=>y.id!==it.id);save();render();const lt=caseTxt(it);toast('Patient'+(lt?' ('+lt+')':'')+' tildelt '+d.name+' kl. '+hm(Date.now()),true);undoState=before;return}
+  if(x){const before=JSON.stringify(S);S.queue=q.filter(y=>y.id!==x.dataset.qdel);save();render();toast('Fjernet fra ufordelte',true);undoState=before}});
+setInterval(()=>{document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent='venter '+dur(Date.now()-(+e.dataset.qw))})},30000);
+function setVt(v){const w=document.querySelector('.wrap');w.dataset.vt=v;document.querySelectorAll('#vTabs [data-vt]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.vt===v))}
+setVt('roster');
+$('#vTabs').addEventListener('click',e=>{const b=e.target.closest('[data-vt]');if(b)setVt(b.dataset.vt)});
+$('#sleepToggle').addEventListener('click',()=>{setVt('sleep');$('#vTabs').scrollIntoView({behavior:'smooth',block:'start'})});
 $('#sleepToggle').addEventListener('click',()=>{sleepShow=!sleepVisible();render();if(sleepShow)$('#sleepCard').scrollIntoView({behavior:'smooth',block:'start'})});
 ['sleepFrom','sleepTo'].forEach(id=>$('#'+id).addEventListener('input',e=>e.target.dataset.touched='1'));
 $('#sleepCard').addEventListener('click',async e=>{
@@ -735,7 +792,7 @@ function fillTo(ds,n){const sel=$('#assignTo');const sig=n.id+'|'+ds.map(d=>d.id
   const c=sel.value?ds.find(d=>d.id===sel.value):n;$('#assignNext').textContent='Tildel '+(c?c.name:n.name)}
 $('#assignTo').addEventListener('change',()=>render());
 function render(){
-  renderSleep();
+  renderSleep();renderQ();
   const now=Date.now(),ds=onDuty(),n=next();
   // står for skud
   const shot=$('#shot');shot.classList.toggle('empty',!n);
