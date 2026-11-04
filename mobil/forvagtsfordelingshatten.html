@@ -596,7 +596,29 @@ body{padding-bottom:0!important}
 #viewCtl select{height:32px;padding:0 6px;font:600 .82rem var(--sans);text-transform:none;letter-spacing:0;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px}
 #docs[data-lay="rows"]{display:grid!important;columns:auto!important;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))!important;gap:10px!important;align-items:start}
 #docs[data-lay="rows"]>.doc,#docs[data-lay="cols"]>.doc{margin-bottom:0!important}
-#docs[data-lay="cols"]{display:grid!important;columns:auto!important;grid-auto-flow:column;grid-template-columns:none!important;grid-auto-columns:minmax(270px,1fr);gap:10px!important;align-items:start;overflow-x:auto;padding-bottom:6px}
+#docs[data-lay="cols"]{display:grid!important;columns:auto!important;gap:8px!important;align-items:start;overflow:visible}
+#docs[data-lay="cols"] .doc-h{padding:8px 8px 4px}
+#docs[data-lay="cols"] .doc-h .load{transform:scale(.8);transform-origin:top right}
+#docs[data-lay="cols"] .doc .case{grid-template-columns:minmax(0,1fr)!important;gap:4px!important;padding:8px!important}
+#docs[data-lay="cols"] .doc .case .el{grid-row:auto!important;grid-column:1!important;text-align:left!important;font-size:.95rem}
+#docs[data-lay="cols"] .doc .case .el small{text-align:left}
+#docs[data-lay="cols"] .doc .case .cl{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+#docs[data-lay="cols"] .doc .case .acts{flex-wrap:wrap!important;gap:4px}
+#docs[data-lay="cols"] .doc .case .acts>*{flex:1 1 auto!important;min-width:0!important;padding:5px 6px!important;font-size:.78rem}
+#docs[data-lay="cols"] .doc .case .acts>*{white-space:nowrap}
+#docs[data-lay="cols"] .doc .case .acts .plbtn{flex:1 1 100%!important}
+#docs[data-lay="cols"] .doc .case .acts .fin{flex:1 1 55%!important}
+#docs[data-lay="cols"] .doc .case .acts .mvsel,#docs[data-lay="cols"] .doc .case .acts select{flex:1 1 30%!important;max-width:100%}
+#docs[data-lay="cols"] .doc-f{padding:8px}
+#docs[data-lay="cols"] .doc-f .stats{flex-basis:100%}
+/*FV39*/
+@media(min-width:1500px){
+.wrap:not(:has(#docsEmpty:not([hidden]))){grid-template-columns:340px minmax(0,1fr) 290px!important}
+.wrap:not(:has(#docsEmpty:not([hidden]))) > :not(#leftCol):not(#qSec){grid-column:2!important}
+.wrap:not(:has(#docsEmpty:not([hidden]))) > #qSec{grid-column:3!important;grid-row:1/span 40;position:sticky;top:10px;align-self:start;max-height:calc(100vh - 20px);overflow-y:auto}
+.wrap:not(:has(#docsEmpty:not([hidden]))):has(#qSec[hidden]){grid-template-columns:340px minmax(0,1fr)!important}
+}
+.wrap:has(#docsEmpty:not([hidden])) > #qSec{display:none!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -881,16 +903,15 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  {const _r=render;render=function(){_r.apply(this,arguments);try{apply()}catch(e){console.error(e)}}}
  apply()}
 {const LS=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}},SS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
- let sortM=LS('fv.sort','fast'),lay=LS('fv.lay','cols');
+ let sortM=LS('fv.sort','fast'),lay=LS('fv.lay','cols');if(!['fast','tung','let'].includes(sortM))sortM='fast';if(!['cols','rows'].includes(lay))lay='cols';
  const ctl=document.createElement('div');ctl.id='viewCtl';
- ctl.innerHTML='<label>Sortér<select id="sortSel"><option value="fast">Fast rækkefølge</option><option value="navn">Navn</option><option value="tung">Mest belastet først</option><option value="let">Mindst belastet først</option></select></label><label>Layout<select id="laySel"><option value="cols">Kolonner</option><option value="rows">Rækker</option><option value="mos">Mosaik</option></select></label>';
+ ctl.innerHTML='<label>Sortér<select id="sortSel"><option value="fast">Fast rækkefølge</option><option value="tung">Mest belastet først</option><option value="let">Mindst belastet først</option></select></label><label>Layout<select id="laySel"><option value="cols">Kolonner</option><option value="rows">Rækker</option></select></label>';
  $('#docSum').after(ctl);
  const sS=ctl.querySelector('#sortSel'),lS=ctl.querySelector('#laySel');sS.value=sortM;lS.value=lay;
- const order=()=>{const box=$('#docs');box.dataset.lay=lay;
+ const order=()=>{const box=$('#docs');box.dataset.lay=lay;if(lay==='cols')box.style.setProperty('grid-template-columns','repeat(auto-fit,minmax(175px,1fr))','important');else box.style.removeProperty('grid-template-columns')
   const od=onDuty(),idx=id=>od.findIndex(d=>d.id===id),nm=id=>(S.doctors.find(d=>d.id===id)||{}).name||'';
   const ac=id=>active(id).length,wl=id=>wload(id);
-  const cmp={fast:(a,b)=>idx(a)-idx(b),navn:(a,b)=>nm(a).localeCompare(nm(b),'da'),
-   tung:(a,b)=>wl(b)-wl(a)||ac(b)-ac(a)||idx(a)-idx(b),let:(a,b)=>wl(a)-wl(b)||ac(a)-ac(b)||idx(a)-idx(b)}[sortM];
+  const cmp={fast:(a,b)=>idx(a)-idx(b),   tung:(a,b)=>wl(b)-wl(a)||ac(b)-ac(a)||idx(a)-idx(b),let:(a,b)=>wl(a)-wl(b)||ac(a)-ac(b)||idx(a)-idx(b)}[sortM];
   [...box.querySelectorAll(':scope>.doc[data-did]')].sort((a,b)=>cmp(a.dataset.did,b.dataset.did)).forEach(x=>box.appendChild(x));
   const fa=$('#foldAll');if(fa&&ctl.previousElementSibling!==fa)fa.after(ctl)};
  sS.addEventListener('change',()=>{sortM=sS.value;SS('fv.sort',sortM);order()});
@@ -898,7 +919,7 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  {const _r=render;render=function(){_r.apply(this,arguments);try{order()}catch(e){console.error(e)}}}
  order()}
 setVt('roster');
-{const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);lc.appendChild($('#qSec'))}
+{const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);lc.after($('#qSec'))}
 function postRender(){
   const ds=onDuty(),n=next(),el=$('#teamStrip');
   if(el){el.hidden=!ds.length;
