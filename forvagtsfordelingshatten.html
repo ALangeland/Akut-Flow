@@ -403,6 +403,44 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .qempty{margin:0;padding:8px 2px;color:var(--muted);font-size:.85rem}
 .case .acts .mvsel{flex:0 0 46px;width:46px;height:32px;padding:0 2px;text-align:center;text-align-last:center;font:700 1rem var(--sans);border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
 .case .acts .mvsel:hover{color:var(--fg);border-color:var(--go)}
+/*FV22*/
+#leftCol{display:contents}
+#teamStrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+#teamStrip[hidden]{display:none}
+.tm{display:flex;flex-direction:column;gap:7px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-top:4px solid var(--lc,var(--line));border-radius:8px;background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--sans)}
+.tm:hover{border-color:var(--go)}
+.tm.next{box-shadow:0 0 0 2px var(--go)}
+.tm-h{display:flex;align-items:center;gap:6px}
+.tm-h b{font-size:1rem}
+.tm .nx{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--go)}
+.tm .tu{margin-left:auto;font-size:.76rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.tm-b{display:flex;flex-wrap:wrap;gap:4px;min-height:26px;align-items:center}
+.sb{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font:800 .8rem var(--sans);color:#fff}
+.sb.t-l{background:var(--t-l)}.sb.t-m{background:var(--t-m);color:#1e2a35}.sb.t-t{background:var(--t-t)}
+.tm .free{font-weight:700;font-size:.82rem;color:var(--done)}
+.tm.idle{background:color-mix(in srgb,var(--done) 8%,var(--surface))}
+.doc:has(.nocase){display:none}
+.docs:not(:has(.doc:not(:has(.nocase))))::before{content:"Ingen aktive patienter hos forvagterne";grid-column:1/-1;padding:14px;color:var(--muted);text-align:center;border:1px dashed var(--line);border-radius:8px}
+.doc.flash{animation:fl 1.2s}
+@keyframes fl{0%,60%{box-shadow:0 0 0 3px var(--go)}100%{box-shadow:none}}
+@media(min-width:1500px){
+.wrap{display:grid!important;grid-template-columns:430px minmax(0,1fr)!important;column-gap:20px!important;max-width:1880px!important;align-items:start}
+.wrap>*{grid-column:2}
+#leftCol{display:flex!important;flex-direction:column;gap:14px;grid-column:1!important;grid-row:1/span 40;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;padding:2px}
+#leftCol .shot .assign{grid-template-columns:110px minmax(0,1fr)!important;grid-template-areas:"zone stue" "pb pb" "ty ty" "note note" "q q"!important}
+#leftCol #shotWhy{display:none}
+#leftCol .shot > div:nth-of-type(1){flex-wrap:nowrap}
+#qList{grid-template-columns:1fr!important}
+.docs{display:block!important;columns:5 270px;column-gap:10px}
+.docs>.doc{break-inside:avoid;margin-bottom:10px}
+.docs:not(:has(.doc:not(:has(.nocase))))::before{display:block}
+.case .acts .stsel{font-size:.78rem!important;padding:0 2px!important}
+.case .acts .fin{padding:0 8px!important}
+.case .acts .mvsel{flex:0 0 40px!important;width:40px!important}
+.wrap:has(#docsEmpty:not([hidden])){grid-template-columns:minmax(0,1fr)!important}
+.wrap:has(#docsEmpty:not([hidden]))>*{grid-column:1!important}
+.wrap:has(#docsEmpty:not([hidden])) #leftCol{display:none!important}
+}
 </style><style>/*AFMEM*/.afmem-btn{margin-left:auto;flex:none;align-self:center;display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--bar-muted,var(--muted));border-radius:6px;padding:3px 10px;font:600 .78rem var(--sans,system-ui,sans-serif);cursor:pointer;white-space:nowrap}
 .afmem-btn::before{content:"";width:18px;height:18px;background:url(data:image/webp;base64,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) center/contain no-repeat}
 .afmem-btn.ok{color:var(--go)}.afmem-btn.warn{color:var(--warn,#e8a317);border-color:var(--warn,#e8a317)}
@@ -434,6 +472,8 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
   </section>
 
   <section id="qSec" hidden><div class="qh"><h2>Ufordelte patienter</h2><span class="qn" id="qCount"></span></div><div id="qList"></div></section>
+
+  <section id="teamStrip" hidden></section>
 
   <section>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><h2>Forvagter</h2><div class="kpis" id="docSum"></div></div>
@@ -640,6 +680,20 @@ $('#docs').addEventListener('change',e=>{const sel=e.target.closest('.mvsel');if
   const d=S.doctors.find(x=>x.id===to);if(!d)return;c.doc=d.id;c.movedFrom=from?from.id:null;c.movedAt=Date.now();save();render();toast('Patient flyttet'+(from?' fra '+from.name:'')+' til '+d.name,true);undoState=before});
 function setVt(v){const w=document.querySelector('.wrap');w.dataset.vt=v;document.querySelectorAll('#vTabs [data-vt]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.vt===v))}
 setVt('roster');
+{const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);lc.appendChild($('#shot'));lc.appendChild($('#qSec'))}
+function postRender(){
+  const ds=onDuty(),n=next(),el=$('#teamStrip');
+  if(el){el.hidden=!ds.length;
+    el.innerHTML=ds.map(d=>{const act=active(d.id).sort((a,b)=>a.start-b.start);
+      const blocks=act.length?act.map(c=>{const p=pbOf(c);return '<span class="sb t-'+tyOf(c)[0]+'" title="'+(p?esc(p[2]):'')+' · '+esc(tyOf(c)[1])+(c.zone?' · Zone '+esc(c.zone):'')+(c.room?' · St. '+esc(c.room):'')+'">'+(p?p[0]:'·')+'</span>'}).join(''):'<span class="free">Ledig</span>';
+      const nx=n&&n.id===d.id;
+      return '<button type="button" class="tm'+(nx?' next':'')+(act.length?'':' idle')+'" data-tm="'+d.id+'" style="--lc:var(--l-'+d.level+')"><span class="tm-h"><b>'+esc(d.name)+'</b><span class="lv" style="--lc:var(--l-'+d.level+')">'+esc(lvl(d.level)[1])+'</span>'+(nx?'<span class="nx">næste</span>':'')+'</span><span class="tm-b">'+blocks+'<span class="tu">'+(d.untilTs?'til '+hm(d.untilTs):'')+'</span></span></button>'}).join('')}
+  const box=$('#docs'),cnt=a=>a.dataset.did?active(a.dataset.did).length:0;
+  [...box.children].sort((a,b)=>cnt(b)-cnt(a)).forEach(x=>box.appendChild(x))}
+{const _r=render;render=function(){_r.apply(this,arguments);try{postRender()}catch(e){console.error(e)}}}
+$('#teamStrip').addEventListener('click',e=>{const b=e.target.closest('[data-tm]');if(!b)return;const doc=[...document.querySelectorAll('#docs .doc')].find(x=>x.dataset.did===b.dataset.tm);if(doc){doc.scrollIntoView({behavior:'smooth',block:'center'});doc.classList.add('flash');setTimeout(()=>doc.classList.remove('flash'),1200)}});
+render();
+
 $('#vTabs').addEventListener('click',e=>{const b=e.target.closest('[data-vt]');if(b)setVt(b.dataset.vt)});
 $('#sleepToggle').addEventListener('click',()=>{setVt('sleep');$('#vTabs').scrollIntoView({behavior:'smooth',block:'start'})});
 $('#sleepToggle').addEventListener('click',()=>{sleepShow=!sleepVisible();render();if(sleepShow)$('#sleepCard').scrollIntoView({behavior:'smooth',block:'start'})});
@@ -815,7 +869,7 @@ function render(){
     const avg=dn.length?dur(dn.reduce((s,c)=>s+(c.end-c.start),0)/dn.length):'–';
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
     const zz=sleepOf(d.id);
-    return `<article class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
+    return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
