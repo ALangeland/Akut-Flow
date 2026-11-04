@@ -670,9 +670,14 @@ $('#newShift').addEventListener('click',()=>{
 $('#cancelShift').addEventListener('click',disarm);
 
 /* ---------- eksempeldata (opdigtet, ingen rigtige patienter) ---------- */
+/* eksempeltider: dagtid går 15:30 eller 17:00, vagttid går 08:30 */
+function exTider(){const d=new Date(),mn=d.getHours()*60+d.getMinutes();
+  if(mn>=8*60+30&&mn<15*60+30)return['15:30','17:00'];
+  if(mn>=15*60+30&&mn<17*60)return['17:00'];
+  return['08:30']}
 function exampleData(){
   const now=Date.now(),m=x=>now-x*60000,id=uid;
-  const D=[['Anna','kbu',180],['Bo','hu',300],['Carl','intro',120],['Dorte','uk',25]].map(([name,level,lm],i)=>{const t=new Date(now+lm*60000);const hhmm=p2(t.getHours())+':'+p2(t.getMinutes());return {id:id()+i,name,level,on:true,added:m(400-i),until:hhmm,untilTs:now+lm*60000}});
+  const D=[['Anna','kbu',180],['Bo','hu',300],['Carl','intro',120],['Dorte','uk',25]].map(([name,level,lm],i)=>{const hhmm=exTider()[i%exTider().length];return {id:id()+i,name,level,on:true,added:m(400-i),until:hhmm,untilTs:nextAt(hhmm)}});
   const [A,B,C,Dd]=D.map(d=>d.id);
   const cs=[
     [A,'3','208','C','t','recv',95,null,'Brystsmerter, troponin afventes'],
