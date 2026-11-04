@@ -549,6 +549,9 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 #leftCol > #docSum{margin:0!important;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 #leftCol > #docSum .kpi{justify-content:center}
 @media(max-width:1499px){#docSum{margin:0 0 10px!important}}
+/*FV31*/
+.doc .case.has-tr{border-top:6px solid var(--trc)!important;background-image:linear-gradient(to bottom,color-mix(in srgb,var(--trc) 16%,transparent),transparent 46px)}
+.doc .case .trp{padding:2px 10px;font-size:.8rem;border-radius:5px;box-shadow:0 0 0 2px color-mix(in srgb,var(--tc) 35%,transparent)}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -955,7 +958,7 @@ function exampleData(){
     [C,'4','509','E','l','plan',230,170,''],
     [Dd,'5','523','C','m','plan',210,120,''],
     [B,'3','209.1','D','t','plan',320,215,'Apopleksi, trombolyse']
-  ].map(([doc,zone,room,pb,ty,st,startAgo,endAgo,note],i)=>({id:id()+'c'+i,doc,zone,room,pb,ty,st,stAt:m(Math.max(1,startAgo-15)),note,start:m(startAgo),end:endAgo===null?null:m(endAgo)}));
+  ].map(([doc,zone,room,pb,ty,st,startAgo,endAgo,note],i)=>({id:id()+'c'+i,doc,zone,room,pb,ty,st,stAt:m(Math.max(1,startAgo-15)),note,start:m(startAgo),end:endAgo===null?null:m(endAgo),tr:['o','y','y','g','r','y','g','y','g','g','o'][i]}));
   return {doctors:D,cases:cs,sleep:null};
 }
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-example]');if(!b) return;const before=JSON.stringify(S);S=exampleData();save();render();window.scrollTo({top:0,behavior:'smooth'});toast('Eksempeldata indlæst – opdigtede patienter. Fortryd, eller tryk «Ny vagt» for at rydde.',true);undoState=before});
@@ -1003,7 +1006,7 @@ function render(){
     const zz=sleepOf(d.id);
     return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><div class="hd-l"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}</div><span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
-      ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
+      ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li ${c.tr?'style="--trc:'+trOf(c.tr)[2]+'" ':''}class="case ${c.tr?'has-tr ':''}t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${c.tr?trPill(c.tr):''}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
         <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<button type="button" class="plbtn${stOf(c)[0]==='plan'?' on':''}" data-plan="${c.id}" aria-pressed="${stOf(c)[0]==='plan'}" title="Markér som planlagt">${stOf(c)[0]==='plan'?'✓ Planlagt':'Planlagt'}</button><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button><select class="mvsel" data-mv="${c.id}" aria-label="Omfordel" title="Omfordel patienten"><option value="">⇄</option>${S.doctors.filter(x=>x.on&&x.id!==d.id).map(x=>`<option value="${x.id}">→ ${esc(x.name)}</option>`).join('')}<option value="__q">→ Ufordelt</option></select></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
