@@ -651,6 +651,17 @@ body{padding-bottom:0!important}
 .hd-add{border:0;border-radius:999px;padding:4px 11px;background:rgba(12,18,38,.62);color:#fff;font:700 .74rem var(--sans);cursor:pointer;white-space:nowrap}
 .hd-add:hover{background:rgba(12,18,38,.85)}
 .doc-f button[data-assign]{display:none!important}
+/*FV44*/
+#navCtl{display:flex;align-items:center;gap:8px;margin-left:auto;margin-right:6px}
+#navCtl[hidden]{display:none}
+#navCtl ~ .topbtns{margin-left:0!important}
+#navCtl #foldAll{width:auto;height:32px;padding:0 12px;white-space:nowrap;background:transparent;color:var(--bar-fg);border:1px solid var(--bar-muted);border-radius:6px;font:600 .82rem var(--sans)}
+#navCtl #foldAll:hover{border-color:var(--bar-fg)}
+#navCtl #viewCtl{display:flex;gap:8px}
+#navCtl #viewCtl label{flex-direction:row;align-items:center;gap:6px;color:var(--bar-muted)}
+#navCtl #viewCtl select{height:32px;background:var(--bar-2);color:var(--bar-fg);border:1px solid var(--bar-muted);font-size:.82rem}
+@media(max-width:1699px){#navCtl #viewCtl label{font-size:0;gap:0}#navCtl #viewCtl select{font-size:.8rem}}
+@media(max-width:1299px){.topbar-in{flex-wrap:wrap!important}}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -918,8 +929,7 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  const fa=document.createElement('button');fa.id='foldAll';fa.type='button';$('#docSum').after(fa);
  const docs=()=>[...document.querySelectorAll('.doc[data-did]')];
  const cid=li=>{const b=li.querySelector('[data-case]');return b?b.dataset.case:null};
- const apply=()=>{{const ds=$('#docSum');if(fa.previousElementSibling!==ds)ds.after(fa)}
-  docs().forEach(a=>{const id=a.dataset.did,h=a.querySelector('.hd-l'),fold=!U.has(id);a.classList.toggle('folded',fold);
+ const apply=()=>{  docs().forEach(a=>{const id=a.dataset.did,h=a.querySelector('.hd-l'),fold=!U.has(id);a.classList.toggle('folded',fold);
    a.querySelectorAll('.case').forEach(li=>{const op=fold&&O.has(cid(li));li.classList.toggle('open',op);let dt=li.querySelector(':scope>.cdet');
      if(op&&!dt){dt=document.createElement('div');dt.className='cdet';[...li.querySelectorAll(':scope>.ct,:scope>.cnote,:scope>.acts')].forEach(x=>dt.appendChild(x));li.appendChild(dt)}
      else if(!op&&dt){while(dt.firstChild)li.appendChild(dt.firstChild);dt.remove()}});
@@ -939,14 +949,14 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
  let sortM=LS('fv.sort','fast'),lay=LS('fv.lay','cols');if(!['fast','tung','let'].includes(sortM))sortM='fast';if(!['cols','rows'].includes(lay))lay='cols';
  const ctl=document.createElement('div');ctl.id='viewCtl';
  ctl.innerHTML='<label>Sortér<select id="sortSel"><option value="fast">Fast rækkefølge</option><option value="tung">Mest belastet først</option><option value="let">Mindst belastet først</option></select></label><label>Layout<select id="laySel"><option value="cols">Kolonner</option><option value="rows">Rækker</option></select></label>';
- $('#docSum').after(ctl);
+ const nav=document.createElement('div');nav.id='navCtl';nav.append($('#foldAll'),ctl);document.querySelector('.topbtns').before(nav);
  const sS=ctl.querySelector('#sortSel'),lS=ctl.querySelector('#laySel');sS.value=sortM;lS.value=lay;
  const order=()=>{const box=$('#docs');box.dataset.lay=lay;if(lay==='cols')box.style.setProperty('grid-template-columns','repeat(auto-fit,minmax(175px,1fr))','important');else box.style.removeProperty('grid-template-columns')
   const od=onDuty(),idx=id=>od.findIndex(d=>d.id===id),nm=id=>(S.doctors.find(d=>d.id===id)||{}).name||'';
   const ac=id=>active(id).length,wl=id=>wload(id);
   const cmp={fast:(a,b)=>idx(a)-idx(b),   tung:(a,b)=>wl(b)-wl(a)||ac(b)-ac(a)||idx(a)-idx(b),let:(a,b)=>wl(a)-wl(b)||ac(a)-ac(b)||idx(a)-idx(b)}[sortM];
   [...box.querySelectorAll(':scope>.doc[data-did]')].sort((a,b)=>cmp(a.dataset.did,b.dataset.did)).forEach(x=>box.appendChild(x));
-  const fa=$('#foldAll');if(fa&&ctl.previousElementSibling!==fa)fa.after(ctl)};
+  nav.hidden=!box.querySelector(':scope>.doc[data-did]')};
  sS.addEventListener('change',()=>{sortM=sS.value;SS('fv.sort',sortM);order()});
  lS.addEventListener('change',()=>{lay=lS.value;SS('fv.lay',lay);order()});
  {const _r=render;render=function(){_r.apply(this,arguments);try{order()}catch(e){console.error(e)}}}
