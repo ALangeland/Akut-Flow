@@ -750,6 +750,23 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .doc{border:3px solid var(--dc,var(--line))!important;border-radius:10px!important;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 .doc.next{box-shadow:0 0 0 3px var(--go),0 4px 14px rgba(0,0,0,.35)}
 .doc .doc-h{border-radius:0!important}
+/*FV59*/
+.doc .doc-h{border-radius:7px 7px 0 0!important}
+.doc:not(:has(.cases)).folded .doc-h{border-radius:7px!important}
+.doc.folded .cases>.case:last-child{border-bottom-left-radius:7px!important;border-bottom-right-radius:7px!important}
+.doc:not(.folded) .doc-f{border-radius:0 0 7px 7px}
+.doc:not(.folded):not(:has(.doc-f)) .cases>.case:last-child{border-bottom-left-radius:7px!important;border-bottom-right-radius:7px!important}
+.doc.folded .case.open:last-child{border-radius:0!important}
+.doc.folded .case.open:last-child .cdet{border-radius:0 0 7px 7px!important}
+/*FV60*/
+#rightCol{overflow-x:hidden!important}
+#qList{grid-template-columns:minmax(0,1fr)!important;min-width:0}
+#qSec,#qList,.qcase,.qcase .qin{min-width:0;max-width:100%;box-sizing:border-box}
+.qcase .qzs select{min-width:0;width:0;flex:1 1 0}
+.qcase .qzs .qz{flex:0 0 38%;width:auto}
+.qcase .qto{min-width:0;flex:1 1 90px}
+.qcase .qgo{flex:0 0 auto;padding:0 12px}
+.qcase .qdel{flex:0 0 32px}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
