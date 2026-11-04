@@ -840,6 +840,18 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 #qList .qin>.qnote{flex:1 1 100%!important;font-size:.88rem!important;color:var(--fg)!important;padding:2px 0 0!important;white-space:normal}
 /* 6 ens højde */
 #docs[data-lay="rows"]{align-items:stretch!important}
+/*FV68*/
+#addForm{display:grid!important;grid-template-columns:minmax(130px,1.3fr) minmax(130px,1fr) minmax(110px,.8fr) minmax(130px,.9fr) 130px auto!important;align-items:end!important;gap:10px!important}
+#addForm>*{min-width:0;width:auto!important;max-width:none!important}
+#addForm :is(input,select){width:100%!important}
+#addForm>button{height:40px;padding:0 18px}
+@media(max-width:899px){#addForm{grid-template-columns:1fr 1fr!important}}
+.vtset{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:10px;font-size:.84rem}
+.vtset label{display:flex;align-items:center;gap:6px}
+.vtset input{height:32px}
+.vtset .muted{font-size:.78rem}
+#roster select[data-dsp],#roster select[data-dvt]{height:32px;font-size:.82rem;padding:0 6px;max-width:130px}
+.doc .doc-h .dsp{font:700 .72rem var(--sans);color:var(--muted);white-space:nowrap;letter-spacing:.02em}
 </style><style>/*AFMEM*/.afmem-btn{margin-left:auto;flex:none;align-self:center;display:inline-flex;align-items:center;gap:7px;background:transparent;border:1px solid var(--line);color:var(--bar-muted,var(--muted));border-radius:6px;padding:3px 10px;font:600 .78rem var(--sans,system-ui,sans-serif);cursor:pointer;white-space:nowrap}
 .afmem-btn::before{content:"";width:18px;height:18px;background:url(data:image/webp;base64,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) center/contain no-repeat}
 .afmem-btn.ok{color:var(--go)}.afmem-btn.warn{color:var(--warn,#e8a317);border-color:var(--warn,#e8a317)}
@@ -1062,7 +1074,7 @@ function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l
   const sig=q.map(x=>x.id).join(',')+'|'+ds.map(d=>d.id+':'+active(d.id).length).join(',');
   if(sig!==_qSig){_qSig=sig;
     $('#qList').innerHTML=q.slice().sort((a,b)=>(trRank(a)-trRank(b))||(tyOf(b)[2]-tyOf(a)[2])||a.q-b.q).map(c=>{const p=pbOf(c);
-      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${trCyc(c,'q')}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
+      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${trCyc(c,'q')}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)}${d.sp?' ('+esc(d.sp)+')':''} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
   $('#qCount').textContent=q.length+(q.length===1?' venter':' venter');
   document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent=(Date.now()-(+e.dataset.qw)<60000?'under 1 min siden oprettelse':dur(Date.now()-(+e.dataset.qw))+' siden oprettelse')})}
 $('#queueAdd').addEventListener('click',()=>{const en=window.qArrNew==='enroute',rv=en?'':$('#caseRoom').value,zone=en?'':(rv?rv.split('|')[0]:$('#caseZone').value),room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
@@ -1194,6 +1206,28 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
   it.arr=arrOf(it)==='arrived'?'enroute':'arrived';_qSig='';save();render()},true);
  {const _r=render;render=function(){_r.apply(this,arguments);try{group()}catch(e){console.error(e)}}}
  group()}
+{const SP=['ATC','ATC amb','Lunge','Gas','Nyre','Endo','Hæm','Inf'],VT=[['k','Kort dagvagt'],['l','Lang dagvagt']];
+ const TK='fv.vtTimes',getT=()=>{try{return JSON.parse(localStorage.getItem(TK))||{}}catch(e){return {}}};
+ window.fvVtLbl=v=>v==='k'?'Kort dag':v==='l'?'Lang dag':'';
+ const spOpts=v=>'<option value="">– speciale –</option>'+SP.map(s=>'<option'+(s===v?' selected':'')+'>'+s+'</option>').join('');
+ const vtOpts=v=>'<option value="">– vagt –</option>'+VT.map(([k,t])=>'<option value="'+k+'"'+(k===v?' selected':'')+'>'+t+'</option>').join('');
+ window.fvSpOpts=spOpts;window.fvVtOpts=vtOpts;
+ const f=document.getElementById('addForm'),u=document.getElementById('docUntil');
+ if(f&&u){const w=u.closest('div');
+  const a=document.createElement('div');a.innerHTML='<label class="lbl" for="docSp">Speciale</label><select id="docSp">'+spOpts('')+'</select>';
+  const b=document.createElement('div');b.innerHTML='<label class="lbl" for="docVt">Vagt</label><select id="docVt">'+vtOpts('')+'</select>';
+  w.before(a);w.before(b);
+  document.getElementById('docVt').addEventListener('change',e=>{const t=getT()[e.target.value];if(t)u.value=t});
+  f.addEventListener('submit',()=>setTimeout(()=>{['docSp','docVt'].forEach(i=>{const x=document.getElementById(i);if(x)x.value=''})},0));
+  const nt=f.parentNode.querySelector('.note');const st=document.createElement('div');st.className='vtset';
+  const T=getT();st.innerHTML='<span class="lbl">Sluttider</span><label>Kort dagvagt <input type="time" data-vtt="k" value="'+(T.k||'')+'"></label><label>Lang dagvagt <input type="time" data-vtt="l" value="'+(T.l||'')+'"></label><span class="muted">Vælges vagttype, sættes «Til kl.» automatisk.</span>';
+  (nt||f).after(st);
+  st.addEventListener('change',e=>{const i=e.target.closest('[data-vtt]');if(!i)return;const o=getT();o[i.dataset.vtt]=i.value;try{localStorage.setItem(TK,JSON.stringify(o))}catch(_){}toast('Sluttid gemt')});
+ }
+ const R=document.getElementById('roster');
+ if(R)R.addEventListener('change',e=>{const s=e.target.closest('select[data-dsp],select[data-dvt]');if(!s)return;const d=S.doctors.find(x=>x.id===(s.dataset.dsp||s.dataset.dvt));if(!d)return;
+  if(s.dataset.dsp)d.sp=s.value;else{d.vt=s.value;const t=getT()[s.value];if(t){d.until=t;d.untilTs=nextAt(t)}}save();render()});
+}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);{const rc=document.createElement('div');rc.id='rightCol';lc.after(rc);rc.appendChild($('#qSec'));const mq=matchMedia('(min-width:1500px)');const place=()=>{if(mq.matches)rc.insertBefore(rb,rc.firstChild);else lc.insertBefore(rb,sh)};mq.addEventListener('change',place);place()}}
 {const mq=matchMedia('(min-width:1500px)'),W=document.querySelector('.wrap'),lc=document.getElementById('leftCol'),rc=document.getElementById('rightCol'),ds=document.getElementById('docSum'),rb=document.getElementById('recBox'),qs=document.getElementById('qSec'),tb=document.querySelector('.topbtns');
@@ -1306,8 +1340,8 @@ try{const l=localStorage.getItem(KEY+'.lastLevel');if(l)$('#docLevel').value=l;c
 $('#addForm').addEventListener('submit',e=>{
   e.preventDefault();const name=$('#docName').value.trim();if(!name) return;const level=$('#docLevel').value;const until=$('#docUntil').value;
   const ex=S.doctors.find(d=>d.name.toLowerCase()===name.toLowerCase()&&d.level===level);
-  if(ex){ex.on=true;if(until){ex.until=until;ex.untilTs=nextAt(until)}toast(ex.name+' er på arbejde igen')}
-  else S.doctors.push({id:uid(),name:name.charAt(0).toUpperCase()+name.slice(1),level,on:true,added:Date.now(),until:until||'',untilTs:nextAt(until)});
+  if(ex){ex.on=true;if($('#docSp')&&$('#docSp').value)ex.sp=$('#docSp').value;if($('#docVt')&&$('#docVt').value)ex.vt=$('#docVt').value;if(until){ex.until=until;ex.untilTs=nextAt(until)}toast(ex.name+' er på arbejde igen')}
+  else S.doctors.push({id:uid(),name:name.charAt(0).toUpperCase()+name.slice(1),level,sp:$('#docSp')?$('#docSp').value:'',vt:$('#docVt')?$('#docVt').value:'',on:true,added:Date.now(),until:until||'',untilTs:nextAt(until)});
   try{localStorage.setItem(KEY+'.lastLevel',level);localStorage.setItem(KEY+'.lastUntil',until)}catch(_){}
   $('#docName').value='';save();render();$('#docName').focus();
 });
@@ -1381,7 +1415,7 @@ $('#fileIn').addEventListener('change',async e=>{
 /* ---------- visning ---------- */
 let _toSig='';
 function fillTo(ds,n){const sel=$('#assignTo');const sig=n.id+'|'+ds.map(d=>d.id+':'+d.name+':'+active(d.id).length).join(',');
-  if(sig!==_toSig){_toSig=sig;const cur=sel.value;sel.innerHTML='<option value="">Anbefalet: '+esc(n.name)+'</option>'+ds.map(d=>'<option value="'+d.id+'">'+esc(d.name)+' · '+active(d.id).length+' aktive</option>').join('');if(cur&&ds.some(d=>d.id===cur))sel.value=cur}
+  if(sig!==_toSig){_toSig=sig;const cur=sel.value;sel.innerHTML='<option value="">Anbefalet: '+esc(n.name)+'</option>'+ds.map(d=>'<option value="'+d.id+'">'+esc(d.name)+(d.sp?' ('+esc(d.sp)+')':'')+' · '+active(d.id).length+' aktive</option>').join('');if(cur&&ds.some(d=>d.id===cur))sel.value=cur}
   const c=sel.value?ds.find(d=>d.id===sel.value):n;$('#assignNext').textContent='Tildel '+(c?c.name:n.name)}
 $('#assignTo').addEventListener('change',()=>render());
 function render(){
@@ -1402,7 +1436,7 @@ function render(){
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
     const zz=sleepOf(d.id);
     return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
-      <div class="doc-h"><div class="hd-l"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}</div><span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
+      <div class="doc-h"><div class="hd-l"><span class="nm">${esc(d.name)}</span>${(d.sp||d.vt)?'<span class="dsp">'+esc([d.sp,fvVtLbl(d.vt)].filter(Boolean).join(' · '))+'</span>':''}<span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}</div><span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li ${c.tr?'style="--trc:'+trOf(c.tr)[2]+'" ':''}class="case ${c.tr?'has-tr ':''}t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${trCyc(c,'c')}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
@@ -1415,7 +1449,7 @@ function render(){
   $('#docSum').innerHTML=ds.length?`<span class="kpi act"><b>${totAct}</b> aktive</span><span class="kpi dn"><b>${totDone}</b> afsluttet</span>`:'';
   // roster
   $('#roster').innerHTML=S.doctors.slice().sort((a,b)=>(b.on-a.on)||a.added-b.added).map(d=>`<li class="${d.on?'':'off'}" style="--lc:var(--l-${d.level})">
-    <span class="nm">${esc(d.name)}</span><button type="button" class="lv" style="border:0;cursor:pointer" data-act="lvl" data-id="${d.id}" title="Skift uddannelsesniveau">${esc(lvl(d.level)[1])}</button>
+    <span class="nm">${esc(d.name)}</span><button type="button" class="lv" style="border:0;cursor:pointer" data-act="lvl" data-id="${d.id}" title="Skift uddannelsesniveau">${esc(lvl(d.level)[1])}</button><select data-dsp="${d.id}" aria-label="Speciale">${fvSpOpts(d.sp||'')}</select><select data-dvt="${d.id}" aria-label="Vagttype">${fvVtOpts(d.vt||'')}</select>
     <span class="sp muted" style="font-size:.82rem">${d.on?(d.untilTs?`<span class="until${untilCls(d)}">${esc(untilTxt(d))}</span>`:'På arbejde'):'Ikke på arbejde'}</span>
     ${d.on?`<input type="time" data-until="${d.id}" value="${esc(d.until||'')}" title="Til kl." aria-label="${esc(d.name)} til kl.">`:''}
     <button type="button" data-act="toggle" data-id="${d.id}">${d.on?'Går hjem':'På arbejde'}</button>
