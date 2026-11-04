@@ -356,6 +356,14 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .case .cl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 5px}
 .case .cl .cnote{flex:1 1 100%}
 .case .cl .zrow{flex:1 1 100%;display:flex;gap:5px}
+/*FV16*/
+.case .stsel{display:none}
+@media(max-width:700px){
+.case .acts .st{display:none!important}
+.case .acts .stsel{display:block;flex:1 1 0;min-width:0;height:40px;font:700 .9rem var(--sans);border-radius:6px;padding:0 8px;border:2px solid var(--sc,var(--line));background:var(--surface);color:var(--fg)}
+.case .acts .stsel[data-st="start"]{--sc:var(--hit)}.case .acts .stsel[data-st="recv"]{--sc:var(--warn)}.case .acts .stsel[data-st="plan"]{--sc:var(--go)}
+.case .acts .fin{height:40px;padding:0 14px!important}
+}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -555,6 +563,7 @@ function renderSleep(){
   <div class="sp-acts"><button type="button" id="sleepCopy">Kopiér soveplan</button><button type="button" id="sleepDel">${ph==='over'?'Ryd soveplan':'Slet soveplan'}</button></div>`;
 }
 $('#sleepMake').addEventListener('click',makePlan);
+$('#docs').addEventListener('change',e=>{const sel=e.target.closest('.stsel');if(!sel)return;const c=S.cases.find(x=>x.id===sel.dataset.case);if(c&&c.st!==sel.value){c.st=sel.value;c.stAt=Date.now();save();render()}});
 $('#sleepToggle').addEventListener('click',()=>{sleepShow=!sleepVisible();render();if(sleepShow)$('#sleepCard').scrollIntoView({behavior:'smooth',block:'start'})});
 ['sleepFrom','sleepTo'].forEach(id=>$('#'+id).addEventListener('input',e=>e.target.dataset.touched='1'));
 $('#sleepCard').addEventListener('click',async e=>{
@@ -728,7 +737,7 @@ function render(){
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
-        <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
+        <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<select class="stsel" data-st="${stOf(c)[0]}" data-case="${c.id}" aria-label="Status">${ST.map(x=>`<option value="${x[0]}"${stOf(c)[0]===x[0]?' selected':''}>${x[2]}</option>`).join('')}</select><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats"><span class="donec">✓ ${dn.length} afsluttet</span><span class="sm">gns. ${avg}</span>${la?`<span class="sm">sidst tildelt ${hm(la)}</span>`:''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
     </article>`}).join('');
   $('#docsEmpty').hidden=ds.length>0;
