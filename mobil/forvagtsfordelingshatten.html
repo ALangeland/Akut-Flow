@@ -716,6 +716,19 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .doc .doc-h .lv,.doc .doc-h:has(.load.l2) .lv{border:0!important;box-shadow:none!important;padding:3px 10px!important;font-size:.7rem!important;letter-spacing:.07em;border-radius:6px!important}
 #docs[data-lay="cols"] .doc .doc-h .nm{font-size:1.15rem}
 #docs[data-lay="cols"] .doc .doc-h .nm::before{width:28px;height:28px;font-size:.9rem}
+/*FV55*/
+.a-arr{grid-area:arr}
+.a-arr .arrseg button{height:38px;font-size:.9rem}
+.a-arr .arrseg{border-width:2px}
+#shot[data-arr="enroute"] :is(.a-zone,.a-stue,.a-ty){display:none!important}
+@media(min-width:1500px){
+#leftCol .shot .assign{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"arr arr" "zone stue" "pb pb" "ty tr" "note note" "q q"!important;gap:16px 10px!important}
+#shot[data-arr="enroute"] .a-tr{grid-area:4/1/5/3!important}
+#leftCol .shot .assign :is(.cdd-b,.fsel,input){height:44px!important;font-size:.95rem}
+#leftCol .shot .assign .lbl{font-size:.7rem;margin-bottom:5px!important}
+#leftCol #queueAdd{height:48px!important;font-size:1.02rem!important}
+#leftCol .shot{padding:18px!important}
+}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -935,7 +948,7 @@ function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l
       return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${trCyc(c,'q')}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
   $('#qCount').textContent=q.length+(q.length===1?' venter':' venter');
   document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent=(Date.now()-(+e.dataset.qw)<60000?'venter under 1 min':'venter '+dur(Date.now()-(+e.dataset.qw)))})}
-$('#queueAdd').addEventListener('click',()=>{const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
+$('#queueAdd').addEventListener('click',()=>{const en=window.qArrNew==='enroute',rv=en?'':$('#caseRoom').value,zone=en?'':(rv?rv.split('|')[0]:$('#caseZone').value),room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
   if(/\d{6}\s*-?\s*\d{4}/.test(note)){toast('Noten ligner et CPR-nummer – fjern det');$('#caseNote').focus();return}
   const before=JSON.stringify(S);(S.queue=S.queue||[]).push({id:uid(),zone,room,pb:curPb,note,ty:curTy,tr:curTr,arr:window.qArrNew||'arrived',q:Date.now()});save();
   $('#caseRoom').value='';$('#roomHint').textContent='';setPb('');setTy('m');setTr('');$('#caseNote').value='';render();toast('Patient lagt i ufordelte',true);undoState=before});
@@ -1040,9 +1053,9 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
   if(q)_qSig='';save();render()},true)}
 {const LS=()=>{try{return localStorage.getItem('fv.arrnew')||'arrived'}catch(e){return 'arrived'}};
  window.qArrNew=LS();
- {const holder=document.querySelector('.a-q .lbl');if(holder){holder.innerHTML='<span class="arrseg" role="group" aria-label="Status for ny patient"><button type="button" data-an="arrived">Ankommet</button><button type="button" data-an="enroute">På vej</button></span>';
-  const sync=()=>holder.querySelectorAll('[data-an]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.an===window.qArrNew)));sync();
-  holder.addEventListener('click',e=>{const b=e.target.closest('[data-an]');if(!b)return;window.qArrNew=b.dataset.an;try{localStorage.setItem('fv.arrnew',b.dataset.an)}catch(_){}sync()})}}
+ {const as=document.querySelector('.assign'),sh=document.getElementById('shot');if(as){const w=document.createElement('div');w.className='zs a-arr';w.innerHTML='<span class="lbl">Status</span><span class="arrseg" role="group" aria-label="Status for ny patient"><button type="button" data-an="arrived">Ankommet</button><button type="button" data-an="enroute">På vej</button></span>';as.insertBefore(w,as.firstChild);
+  const sync=()=>{w.querySelectorAll('[data-an]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.an===window.qArrNew)));if(sh)sh.dataset.arr=window.qArrNew};sync();
+  w.addEventListener('click',e=>{const b=e.target.closest('[data-an]');if(!b)return;window.qArrNew=b.dataset.an;try{localStorage.setItem('fv.arrnew',b.dataset.an)}catch(_){}sync()})}}
  const arrOf=c=>c.arr==='enroute'?'enroute':'arrived';
  const group=()=>{const L=$('#qList');if(!L||L.querySelector('.qgrp-h')||!L.querySelector('.qcase'))return;
   const q=S.queue||[],cards=[...L.querySelectorAll(':scope>.qcase')],by={arrived:[],enroute:[]};
