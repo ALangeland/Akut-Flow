@@ -305,6 +305,29 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 :root[data-theme="light"] #themeToggle::before{content:"\263E"}
 }
 @media (max-width:720px) and (prefers-color-scheme:light){:root:not([data-theme]) #themeToggle::before{content:"\263E"}}
+/*FV13*/
+.wrap{max-width:1320px!important;gap:16px!important}
+.wrap:has(#docsEmpty:not([hidden])) #shot,.wrap:has(#docsEmpty:not([hidden])) #sleepCard,.wrap:has(#docsEmpty:not([hidden])) section:has(#log){display:none!important}
+.wrap:has(#docsEmpty:not([hidden])) > section:has(#docs) > div:first-child{display:none!important}
+.wrap:has(#docsEmpty:not([hidden])) > .card:has(#addForm){order:-1;border-color:var(--go);box-shadow:0 0 0 2px color-mix(in srgb,var(--go) 35%,transparent)}
+.wrap:has(#docsEmpty:not([hidden])) > .card:has(#addForm) .card-h h2::after{content:" – start her";font-weight:600;color:var(--go)}
+.docs{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))!important;gap:10px!important;align-items:start}
+.case .acts.sts{flex-wrap:nowrap!important;align-items:stretch}
+.case .acts .fin{flex:0 0 auto!important;padding:6px 10px!important}
+.case .acts .st{padding:6px 2px!important}
+.doc-h{padding:8px 10px 4px!important}
+.case{padding:7px 9px!important}
+@media(min-width:1000px){
+.shot{grid-template-columns:auto minmax(0,1fr)!important;justify-items:stretch!important;text-align:left!important;padding:10px 14px!important;gap:6px 12px!important;align-items:center}
+.shot .hat{width:auto!important;justify-content:flex-start!important}
+.shot .hat .avs{width:40px!important;height:40px!important;margin:0!important}
+.shot .hat{font-size:1.6rem}
+.shot > div:nth-of-type(1){display:flex;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
+.shot .who{font-size:1.15rem}
+.shot .assign{grid-template-columns:92px 130px 270px 230px minmax(120px,1fr) 140px!important;grid-template-areas:"zone stue pb ty note btn"!important;gap:8px 10px!important;align-items:end!important}
+.shot .assign select,.shot .assign input,.shot .assign .tyseg,.shot .assign .pbseg button,.shot .assign #assignNext{height:36px!important}
+.shot .assign .lbl{height:14px!important;line-height:14px!important;margin-bottom:3px!important;font-size:.64rem}
+}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -330,7 +353,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
   <section>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><h2>Forvagter</h2><div class="kpis" id="docSum"></div></div>
     <div class="docs" id="docs"></div>
-    <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem nedenfor, eller <button type="button" class="exbtn" data-example="1">indlæs eksempeldata</button> for at se, hvordan det ser ud.</p>
+    <p class="empty" id="docsEmpty" hidden>Ingen forvagter på arbejde endnu – tilføj dem ovenfor, eller <button type="button" class="exbtn" data-example="1">indlæs eksempeldata</button> for at se, hvordan det ser ud.</p>
   </section>
 
   <section class="card" id="sleepCard">
