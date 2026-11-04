@@ -685,6 +685,17 @@ body{padding-bottom:0!important}
 /*FV49*/
 .qcase .qzr{flex-basis:100%;display:flex;gap:5px}
 #qPick .qp-row .zp{flex-basis:100%}
+/*FV50*/
+button.trp{border:0;cursor:pointer}
+button.trp.trp-empty{background:transparent!important;color:var(--muted)!important;border:2px dashed color-mix(in srgb,var(--fg) 45%,transparent);padding:0 9px;font-weight:700}
+button.trp.trp-empty:hover{color:var(--fg)!important;border-color:var(--fg)}
+button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
+/*FV51*/
+.doc .cases,.doc.folded .cases{padding:0!important;gap:3px!important}
+.doc .case{border-radius:0!important;border-right:0!important;border-top:0!important;border-bottom:0!important;box-shadow:none!important}
+.doc.folded .case.open{border-radius:0!important}
+.cdet{left:0!important;right:0!important;border-radius:0!important;border-left:0!important;border-right:0!important}
+.doc-f{margin-top:3px!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -901,7 +912,7 @@ function renderQ(){{const r=$('#vtR');if(r)r.textContent=onDuty().length;const l
   const sig=q.map(x=>x.id).join(',')+'|'+ds.map(d=>d.id+':'+active(d.id).length).join(',');
   if(sig!==_qSig){_qSig=sig;
     $('#qList').innerHTML=q.slice().sort((a,b)=>(trRank(a)-trRank(b))||(tyOf(b)[2]-tyOf(a)[2])||a.q-b.q).map(c=>{const p=pbOf(c);
-      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${c.tr?trPill(c.tr):''}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
+      return `<div class="qcase t-${tyOf(c)[0]}"${c.tr?' style="--trc:'+trOf(c.tr)[2]+'"':''} data-q="${c.id}"><div class="qin">${trCyc(c,'q')}${p?`<span class="pbt" style="--pc:${p[3]}" title="${p[0]} – ${p[2]}">${p[1]} ${p[0]}</span>`:''}<span class="typ ty-${tyOf(c)[0]}">${tyOf(c)[1]}</span>${(c.zone||c.room)?'<span class="qzr">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':''}${c.note?`<span class="qnote">${esc(c.note)}</span>`:''}</div><span class="qw" data-qw="${c.q}"></span><select class="qto" data-qto="${c.id}" aria-label="Tildel til"><option value="">${n?esc(n.name)+' ★':'Anbefalet'}</option>${ds.map(d=>`<option value="${d.id}">${esc(d.name)} · ${active(d.id).length} aktive</option>`).join('')}</select><button type="button" class="primary qgo" data-qgo="${c.id}">Tildel</button><button type="button" class="qdel" data-qdel="${c.id}" title="Fjern fra ufordelte" aria-label="Fjern">✕</button></div>`}).join('')}
   $('#qCount').textContent=q.length+(q.length===1?' venter':' venter');
   document.querySelectorAll('[data-qw]').forEach(e=>{e.textContent=(Date.now()-(+e.dataset.qw)<60000?'venter under 1 min':'venter '+dur(Date.now()-(+e.dataset.qw)))})}
 $('#queueAdd').addEventListener('click',()=>{const rv=$('#caseRoom').value,zone=rv?rv.split('|')[0]:$('#caseZone').value,room=rv?rv.split('|')[1]:'';const note=$('#caseNote').value.trim();
@@ -1001,6 +1012,11 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
    pop.style.left=Math.max(8,Math.min(r.right-w,innerWidth-w-8))+'px';pop.style.top=(r.bottom+6)+'px';return}
   if(!e.target.closest('#qPick'))close()},true);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()})}
+{window.trCyc=(c,k)=>{const t=c.tr&&trOf(c.tr);return '<button type="button" class="trp'+(t?'':' trp-empty')+'" data-trcyc="'+c.id+'" data-trk="'+k+'"'+(t?' style="--tc:'+t[2]+'"':'')+' title="Klik for at skifte triage">'+(t?t[1]:'Triage')+'</button>'};
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-trcyc]');if(!b)return;e.stopPropagation();
+  const q=b.dataset.trk==='q',list=q?(S.queue||[]):S.cases,it=list.find(x=>x.id===b.dataset.trcyc);if(!it)return;
+  const ord=[''].concat(TRI.map(x=>x[0])),i=ord.indexOf(it.tr||'');it.tr=ord[(i+1)%ord.length];
+  if(q)_qSig='';save();render()},true)}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);{const rc=document.createElement('div');rc.id='rightCol';lc.after(rc);rc.appendChild($('#qSec'));const mq=matchMedia('(min-width:1500px)');const place=()=>{if(mq.matches)rc.insertBefore(rb,rc.firstChild);else lc.insertBefore(rb,sh)};mq.addEventListener('change',place);place()}}
 function postRender(){
@@ -1194,7 +1210,7 @@ function render(){
     return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><div class="hd-l"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}</div><span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li ${c.tr?'style="--trc:'+trOf(c.tr)[2]+'" ':''}class="case ${c.tr?'has-tr ':''}t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
-        <span class="cl">${c.tr?trPill(c.tr):''}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
+        <span class="cl">${trCyc(c,'c')}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
         <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<button type="button" class="plbtn${stOf(c)[0]==='plan'?' on':''}" data-plan="${c.id}" aria-pressed="${stOf(c)[0]==='plan'}" title="Markér som planlagt">${stOf(c)[0]==='plan'?'✓ Planlagt':'Planlagt'}</button><button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button><select class="mvsel" data-mv="${c.id}" aria-label="Omfordel" title="Omfordel patienten"><option value="">⇄</option>${S.doctors.filter(x=>x.on&&x.id!==d.id).map(x=>`<option value="${x.id}">→ ${esc(x.name)}</option>`).join('')}<option value="__q">→ Ufordelt</option></select></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats"><span class="donec">✓ ${dn.length} afsluttet</span><span class="sm">gns. ${avg}</span>${la?`<span class="sm">sidst tildelt ${hm(la)}</span>`:''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
