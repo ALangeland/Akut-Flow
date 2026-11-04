@@ -502,6 +502,18 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .shot .assign{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"zone stue" "pb ty" "tr note" "q q"!important}
 }
 #queueAdd{height:38px!important}
+.cdd{position:relative}
+.cdd-b{width:100%;height:36px;display:flex;align-items:center;gap:6px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);font:600 .88rem var(--sans);text-align:left;cursor:pointer}
+.cdd-t{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;white-space:nowrap}
+.cdd-c{margin-left:auto;color:var(--muted)}
+.cdd-l{position:absolute;z-index:60;left:0;top:calc(100% + 2px);min-width:100%;width:max-content;margin:0;padding:4px;list-style:none;background:var(--surface);border:1px solid var(--fg);border-radius:8px;box-shadow:0 8px 22px rgba(0,0,0,.4)}
+.cdd-l li{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;font:600 .9rem var(--sans)}
+.cdd-l li:hover{background:var(--accent-soft)}
+.cdd-l li[aria-selected="true"]{background:color-mix(in srgb,var(--go) 22%,var(--surface))}
+.cdd .px{width:22px;height:22px}
+.cdd-k{font-weight:800;margin-right:-2px}
+.cdd-ph{color:var(--muted);font-weight:500}
+.tdot{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fg) 35%,transparent)}
 /*FV29*/
 .doc{background:color-mix(in srgb,var(--fg) 5%,var(--surface))!important}
 .doc .cases{gap:14px!important;padding:6px 12px 4px!important}
@@ -761,13 +773,24 @@ const trPill=k=>{const t=trOf(k);return t?'<span class="trp" style="--tc:'+t[2]+
 let curTr='';
 function setTr(k){curTr=k||'';document.querySelectorAll('#trSeg [data-tr]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tr===curTr))}
 $('#trSeg').addEventListener('click',e=>{const b=e.target.closest('[data-tr]');if(b)setTr(b.dataset.tr===curTr?'':b.dataset.tr)});
-{const mk=(seg,id,opts,set)=>{const sel=document.createElement('select');sel.id=id;sel.className='fsel';sel.innerHTML=opts;seg.parentNode.appendChild(sel);sel.addEventListener('change',()=>set(sel.value))};
- mk($('#pbSeg'),'pbSel','<option value="">– vælg –</option>'+PB.map(x=>'<option value="'+x[0]+'">'+x[1]+'  '+x[0]+' · '+x[2]+'</option>').join(''),v=>setPb(v));
- mk($('#tySeg'),'tySel',TY.map(x=>'<option value="'+x[0]+'">'+'▮'.repeat(x[2])+'  '+x[1]+'</option>').join(''),v=>setTy(v));
- mk($('#trSeg'),'trSel','<option value="">– ingen –</option>'+TRI.map(x=>'<option value="'+x[0]+'">'+({r:'🔴',o:'🟠',y:'🟡',g:'🟢',b:'🔵'})[x[0]]+'  '+x[1]+'</option>').join(''),v=>setTr(v));
- const sync=()=>{$('#pbSel').value=curPb;$('#tySel').value=curTy;$('#trSel').value=curTr};
+{const closeAll=()=>document.querySelectorAll('.cdd-l').forEach(u=>u.hidden=true);
+ document.addEventListener('click',e=>{if(!e.target.closest('.cdd'))closeAll()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+ const mk=(seg,id,items,set)=>{const sel=document.createElement('select');sel.id=id;sel.hidden=true;sel.innerHTML=items.map(i=>'<option value="'+i[0]+'"></option>').join('');
+  const w=document.createElement('div');w.className='cdd';const b=document.createElement('button');b.type='button';b.className='cdd-b';b.setAttribute('aria-haspopup','listbox');
+  const ul=document.createElement('ul');ul.className='cdd-l';ul.hidden=true;ul.setAttribute('role','listbox');
+  ul.innerHTML=items.map(i=>'<li role="option" data-v="'+i[0]+'">'+i[1]+'</li>').join('');
+  const refresh=()=>{const it=items.find(i=>i[0]===sel.value)||items[0];b.innerHTML='<span class="cdd-t">'+it[1]+'</span><span class="cdd-c">▾</span>';ul.querySelectorAll('li').forEach(l=>l.setAttribute('aria-selected',l.dataset.v===sel.value))};
+  b.addEventListener('click',()=>{const o=ul.hidden;closeAll();ul.hidden=!o});
+  ul.addEventListener('click',e=>{const l=e.target.closest('li');if(!l)return;sel.value=l.dataset.v;refresh();ul.hidden=true;set(l.dataset.v)});
+  sel.refresh=refresh;w.append(sel,b,ul);seg.parentNode.appendChild(w);refresh();return sel};
+ const tyh={};document.querySelectorAll('#tySeg button').forEach(x=>tyh[x.dataset.ty]=x.innerHTML);
+ mk($('#pbSeg'),'pbSel',[['','<span class="cdd-ph">– vælg –</span>']].concat(PB.map(x=>[x[0],x[1]+'<b class="cdd-k">'+x[0]+'</b> '+x[2]])),v=>setPb(v));
+ mk($('#tySeg'),'tySel',TY.map(x=>[x[0],tyh[x[0]]||x[1]]),v=>setTy(v));
+ mk($('#trSeg'),'trSel',[['','<span class="cdd-ph">– ingen –</span>']].concat(TRI.map(x=>[x[0],'<i class="tdot" style="background:'+x[2]+'"></i>'+x[1]])),v=>setTr(v));
+ const sync=()=>{$('#pbSel').value=curPb;$('#tySel').value=curTy;$('#trSel').value=curTr;['pbSel','tySel','trSel'].forEach(i=>$('#'+i).refresh())};
  {const a=setPb;setPb=function(k){a(k);sync()}}{const a=setTy;setTy=function(k){a(k);sync()}}{const a=setTr;setTr=function(k){a(k);sync()}}
- $('#tySel').value='m'}
+ $('#tySel').value='m';$('#tySel').refresh()}
 document.getElementById('saveShift').addEventListener('click',()=>document.getElementById('saveFile').click());
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);lc.appendChild($('#qSec'))}
