@@ -541,7 +541,7 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 /*FV29*/
 .doc{background:color-mix(in srgb,var(--fg) 5%,var(--surface))!important}
 .doc .cases{gap:14px!important;padding:6px 12px 4px!important}
-.doc .case{padding:11px 12px!important;border:1px solid color-mix(in srgb,var(--fg) 30%,var(--line))!important;border-left-width:6px!important;border-radius:8px!important;box-shadow:0 2px 5px rgba(0,0,0,.22),0 0 0 3px color-mix(in srgb,var(--fg) 4%,transparent)!important}
+.doc .case{padding:11px 12px!important;border-radius:8px!important;box-shadow:0 2px 4px rgba(0,0,0,.25)!important}
 .doc .case .acts .st{white-space:nowrap;min-width:0}
 .doc .case .acts .plbtn{white-space:nowrap!important;flex:1 0 auto!important;min-width:fit-content;line-height:1.2;padding-inline:10px!important}
 #saveShift{background:var(--go)!important;border-color:var(--go)!important;color:#fff!important}
@@ -550,8 +550,19 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 #leftCol > #docSum .kpi{justify-content:center}
 @media(max-width:1499px){#docSum{margin:0 0 10px!important}}
 /*FV31*/
-.doc .case.has-tr{border-top:6px solid var(--trc)!important;background-image:linear-gradient(to bottom,color-mix(in srgb,var(--trc) 16%,transparent),transparent 46px)}
-.doc .case .trp{padding:2px 10px;font-size:.8rem;border-radius:5px;box-shadow:0 0 0 2px color-mix(in srgb,var(--tc) 35%,transparent)}
+.doc .case.has-tr{background:color-mix(in srgb,var(--trc) 34%,var(--surface))!important}
+.doc .case .trp{box-shadow:none}
+/*FV32*/
+.fold-b{border:0;background:color-mix(in srgb,var(--fg) 12%,transparent);color:var(--fg);width:26px;height:26px;border-radius:6px;padding:0;font-size:.9rem;cursor:pointer;line-height:1}
+.fold-b:hover{background:color-mix(in srgb,var(--fg) 24%,transparent)}
+#foldAll{width:100%;padding:6px;font-size:.82rem;font-weight:600;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;cursor:pointer}
+#foldAll:hover{color:var(--fg);border-color:var(--fg)}
+.doc.folded .doc-f,.doc.folded .case .acts,.doc.folded .case .ct,.doc.folded .case .cnote,.doc.folded .case .el small,.doc.folded .doc-h .until,.doc.folded .doc-h .stsum{display:none!important}
+.doc.folded .doc-h{padding-bottom:10px}
+.doc.folded .doc-h .hd-l{min-height:0}
+.doc.folded .cases{gap:8px!important;padding-bottom:12px!important}
+.doc.folded .case{padding:7px 10px!important;grid-template-columns:minmax(0,1fr) auto}
+.doc.folded .case .el{grid-row:auto;font-size:.95rem}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -814,6 +825,18 @@ $('#trSeg').addEventListener('click',e=>{const b=e.target.closest('[data-tr]');i
  {const a=setPb;setPb=function(k){a(k);sync()}}{const a=setTy;setTy=function(k){a(k);sync()}}{const a=setTr;setTr=function(k){a(k);sync()}}
  $('#tySel').value='m';$('#tySel').refresh()}
 document.getElementById('saveShift').addEventListener('click',()=>document.getElementById('saveFile').click());
+{let F=new Set();try{F=new Set(JSON.parse(localStorage.getItem('fv.fold')||'[]'))}catch(e){}
+ const sv=()=>{try{localStorage.setItem('fv.fold',JSON.stringify([...F]))}catch(e){}};
+ const fa=document.createElement('button');fa.id='foldAll';fa.type='button';$('#docSum').after(fa);
+ const docs=()=>[...document.querySelectorAll('.doc[data-did]')];
+ const apply=()=>{{const ds=$('#docSum');if(fa.previousElementSibling!==ds)ds.after(fa)}docs().forEach(a=>{const id=a.dataset.did,h=a.querySelector('.hd-l');a.classList.toggle('folded',F.has(id));
+   let b=a.querySelector('.fold-b');if(!b&&h){b=document.createElement('button');b.type='button';b.className='fold-b';b.title='Fold kortet ind/ud';b.setAttribute('aria-label','Fold kortet ind/ud');h.insertBefore(b,h.firstChild)}
+   if(b){b.textContent=F.has(id)?'▸':'▾';b.setAttribute('aria-expanded',String(!F.has(id)))}});
+  const d=docs();fa.hidden=!d.length;fa.textContent=d.length&&d.every(a=>F.has(a.dataset.did))?'▾ Fold alle ud':'▸ Fold alle ind'};
+ document.addEventListener('click',e=>{const b=e.target.closest('.fold-b');if(!b)return;const id=b.closest('.doc').dataset.did;F.has(id)?F.delete(id):F.add(id);sv();apply()});
+ fa.addEventListener('click',()=>{const d=docs();const all=d.every(a=>F.has(a.dataset.did));d.forEach(a=>all?F.delete(a.dataset.did):F.add(a.dataset.did));sv();apply()});
+ {const _r=render;render=function(){_r.apply(this,arguments);try{apply()}catch(e){console.error(e)}}}
+ apply()}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild($('#docSum'));lc.appendChild(rb);lc.appendChild(sh);lc.appendChild($('#qSec'))}
 function postRender(){
