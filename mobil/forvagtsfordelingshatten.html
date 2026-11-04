@@ -625,6 +625,21 @@ body{padding-bottom:0!important}
 .doc .doc-h .load span{font-size:.62rem}
 .doc .doc-h .hd-l{min-height:0!important}
 .doc .doc-h{align-items:center!important;row-gap:4px}
+/*FV41*/
+.doc .doc-h:has(.load.l0){--hb:color-mix(in srgb,var(--done) 26%,var(--surface));--hf:var(--fg)}
+.doc .doc-h:has(.load.l1){--hb:#2e9e44;--hf:#fff}
+.doc .doc-h:has(.load.l2){--hb:#f0b000;--hf:#1e2a35}
+.doc .doc-h:has(.load.l3){--hb:var(--hit);--hf:#fff}
+.doc .doc-h{background:var(--hb,var(--surface))!important;color:var(--hf,var(--fg))!important;padding:8px 12px!important;row-gap:2px!important}
+.doc .doc-h .nm{color:inherit!important;font-size:1.15rem}
+.doc .doc-h .lv{background:rgba(255,255,255,.28)!important;color:inherit!important;border-color:transparent!important}
+.doc .doc-h:has(.load.l2) .lv{background:rgba(0,0,0,.14)!important}
+.doc .doc-h .zzz{background:rgba(0,0,0,.22)!important;color:inherit!important}
+.doc .doc-h .load{background:transparent!important;color:inherit!important;box-shadow:none!important;padding:0!important}
+.doc .doc-h .load b{font:800 1.7rem var(--sans)!important;color:inherit!important}
+.doc .doc-h .load span{font-size:.7rem;color:inherit!important}
+.doc .doc-h .until,.doc .doc-h .stsum{background:rgba(0,0,0,.2)!important;color:inherit!important}
+.doc .doc-h:has(.load.l2) .until{background:rgba(0,0,0,.12)!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
