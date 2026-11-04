@@ -351,6 +351,11 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .doc-f .stats .sm{color:var(--muted);font-weight:500}
 .case .ct{font-size:.78rem!important;font-weight:500}
 .case .el{font-weight:800!important}
+/*FV15*/
+.zp{display:inline-block;padding:1px 8px;border-radius:4px;font:700 .74rem var(--sans);vertical-align:middle;background:color-mix(in srgb,var(--fg) 12%,transparent);color:var(--fg);white-space:nowrap}
+.case .cl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 5px}
+.case .cl .cnote{flex:1 1 100%}
+.case .cl .zrow{flex:1 1 100%;display:flex;gap:5px}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -721,7 +726,7 @@ function render(){
     return `<article class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
       <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${(w=>w===0?0:w<=2?1:w<=4?2:3)(wload(d.id))}" title="${act.length} aktive patienter · samlet tyngde ${wload(d.id)} (let 1, middel 2, tung 3)"><b>${act.length}</b><span>${act.length?'aktiv'+(act.length===1?'':'e'):'ledig'}</span></span>${act.length?`<span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
-        <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button> ${esc([c.zone?'Zone\u00a0'+c.zone:'',c.room?'St.\u00a0'+c.room:''].filter(Boolean).join('\u00a0·\u00a0')||(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient'))}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
+        <span class="cl">${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
         <div class="acts sts">${ST.map(x=>`<button type="button" class="st st-${x[0]}" data-st="${x[0]}" data-case="${c.id}" aria-pressed="${stOf(c)[0]===x[0]}" title="${x[1]}">${x[2]}</button>`).join('')}<button class="fin" type="button" data-finish="${c.id}">✓ Afslut</button></div></li>`}).join('')}</ul>`:'<div class="nocase">Ingen aktive patienter'+esc(free)+'</div>'}
       <div class="doc-f"><span class="stats"><span class="donec">✓ ${dn.length} afsluttet</span><span class="sm">gns. ${avg}</span>${la?`<span class="sm">sidst tildelt ${hm(la)}</span>`:''}</span><button type="button" data-assign="${d.id}">+ Patient</button></div>
