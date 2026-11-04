@@ -391,13 +391,22 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .case .acts .mvsel:hover{color:var(--fg);border-color:var(--go)}
 /*FV22*/
 #leftCol{display:contents}
-#teamStrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px}
+#recBox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px;align-items:center;padding:12px 14px;border:2px solid color-mix(in srgb,var(--go) 60%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--go) 12%,var(--surface))}
+#recBox .hat{grid-row:1/span 3;font-size:2rem;line-height:1;display:flex}
+#recBox .hat .avs{width:44px;height:44px}
+#recBox #shotLabel{font:700 .68rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--go)}
+#recBox .who{font-size:1.45rem;font-weight:800;display:flex;align-items:center;gap:8px}
+#recBox #shotWhy{font-size:.8rem;color:var(--muted)}
+.wrap:has(#docsEmpty:not([hidden])) #recBox{display:none}
+#teamStrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(156px,1fr));gap:8px}
 #teamStrip[hidden]{display:none}
 .tm{display:flex;flex-direction:column;gap:7px;text-align:left;padding:8px 10px;border:1px solid var(--line);border-top:4px solid var(--lc,var(--line));border-radius:8px;background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--sans)}
 .tm:hover{border-color:var(--go)}
 .tm.next{box-shadow:0 0 0 2px var(--go)}
 .tm-h{display:flex;align-items:center;gap:6px}
 .tm-h b{font-size:1rem}
+.tm .nx{font-size:0!important;}
+.tm .nx::before{content:"▶";font-size:.72rem}
 .tm .nx{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--go)}
 .tm .tu{margin-left:auto;font-size:.76rem;color:var(--muted);font-weight:600;white-space:nowrap}
 .tm-b{display:flex;flex-wrap:wrap;gap:4px;min-height:26px;align-items:center}
@@ -414,7 +423,6 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .wrap>*{grid-column:2}
 #leftCol{display:flex!important;flex-direction:column;gap:14px;grid-column:1!important;grid-row:1/span 40;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow-y:auto;padding:2px}
 #leftCol .shot .assign{grid-template-columns:110px minmax(0,1fr)!important;grid-template-areas:"zone stue" "pb pb" "ty ty" "note note" "q q"!important}
-#leftCol #shotWhy{display:none}
 #leftCol .shot > div:nth-of-type(1){flex-wrap:nowrap}
 #qList{grid-template-columns:1fr!important}
 .docs{display:block!important;columns:5 270px;column-gap:10px}
@@ -665,7 +673,7 @@ $('#docs').addEventListener('change',e=>{const sel=e.target.closest('.mvsel');if
   const d=S.doctors.find(x=>x.id===to);if(!d)return;c.doc=d.id;c.movedFrom=from?from.id:null;c.movedAt=Date.now();save();render();toast('Patient flyttet'+(from?' fra '+from.name:'')+' til '+d.name,true);undoState=before});
 function setVt(v){const w=document.querySelector('.wrap');w.dataset.vt=v;document.querySelectorAll('#vTabs [data-vt]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.vt===v))}
 setVt('roster');
-{const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);lc.appendChild($('#shot'));lc.appendChild($('#qSec'))}
+{const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild(rb);lc.appendChild(sh);lc.appendChild($('#qSec'))}
 function postRender(){
   const ds=onDuty(),n=next(),el=$('#teamStrip');
   if(el){el.hidden=!ds.length;
