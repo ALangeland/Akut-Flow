@@ -511,6 +511,21 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .doc-h > .lbar,.doc-h > .stsum,.doc-h > .until{grid-column:1/-1;flex-basis:auto}
 .doc-h .zzz{font-size:.7rem}
 .doc-h .lbar{display:none!important}
+/*FV28*/
+#pbSeg,#tySeg,#trSeg{display:none!important}
+.shot .assign .fsel{width:100%;height:36px!important;padding-block:0}
+.shot .assign .lbl{margin-bottom:3px!important}
+.shot .assign{gap:8px 8px!important}
+@media(min-width:1000px){
+.shot .assign{grid-template-columns:84px 104px repeat(3,minmax(0,1fr))!important;grid-template-areas:"zone stue pb ty tr" "note note note note q"!important}
+}
+@media(min-width:1500px){
+#leftCol .shot .assign{grid-template-columns:84px 104px minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"zone stue pb pb" "ty ty tr tr" "note note note note" "q q q q"!important}
+}
+@media(max-width:700px){
+.shot .assign{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"zone stue" "pb ty" "tr note" "q q"!important}
+}
+#queueAdd{height:38px!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -752,6 +767,13 @@ const trPill=k=>{const t=trOf(k);return t?'<span class="trp" style="--tc:'+t[2]+
 let curTr='';
 function setTr(k){curTr=k||'';document.querySelectorAll('#trSeg [data-tr]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tr===curTr))}
 $('#trSeg').addEventListener('click',e=>{const b=e.target.closest('[data-tr]');if(b)setTr(b.dataset.tr===curTr?'':b.dataset.tr)});
+{const mk=(seg,id,opts,set)=>{const sel=document.createElement('select');sel.id=id;sel.className='fsel';sel.innerHTML=opts;seg.parentNode.appendChild(sel);sel.addEventListener('change',()=>set(sel.value))};
+ mk($('#pbSeg'),'pbSel','<option value="">– vælg –</option>'+PB.map(x=>'<option value="'+x[0]+'">'+x[0]+' · '+x[2]+'</option>').join(''),v=>setPb(v));
+ mk($('#tySeg'),'tySel',TY.map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join(''),v=>setTy(v));
+ mk($('#trSeg'),'trSel','<option value="">– ingen –</option>'+TRI.map(x=>'<option value="'+x[0]+'">'+x[1]+'</option>').join(''),v=>setTr(v));
+ const sync=()=>{$('#pbSel').value=curPb;$('#tySel').value=curTy;$('#trSel').value=curTr};
+ {const a=setPb;setPb=function(k){a(k);sync()}}{const a=setTy;setTy=function(k){a(k);sync()}}{const a=setTr;setTr=function(k){a(k);sync()}}
+ $('#tySel').value='m'}
 setVt('roster');
 {const w=document.querySelector('.wrap'),lc=document.createElement('div');lc.id='leftCol';w.insertBefore(lc,w.firstChild);const sh=$('#shot'),hat=sh.querySelector('.hat'),info=hat.nextElementSibling,rb=document.createElement('section');rb.id='recBox';rb.appendChild(hat);rb.appendChild(info);lc.appendChild(rb);lc.appendChild(sh);lc.appendChild($('#qSec'))}
 function postRender(){
