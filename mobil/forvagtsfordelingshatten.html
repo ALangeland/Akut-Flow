@@ -645,6 +645,12 @@ body{padding-bottom:0!important}
 .doc .doc-h .load{min-width:34px;justify-content:center}
 .doc .doc-h .nm{background:rgba(12,18,38,.55);color:#fff!important;padding:2px 12px 3px;border-radius:999px}
 .doc .doc-h .lv,.doc .doc-h:has(.load.l2) .lv{background:var(--lc)!important;color:#fff!important;border:2px solid rgba(255,255,255,.9)!important;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+/*FV43*/
+.doc .doc-h .hd-r{grid-column:2;grid-row:1;display:flex;align-items:center;gap:8px;margin-left:auto}
+.doc .doc-h .hd-r .load{grid-column:auto!important;grid-row:auto!important}
+.hd-add{border:0;border-radius:999px;padding:4px 11px;background:rgba(12,18,38,.62);color:#fff;font:700 .74rem var(--sans);cursor:pointer;white-space:nowrap}
+.hd-add:hover{background:rgba(12,18,38,.85)}
+.doc-f button[data-assign]{display:none!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -917,6 +923,7 @@ document.getElementById('saveShift').addEventListener('click',()=>document.getEl
    a.querySelectorAll('.case').forEach(li=>{const op=fold&&O.has(cid(li));li.classList.toggle('open',op);let dt=li.querySelector(':scope>.cdet');
      if(op&&!dt){dt=document.createElement('div');dt.className='cdet';[...li.querySelectorAll(':scope>.ct,:scope>.cnote,:scope>.acts')].forEach(x=>dt.appendChild(x));li.appendChild(dt)}
      else if(!op&&dt){while(dt.firstChild)li.appendChild(dt.firstChild);dt.remove()}});
+   if(!a.querySelector('.hd-r')){const dh=a.querySelector('.doc-h'),ld=dh&&dh.querySelector('.load');if(ld){const r=document.createElement('div');r.className='hd-r';const bt=document.createElement('button');bt.type='button';bt.className='hd-add';bt.dataset.assign=id;bt.title='Tildel patienten fra opretteren til '+((a.querySelector('.nm')||{}).textContent||'');bt.textContent='＋ Tildel';ld.before(r);r.append(bt,ld)}}
    let b=a.querySelector('.fold-b');if(!b&&h){b=document.createElement('button');b.type='button';b.className='fold-b';b.title='Fold kortet ind/ud';b.setAttribute('aria-label','Fold kortet ind/ud');h.insertBefore(b,h.firstChild)}
    if(b){b.textContent=fold?'▸':'▾';b.setAttribute('aria-expanded',String(!fold))}});
   const d=docs();fa.hidden=!d.length;fa.textContent=d.length&&d.every(a=>U.has(a.dataset.did))?'▸ Fold alle ind':'▾ Fold alle ud'};
