@@ -410,6 +410,29 @@ if(!state||!Array.isArray(state.flows)||!state.flows.length){const f=seed();stat
 state.flows.forEach(normalize);
 const cur=()=>state.flows.find(f=>f.id===state.cur)||state.flows[0];
 const open=new Set();
+/*VF3 flere faner*/
+let vfBase={};const vfExt=new Set();
+const vfSnapBase=ids=>{state.flows.forEach(f=>{if(!ids||ids.has(f.id))vfBase[f.id]=JSON.stringify(f)})};vfSnapBase();
+const vfDirty=f=>JSON.stringify(f)!==vfBase[f.id];
+function vfMerge(st,write){
+  let view=false;const dirty=new Set(state.flows.filter(vfDirty).map(f=>f.id));
+  if(st&&Array.isArray(st.flows)&&st.flows.length){
+    st.flows.forEach(normalize);
+    const loc=new Map(state.flows.map(f=>[f.id,f])),sto=new Set(st.flows.map(f=>f.id)),out=[];
+    st.flows.forEach(sf=>{const lf=loc.get(sf.id);
+      if(lf){if(dirty.has(sf.id))out.push(lf);else{out.push(sf);if(JSON.stringify(sf)!==vfBase[sf.id])view=true}}
+      else if(!(sf.id in vfBase)){out.push(sf);vfExt.add(sf.id);view=true}});
+    state.flows.forEach(lf=>{if(sto.has(lf.id))return;if(!(lf.id in vfBase)||dirty.has(lf.id))out.push(lf);else view=true});
+    if(out.length){state.flows=out;if(!state.flows.some(f=>f.id===state.cur))state.cur=state.flows[0].id}
+  }
+  if(write)localStorage.setItem(KEY,JSON.stringify(state));
+  const keep=new Set(state.flows.filter(f=>write||!dirty.has(f.id)).map(f=>f.id));vfSnapBase(keep);
+  return view;
+}
+function vfRerender(){const fid=document.activeElement&&document.activeElement.id;let a=null,b=null;try{a=document.activeElement.selectionStart;b=document.activeElement.selectionEnd}catch(_){}
+  renderAll(false);if(fid&&$(fid)){const el=$(fid);el.focus();try{if(a!=null)el.setSelectionRange(a,b)}catch(_){}}}
+window.addEventListener("storage",e=>{if(e.key!==KEY||!e.newValue)return;let st;try{st=JSON.parse(e.newValue)}catch(_){return}if(vfMerge(st,false))vfRerender()});
+
 
 /* gem + historik (fortryd/gendan) */
 const hhmm=()=>new Date().toLocaleTimeString("da-DK",{hour:"2-digit",minute:"2-digit"});
@@ -419,7 +442,7 @@ function updHistBtns(){$("btn-undo").disabled=hi<=0;$("btn-redo").disabled=hi>=h
 function save(manual,changed=true){
   const f=cur();if(changed&&f.autoDate)f.updated=todayISO();
   const el=$("save-status");
-  try{localStorage.setItem(KEY,JSON.stringify(state));
+  try{{let st=null;try{st=JSON.parse(localStorage.getItem(KEY))}catch(_){}if(vfMerge(st,true))setTimeout(vfRerender,0)}
     if(manual||changed){el.className="savest"+(manual?" ok":"");el.textContent=(manual?"Flow gemt kl. ":"Gemt automatisk kl. ")+hhmm();
       if(manual){clearTimeout(stTimer);stTimer=setTimeout(()=>el.className="savest",2500)}}}
   catch(e){el.className="savest err";el.textContent='Kunne ikke gemme i browseren. Brug "Gem flow som fil".'}
@@ -428,7 +451,7 @@ function save(manual,changed=true){
 }
 function restore(s){
   const fid=document.activeElement&&document.activeElement.id;
-  state=JSON.parse(s);state.flows.forEach(normalize);renderAll(false);
+  {const sn=JSON.parse(s);sn.flows.forEach(normalize);const now=new Map(state.flows.map(f=>[f.id,f]));sn.flows=sn.flows.map(f=>(f.id===state.cur||!now.has(f.id))?f:now.get(f.id));state.flows.forEach(f=>{if(vfExt.has(f.id)&&!sn.flows.some(x=>x.id===f.id))sn.flows.push(f)});sn.cur=state.cur;if(!sn.flows.some(f=>f.id===sn.cur))sn.cur=sn.flows[0].id;state=sn}renderAll(false);
   if(fid&&$(fid)){const el=$(fid);el.focus();if(el.setSelectionRange&&typeof el.value==="string")try{el.setSelectionRange(el.value.length,el.value.length)}catch(_){}}
 }
 function undo(){if(histTimer){snap()}if(hi>0){hi--;restore(hist[hi]);updHistBtns()}}
