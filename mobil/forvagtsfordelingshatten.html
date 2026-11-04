@@ -504,6 +504,13 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .doc-h .load.l1{--lb:var(--t-l);color:#fff!important}
 .doc-h .load.l2{--lb:#f0b000;color:#1e2a35!important}
 .doc-h .load.l3{--lb:var(--t-t);color:#fff!important}
+/*FV27*/
+.doc-h{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:6px;align-items:start}
+.doc-h .hd-l{display:flex;flex-wrap:wrap;align-items:center;align-content:flex-start;gap:4px 8px;min-height:64px;min-width:0}
+.doc-h .load{grid-column:2;grid-row:1;margin-left:0!important}
+.doc-h > .lbar,.doc-h > .stsum,.doc-h > .until{grid-column:1/-1;flex-basis:auto}
+.doc-h .zzz{font-size:.7rem}
+.doc-h .lbar{display:none!important}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -936,7 +943,7 @@ function render(){
     const free=!act.length&&la?` · ledig i ${dur(now-Math.max(...S.cases.filter(c=>c.doc===d.id).map(c=>c.end||c.start)))}`:'';
     const zz=sleepOf(d.id);
     return `<article data-did="${d.id}" class="doc${n&&n.id===d.id?' next':''}${zz&&zz.s==='asleep'?' asleep':''}" style="--lc:var(--l-${d.level})">
-      <div class="doc-h"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}<span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
+      <div class="doc-h"><div class="hd-l"><span class="nm">${esc(d.name)}</span><span class="lv">${esc(lvl(d.level)[1])}</span>${n&&n.id===d.id?'<span class="nexttag">Står for skud</span>':''}${zz?`<span class="zzz${zz.s==='asleep'?' sl':''}">${esc(zz.txt)}</span>`:''}</div><span class="load l${act.length===0?0:act.length<=2?1:act.length===3?2:3}" title="${act.length} aktive patienter · belastning: 1-2 let, 3 medium, over 3 hård"><b>${act.length}</b><span>${act.length===0?'ledig':act.length<=2?'let':act.length===3?'medium':'hård'}</span></span>${act.length?`<span class="lbar" title="Én streg pr. patient – farve efter tyngde, svag = planlagt">${act.map(c=>`<i class="t-${tyOf(c)[0]}${stOf(c)[0]==='plan'?' pl':''}"></i>`).join('')}</span><span class="stsum">${stChips(act)}</span>`:''}${d.untilTs?`<span class="until${untilCls(d)}" style="flex-basis:100%">${untilHtml(d)}</span>`:''}</div>
       ${act.length?`<ul class="cases">${act.map(c=>{const ms=now-c.start;return `<li class="case t-${tyOf(c)[0]} s-${stOf(c)[0]}${ms>=LONG_MIN*60000?' long':''}">
         <span class="cl">${c.tr?trPill(c.tr):''}${pbOf(c)?`<span class="pbt" style="--pc:${pbOf(c)[3]}" title="${pbOf(c)[0]} – ${pbOf(c)[2]}">${pbOf(c)[1]} ${pbOf(c)[0]}</span> `:''}<button type="button" class="typ ty-${tyOf(c)[0]}" data-cyclety="${c.id}" title="Estimeret tyngde – tryk for at skifte">${tyOf(c)[1]}</button>${(c.zone||c.room)?'<span class="zrow">'+(c.zone?'<span class="zp">Zone\u00a0'+esc(c.zone)+'</span>':'')+(c.room?'<span class="zp">St.\u00a0'+esc(c.room)+'</span>':'')+'</span>':'<span>'+esc(pbOf(c)?pbOf(c)[2]:c.note?'':'Patient')+'</span>'}${c.note?`<span class="cnote">${esc(c.note)}</span>`:''}</span><span class="el mono" title="Tildelt kl. ${hm(c.start)}">${dur(ms)}<small>i gang</small></span>
         <span class="ct">Tildelt kl. ${hm(c.start)}${c.stAt&&c.st&&c.st!=='start'?' · '+stOf(c)[2].toLowerCase()+' '+hm(c.stAt):''}</span>
