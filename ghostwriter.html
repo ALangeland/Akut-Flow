@@ -813,6 +813,10 @@ html:not(.afmob) .klact .klnew:hover{opacity:1;text-decoration-color:currentColo
 html:not(.afmob) .klact .klnew::before{content:"✕\00a0"}
 html:not(.afmob) .klact .klnew.armed{opacity:1;color:#fff!important;background:var(--hit,#d33)!important;border-radius:8px;padding:5px 10px!important}
 [data-skin="basic"][data-theme="dark"] .klact [data-kl="klar"]{color:#05252b!important}
+#kldraft .klsaved{display:none!important}
+.kdright{margin-left:auto;display:flex;align-items:center;gap:10px}
+.kdright .kdclosed{margin-left:0}
+.kdsaved{font-size:.76rem;color:#2e9e44;font-weight:600;white-space:nowrap}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -2748,11 +2752,14 @@ function kdLabel(r){
   for(const k of pick){const v=String(o[k]||'').replace(/^…\.?\s*indlæggelsesdøgn\.?/,'').trim();if(v){const l=v.split('\n')[0].trim();return l.length>26?l.slice(0,25)+'…':l}}
   return 'Ny kladde';
 }
+function kdSavedTxt(){return klSavedAt?'✓ Gemt kl. '+klSavedAt.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'}):'✓ Gemmes automatisk'}
+{const _sh=klSavedShow;klSavedShow=function(){_sh.apply(this,arguments);const e=document.getElementById('kdsaved');if(e)e.textContent=kdSavedTxt()}}
 const kdHm=t=>new Date(t).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
 function kdTabsHtml(){
   const tabs=KD.list.map((r,i)=>{const on=r.id===KD.active;const stale=Date.now()-r.updated>12*3600e3;
     return `<div class="kdtab t-${r.type}${on?' on':''}${stale?' stale':''}" data-kdid="${r.id}" title="${esc(KL_TYPES[r.type]?KL_TYPES[r.type].name:'')} · oprettet kl. ${kdHm(r.created)}${stale?' · ikke rørt i over 12 timer':''}"><button class="kdgo" data-kdgo="${r.id}"><span class="kdico t-${r.type}" aria-hidden="true"></span><span class="kdtx"><span class="kdl">${esc(kdLabel(r))}</span><span class="kdt">${esc(KL_TYPES[r.type]?KL_TYPES[r.type].short:'')} · kl. ${kdHm(r.created)}</span></span></button>${on?`<button class="kdren" data-kdren="${r.id}" title="Omdøb (skriv ikke navn/CPR)">✎</button>`:''}<button class="kdx" data-kdx="${r.id}" title="Afslut kladden">✕</button></div>`}).join('');
-  const cl=KD.closed.length?`<div class="kdclosed"><button class="kdcb" data-kdcl="1">Afsluttede (${KD.closed.length}) ▾</button></div>`:'';
+  const sv=`<span class="kdsaved" id="kdsaved" title="Kladden gemmes automatisk i browseren">${kdSavedTxt()}</span>`;
+  const cl=`<div class="kdright">${sv}${KD.closed.length?`<div class="kdclosed"><button class="kdcb" data-kdcl="1">Afsluttede (${KD.closed.length}) ▾</button></div>`:''}</div>`;
   return `<div class="kdbar" role="tablist" aria-label="Aktive kladder">${tabs}<div class="kdnewwrap"><button class="kdnew" data-kdnew="1" title="Ny kladde i en ny fane – vælg type">＋ Ny kladde</button></div>${cl}</div>`;
 }
 function kdSwitch(id){
