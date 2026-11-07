@@ -748,6 +748,11 @@ html:not(.afmob) .klact :is(.jfmail,.klmailcfg),html:not(.afmob) .xfer .jfmail{d
 .stchint{padding:8px 10px;border-top:1px dashed var(--line);font-size:.82rem;color:var(--accent)}
 .stcrow{grid-template-columns:150px minmax(0,1fr)!important}
 @media(max-width:620px){.stcrow{grid-template-columns:1fr!important}}
+/*GW7*/
+.klbtns .klc{display:none!important}
+.klbtns .kln.kli{width:30px;height:30px;min-width:30px;padding:0!important;border-radius:50%!important;display:inline-grid!important;place-items:center;font-size:15px!important;font-weight:900;line-height:1;border:2px solid #2e9e44!important;color:#2e9e44!important;background:transparent!important}
+.klbtns .kln.kli:hover{background:#2e9e44!important;color:#fff!important}
+.klbtns .klnsel{border-radius:999px!important;border:2px solid #2e9e44!important;color:#2e9e44!important;font-weight:900;padding:2px 6px!important;background:transparent!important;min-width:0;width:auto}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -2875,7 +2880,7 @@ function renderKLDraft(){
         <div class="klbtns">
           ${f==='Neurologisk'?`<button class="btn sm nihssbtn" data-nihss="1" title="Udfyld NIHSS-skema med knapper">NIHSS${KL.__nihss&&KL.__nihss.ver===2&&KL.__nihss.v&&Object.keys(KL.__nihss.v).length?' '+nihssTotal(KL.__nihss.v).s:''}</button><button class="btn sm neurobtn" data-neuro="1" title="Neurologisk undersøgelse – klik normal/afvigende og kraftgrader">Neuro-us.</button>`:''}${f==='St.c.'?`<button class="btn sm stcbtn" data-stc="1" title="Klik hjertelyde og mislyde – med forklaringer">Mislyde</button>`:''}
           <button class="btn sm klpen" data-klpen="${esc(k)}" title="${ns.length?'Rediger standardnormalfund for feltet':'Opret standardnormalfund for feltet'}">✎</button>
-          ${ns.length?(ns.length===1?`<button class="btn sm kln" data-kln="${esc(k)}" title="Tilføj normalfund: ${esc(ns[0].body)}">✓ Normal</button>`:`<select class="klnsel" data-klnsel="${esc(k)}" title="Tilføj normalfund"><option value="">✓ Normal ▾</option>${ns.map((r,i)=>`<option value="${i}">${esc(r.label||r.body.slice(0,30))}</option>`).join('')}</select>`):'<span class="kln-ph"></span>'}
+          ${ns.length?(ns.length===1?`<button class="btn sm kln kli" data-kln="${esc(k)}" title="Tilføj normalfund: ${esc(ns[0].body)}" aria-label="Tilføj normalfund">✓</button>`:`<select class="klnsel" data-klnsel="${esc(k)}" title="Tilføj normalfund"><option value="">✓ ▾</option>${ns.map((r,i)=>`<option value="${i}">${esc(r.label||r.body.slice(0,30))}</option>`).join('')}</select>`):'<span class="kln-ph"></span>'}
           <button class="btn sm klx" data-klx="${esc(k)}" title="Ryd feltet (kan fortrydes)" ${v.trim()?'':'disabled'}>✕</button>
           <button class="btn sm klc" data-klc="${esc(k)}" title="Kopiér feltet – Enter kopierer næste" ${v.trim()?'':'disabled'}>${klDone.has(k)?'✓':'Kopiér'}</button>
         </div>
