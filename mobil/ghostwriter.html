@@ -811,6 +811,18 @@ html:not(.afmob) .klact .klnew.armed{opacity:1;color:#fff!important;background:v
 .kdright{margin-left:auto;display:flex;align-items:center;gap:10px}
 .kdright .kdclosed{margin-left:0}
 .kdsaved{font-size:.76rem;color:#2e9e44;font-weight:600;white-space:nowrap}
+/*GW10*/
+.brand{align-items:center!important}
+.brand .afhome{align-self:center}
+.unstrlnk{display:block;margin-top:4px;font-size:.78rem}
+.unlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px;max-height:55vh;overflow:auto}
+.unrow{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer}
+.unrow:last-child{border-bottom:0}
+.unrow input{margin-top:3px}
+.unt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.unt .muted{font-size:.74rem}
+.unp{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn.nclr.armed{background:#c62828!important;color:#fff!important}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -3008,7 +3020,7 @@ function renderKLIns(){
   }
   box.innerHTML=`${klModeBar('r')}<div class="card-h"><h2>Fraser</h2></div>
     <div class="instarget"><label class="insroute"><input type="checkbox" id="klRoute" ${klRoute?'checked':''}> Fordel fraser i journalfelter</label>
-      <div>${klInsTab==='norm'?'Normalfund <b>'+(nfMode==='paed'?'børn':'voksne')+'</b> indsættes i deres eget journalfelt.':(klRoute?'Fraser uden struktur indsættes':'Indsættes')+' i: <b id="kltarget">'+esc(klLabel(klTarget))+'</b>'}</div></div>
+      <div>${klInsTab==='norm'?'Normalfund <b>'+(nfMode==='paed'?'børn':'voksne')+'</b> indsættes i deres eget journalfelt.':(klRoute?'Fraser uden struktur indsættes':'Indsættes')+' i: <b id="kltarget">'+esc(klLabel(klTarget))+'</b>'}${unstrLink()}</div></div>
     <div class="inshead">
             <input id="klq" type="search" placeholder="Søg – fx kol, sepsis, abdomen" value="${esc(klInsQ)}" autocomplete="off">
     </div>
@@ -3310,6 +3322,31 @@ document.addEventListener('click',e=>{
   document.body.appendChild(m);const rc=b.getBoundingClientRect();
   m.style.position='fixed';m.style.top=Math.min(rc.bottom+4,innerHeight-m.offsetHeight-8)+'px';m.style.left=Math.max(8,rc.right-m.offsetWidth)+'px';
 });
+
+
+/* ---------- Ryd op: fraser uden struktur ---------- */
+function unstrPlans(){return (S&&S.plans||[]).filter(p=>p&&p.text&&!routePlan(filled(p.text)))}
+function unstrLink(){if(!klRoute||klInsTab==='norm')return '';const n=unstrPlans().length;return n?`<button type="button" class="lnk unstrlnk" data-unstr="1" title="Fraser uden journalstruktur fordeles ikke i felterne, men indsættes samlet i det valgte felt">Ryd op: ${n} fras${n>1?'er':''} uden struktur …</button>`:''}
+function openUnstr(){
+  const L=unstrPlans();
+  const rows=L.map(p=>`<label class="unrow"><input type="checkbox" data-unid="${esc(p.id)}"><span class="unt"><b>${esc(p.title)}</b><span class="muted">${esc([p.cat,p.sub].filter(Boolean).join(' · '))}</span><span class="unp">${esc(String(p.text).trim().split('\n').slice(0,3).join(' / ').slice(0,180))}</span></span></label>`).join('');
+  pmOpen('Fraser uden struktur',`<p class="note" style="margin:0 0 8px">Disse fraser har ingen journaloverskrifter (fx AKTUELT, OBJEKTIVT, PLAN) og kan derfor ikke fordeles i felterne – de indsættes samlet i det valgte felt. Markér dem, du vil slette.</p><div class="nhbtns" style="margin-bottom:8px"><button class="btn sm" data-unall="1">Markér alle</button><button class="btn sm" data-unnone="1">Fjern markering</button></div><div class="unlist">${rows}</div><div class="actions" style="margin-top:12px"><button class="btn nclr" data-undel="1">Slet markerede</button><span class="spacer"></span><button class="btn" data-pm="cancel">Luk</button></div>`);
+  pmSave=null;
+}
+$('#pmDlg').addEventListener('click',e=>{
+  if(e.target.closest('[data-unall]')){document.querySelectorAll('[data-unid]').forEach(c=>c.checked=true);return}
+  if(e.target.closest('[data-unnone]')){document.querySelectorAll('[data-unid]').forEach(c=>c.checked=false);return}
+  const d=e.target.closest('[data-undel]');if(!d)return;
+  const ids=[...document.querySelectorAll('[data-unid]:checked')].map(c=>c.dataset.unid);if(!ids.length){toast('Intet markeret');return}
+  if(!d.classList.contains('armed')){d.classList.add('armed');d.textContent='Ja, slet '+ids.length;setTimeout(()=>{if(d.isConnected){d.classList.remove('armed');d.textContent='Slet markerede'}},6000);return}
+  const gone=S.plans.filter(p=>ids.includes(p.id));
+  const seeds=gone.filter(p=>p.seed).map(p=>p.id);if(seeds.length)S.deletedSeeds=[...new Set([...(S.deletedSeeds||[]),...seeds])];
+  S.plans=S.plans.filter(p=>!ids.includes(p.id));if(ids.includes(ui.sel))ui.sel=null;
+  save();renderAll();toast(ids.length+' fras'+(ids.length>1?'er':'')+' slettet');
+  if(unstrPlans().length)openUnstr();else pmClose();
+});
+document.addEventListener('click',e=>{if(e.target.closest('[data-unstr]'))openUnstr()});
+window.__unstr=()=>unstrPlans().map(p=>p.title);
 
 function klOrder(){const o=[];JOURNAL.forEach(s=>s.f.forEach(f=>o.push(kk(s.s,f))));return o}
 function klText(){
