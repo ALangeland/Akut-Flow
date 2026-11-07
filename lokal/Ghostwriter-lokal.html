@@ -842,6 +842,33 @@ body.tabsfold #tabs .tabfold{text-align:center;font-size:1.1rem;padding:6px 0}
 #nf .nfline:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 #nf [data-nf="edit"]{margin-left:0}
 /*GW13*/
+.sinl .sie{display:inline-block;min-width:2ch;border-radius:5px;padding:1px 4px;margin:-1px -4px;outline:none;cursor:text;white-space:pre-wrap}
+.sinl .sie:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.sinl .sie:focus{background:var(--bg);box-shadow:0 0 0 2px var(--accent)}
+.sinl .sie:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic}
+.sinl .sie-k{display:block;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:.88rem/1.5 var(--sans)}
+.sig{border-top:1px dashed var(--line);padding:8px 0}
+.sigh{display:flex;align-items:center;gap:8px}
+.sie-gn{font-weight:800;font-size:.9rem}
+.sit{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;font:600 .72rem var(--sans);padding:1px 8px;cursor:pointer}
+.sit:hover{border-color:var(--accent);color:var(--accent)}
+.sigx{font-size:.76rem;color:var(--muted);margin:2px 0 6px}
+.sio{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;align-items:start;padding:5px 0}
+.sio.vj{opacity:.7}
+.sio.vj .sie-et::before{content:"ⓘ "}
+.siol{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.sie-et{border:1px solid var(--line)!important;border-radius:999px!important;padding:3px 10px!important;margin:0!important;font:600 .8rem var(--sans)}
+.sie-et.std{border-style:dashed!important;border-color:var(--accent)!important}
+.sioa{display:flex;gap:2px;opacity:0;transition:opacity .15s}
+.sio:hover .sioa,.sio:focus-within .sioa{opacity:1}
+.sib,.six{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:1px 5px;border-radius:5px}
+.sib.on{color:var(--accent)}
+.six:hover{color:#c62828}
+.sie-t{display:block!important;font:.86rem/1.45 var(--sans)}
+.siom{font-size:.74rem;color:var(--muted);margin-top:2px}
+.siv{font-size:.84rem;color:var(--muted);padding:2px 0}
+.siadd{border:1px dashed var(--line);background:none;color:var(--accent);border-radius:8px;font:600 .78rem var(--sans);padding:3px 10px;cursor:pointer;margin-top:4px}
+.sigh .six{opacity:.5}.sig:hover .sigh .six{opacity:1}
 .seggrp{border-top:1px dashed var(--line);padding:6px 0}
 .seggh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
 .seggh b{font-size:.84rem}
@@ -3535,21 +3562,46 @@ document.addEventListener('click',e=>{
   const x=e.target.closest('[data-pvx]');if(x){const L=pvList();L.splice(+x.dataset.pvx,1);KL.__pv=L;klSave();pvRender();return}
   const so=e.target.closest('[data-segoff]');if(so){const p=byId(ui.sel);if(p){p.segOff=!p.segOff;save();renderPreview();toast(p.segOff?'Planen indsættes i sin oprindelige form':'Planen indsættes opdelt med klikbare valg')}return}
 });
-function segOptRows(g){return g.muligheder.filter(m=>m.art!=='vejledning').map(m=>`<div class="segopt"><span class="segm${m.standard?' std':''}">${esc(m.etiket)}</span><div class="segot"><pre>${esc(m.tekst)}</pre><span>${esc(m.hvornaar||'')}${m.kilde?' · '+esc(m.kilde):''}</span></div></div>`).join('')}
+const CE=' contenteditable="plaintext-only" spellcheck="true"';
 function segPreviewHtml(p){
   const key=norm(p.title);const sg=SEG_MAP.get(key);if(!sg)return '';
-  if(segEditing===key&&segDraft)return segEditorHtml(p);
   const on=!p.segOff,edited=!!SEG_EDITS[key];
-  return `<div class="segpv${on?'':' off'}"><div class="segh"><b>Opdelt plan</b><span>${edited?'redigeret af dig':'gennemgået mod nationale kilder'}</span><button class="btn sm primary" data-segedit="1">Redigér kerne og valg</button><button class="btn sm" data-segoff="1">${on?'Brug original i stedet':'Brug opdelt version'}</button></div>
-   <div class="segk"><div class="segl">Kerne – indsættes altid i Plan</div><pre>${esc(sg.kerne)}</pre></div>
-   ${segVejlHtml(sg)}
-   <div class="segl">Valg – hvert klik indsætter teksten til højre i Plan</div>
-   ${sg.valg.filter(g=>g.muligheder.some(m=>m.art!=='vejledning')).map(g=>`<div class="seggrp"><div class="seggh"><b>${esc(g.gruppe)}</b><span>${g.type==='en'?'vælg én':'vælg flere'}${g.hjaelp?' · '+esc(g.hjaelp):''}</span></div>${segOptRows(g)}</div>`).join('')}
+  const ed=(path,val,cls,ph)=>`<span class="sie ${cls||''}" data-ep="${path}" data-ph="${esc(ph||'')}"${CE}>${esc(val||'')}</span>`;
+  return `<div class="segpv sinl${on?'':' off'}"><div class="segh"><b>Opdelt plan</b><span>${edited?'redigeret af dig':'gennemgået mod nationale kilder'} · klik på en tekst for at rette den</span>${edited?'<button class="btn sm nclr" data-segreset="1">Gendan ChatGPT-version</button>':''}<button class="btn sm" data-segoff="1">${on?'Brug original i stedet':'Brug opdelt version'}</button></div>
+   <div class="segl">Kerne – indsættes altid i Plan</div>${ed('kerne',sg.kerne,'sie-k','Kerne …')}
+   ${(sg.vejledning||[]).length?`<div class="segl">Vejledning fra kernen – indsættes ikke</div>${sg.vejledning.map((v,vi)=>`<div class="siv">ⓘ ${ed('v.'+vi+'.tekst',v.tekst,'','Vejledning …')}<button class="six" data-sdv="${vi}" title="Slet">✕</button></div>`).join('')}`:''}
+   <div class="segl">Valg – hvert klik i kladden indsætter teksten til højre</div>
+   ${sg.valg.map((g,gi)=>`<div class="sig"><div class="sigh">${ed(gi+'.gruppe',g.gruppe,'sie-gn','Gruppenavn')}<button class="sit" data-stype="${gi}" title="Skift mellem vælg én og vælg flere">${g.type==='en'?'vælg én':'vælg flere'}</button><button class="six" data-sdg="${gi}" title="Slet gruppen">✕</button></div>
+     <div class="sigx">${ed(gi+'.hjaelp',g.hjaelp,'sie-gx','Forklaring til gruppen …')}</div>
+     ${g.muligheder.map((m,mi)=>`<div class="sio${m.art==='vejledning'?' vj':''}"><div class="siol">${ed(gi+'.'+mi+'.etiket',m.etiket,'sie-et'+(m.standard?' std':''),'Knaptekst')}<div class="sioa"><button class="sib${m.standard?' on':''}" data-sstd="${gi}.${mi}" title="Førstevalg (vises med stiplet kant)">★</button><button class="sib${m.art==='vejledning'?' on':''}" data-sart="${gi}.${mi}" title="${m.art==='vejledning'?'Vejledning – indsættes ikke. Klik for at gøre til ordination':'Ordination – indsættes. Klik for at gøre til vejledning'}">ⓘ</button><button class="six" data-sdm="${gi}.${mi}" title="Slet valget">✕</button></div></div>
+       <div class="siot">${ed(gi+'.'+mi+'.tekst',m.tekst,'sie-t','Tekst der indsættes i Plan')}<div class="siom">${ed(gi+'.'+mi+'.hvornaar',m.hvornaar,'','Hvornår …')}<span> · </span>${ed(gi+'.'+mi+'.kilde',m.kilde,'','Kilde …')}</div></div></div>`).join('')}
+     <button class="siadd" data-sam="${gi}">+ valg</button></div>`).join('')}
+   <button class="siadd" data-sag="1">+ ny gruppe</button>
    ${(sg.aendringer||[]).length?`<details class="segd"><summary>Ændringer fra gennemgangen (${sg.aendringer.length})</summary><ul>${sg.aendringer.map(a=>`<li><b>${esc(a.hvad)}</b><br><span>${esc(a.hvorfor)}</span>${a.kilde?`<br><i>${esc(a.kilde)}</i>`:''}</li>`).join('')}</ul></details>`:''}
    ${sg.bemaerkning?`<details class="segd"><summary>Bemærkning</summary><p>${esc(sg.bemaerkning)}</p></details>`:''}
    ${(sg.kilder||[]).length?`<div class="segsrc">${sg.kilder.map(k=>`<a href="${esc(k.link)}" target="_blank" rel="noopener">${esc(k.titel)}</a>`).join('')}</div>`:''}
   </div>`;
 }
+function segWork(){const p=byId(ui.sel);if(!p)return null;const key=norm(p.title);const sg=SEG_MAP.get(key);if(!sg)return null;return {key,o:JSON.parse(JSON.stringify(sg))}}
+function segCommit(w,rerender,focusPath){SEG_EDITS[w.key]=w.o;try{localStorage.setItem(SEG_EK,JSON.stringify(SEG_EDITS))}catch(_){}segRebuild();
+  if(rerender){const y=window.scrollY;renderPreview();window.scrollTo(0,y);if(focusPath){const el=document.querySelector(`.sinl [data-ep="${focusPath}"]`);if(el){el.focus();const r=document.createRange();r.selectNodeContents(el);const s2=getSelection();s2.removeAllRanges();s2.addRange(r)}}}}
+function segSetIn(o,path,val){const pa=path.split('.');if(pa[0]==='kerne'){o.kerne=val;return}if(pa[0]==='v'){o.vejledning[+pa[1]].tekst=val;return}
+  const g=o.valg[+pa[0]];if(pa.length===2){g[pa[1]]=val;return}g.muligheder[+pa[1]][pa[2]]=val}
+document.addEventListener('focusout',e=>{const el=e.target.closest&&e.target.closest('.sinl [data-ep]');if(!el)return;const w=segWork();if(!w)return;
+  const val=el.innerText.replace(/ /g,' ').replace(/\n+$/,'');let cur;try{const pa=el.dataset.ep.split('.');cur=pa[0]==='kerne'?w.o.kerne:pa[0]==='v'?w.o.vejledning[+pa[1]].tekst:pa.length===2?w.o.valg[+pa[0]][pa[1]]:w.o.valg[+pa[0]].muligheder[+pa[1]][pa[2]]}catch(_){}
+  if((cur||'')===val)return;segSetIn(w.o,el.dataset.ep,val);segCommit(w,false);const h=document.querySelector('.sinl .segh span');if(h)h.textContent='redigeret af dig · klik på en tekst for at rette den';toast('Gemt')});
+document.addEventListener('keydown',e=>{const el=e.target.closest&&e.target.closest('.sinl [data-ep]');if(!el)return;if(e.key==='Escape'){el.blur()}else if(e.key==='Enter'&&!e.shiftKey&&!/sie-[tk]/.test(el.className)&&!/\.tekst$|^kerne$|^v\./.test(el.dataset.ep)){e.preventDefault();el.blur()}});
+document.addEventListener('click',e=>{if(!e.target.closest('.sinl'))return;
+  const t=(sel,fn)=>{const b=e.target.closest(sel);if(!b)return false;const w=segWork();if(!w)return true;fn(w,b);return true};
+  if(t('[data-stype]',(w,b)=>{const g=w.o.valg[+b.dataset.stype];g.type=g.type==='en'?'flere':'en';segCommit(w,true)}))return;
+  if(t('[data-sstd]',(w,b)=>{const [gi,mi]=b.dataset.sstd.split('.').map(Number);const m=w.o.valg[gi].muligheder[mi];m.standard=!m.standard;segCommit(w,true)}))return;
+  if(t('[data-sart]',(w,b)=>{const [gi,mi]=b.dataset.sart.split('.').map(Number);const m=w.o.valg[gi].muligheder[mi];m.art=m.art==='vejledning'?'ordination':'vejledning';segCommit(w,true)}))return;
+  if(t('[data-sdm]',(w,b)=>{const [gi,mi]=b.dataset.sdm.split('.').map(Number);w.o.valg[gi].muligheder.splice(mi,1);if(!w.o.valg[gi].muligheder.length)w.o.valg.splice(gi,1);segCommit(w,true);toast('Valget er slettet')}))return;
+  if(t('[data-sdg]',(w,b)=>{if(!confirm('Slet gruppen og alle dens valg?'))return;w.o.valg.splice(+b.dataset.sdg,1);segCommit(w,true)}))return;
+  if(t('[data-sdv]',(w,b)=>{w.o.vejledning.splice(+b.dataset.sdv,1);segCommit(w,true)}))return;
+  if(t('[data-sam]',(w,b)=>{const gi=+b.dataset.sam;w.o.valg[gi].muligheder.push({etiket:'Nyt valg',tekst:'- Rp. …',hvornaar:'',standard:false,kilde:'',art:'ordination'});segCommit(w,true,gi+'.'+(w.o.valg[gi].muligheder.length-1)+'.etiket')}))return;
+  if(t('[data-sag]',(w,b)=>{w.o.valg.push({gruppe:'Ny gruppe',type:'flere',hjaelp:'',muligheder:[{etiket:'Nyt valg',tekst:'- Rp. …',hvornaar:'',standard:false,kilde:'',art:'ordination'}]});segCommit(w,true,(w.o.valg.length-1)+'.gruppe')}))return;
+});
 function segEditorHtml(p){
   const d=segDraft,key=norm(p.title);
   const inp=(path,val,ph,cls)=>`<input class="${cls||''}" data-sp="${path}" value="${esc(val||'')}" placeholder="${esc(ph||'')}">`;
@@ -3568,15 +3620,12 @@ function segEditorHtml(p){
 function segSetPath(path,val){const parts=path.split('.');if(parts[0]==='kerne'){segDraft.kerne=val;return}
   const g=segDraft.valg[+parts[0]];if(parts.length===2){g[parts[1]]=val;return}const m=g.muligheder[+parts[1]];m[parts[2]]=val}
 function segRerender(){const pv=document.querySelector('.segpv');const y=window.scrollY;renderPreview();window.scrollTo(0,y)}
-/* Redigér-knappen åbner klikvalgs-editoren for opdelte planer; originalteksten kan stadig redigeres */
-document.addEventListener('click',e=>{const b=e.target.closest('[data-act="edit"]');if(!b||b.dataset.raw)return;const p=byId(ui.sel);if(!p||p.segOff)return;const key=norm(p.title);if(!SEG_MAP.has(key))return;
-  e.preventDefault();e.stopImmediatePropagation();segEditing=key;segDraft=JSON.parse(JSON.stringify(SEG_MAP.get(key)));segRerender();const ed=document.querySelector('.seged');if(ed)ed.scrollIntoView({block:'start',behavior:'smooth'})},true);
-document.addEventListener('click',e=>{if(!e.target.closest('[data-segraw]'))return;segEditing=null;segDraft=null;renderPreview();const b=document.querySelector('[data-act="edit"]');if(b){b.dataset.raw='1';b.click()}});
 document.addEventListener('input',e=>{const i=e.target.closest('.seged [data-sp]');if(!i||!segDraft)return;segSetPath(i.dataset.sp,i.type==='checkbox'?i.checked:i.value)});
 document.addEventListener('change',e=>{const i=e.target.closest('.seged [data-sp]');if(!i||!segDraft)return;segSetPath(i.dataset.sp,i.type==='checkbox'?i.checked:i.value)});
 document.addEventListener('click',e=>{
   const p=byId(ui.sel);if(!p)return;const key=norm(p.title);
   if(e.target.closest('[data-segedit]')){segEditing=key;segDraft=JSON.parse(JSON.stringify(SEG_MAP.get(key)));segRerender();return}
+  if(e.target.closest('.sinl [data-segreset]')){if(!confirm('Gendan ChatGPT-versionen og slet dine rettelser til denne plan?'))return;delete SEG_EDITS[key];try{localStorage.setItem(SEG_EK,JSON.stringify(SEG_EDITS))}catch(_){}segRebuild();renderPreview();toast('ChatGPT-version gendannet');return}
   if(!e.target.closest('.seged'))return;
   const dg=e.target.closest('[data-segdg]');if(dg){if(!confirm('Slet gruppen og alle dens valg?'))return;segDraft.valg.splice(+dg.dataset.segdg,1);segRerender();return}
   const dm=e.target.closest('[data-segdm]');if(dm){const [gi,mi]=dm.dataset.segdm.split('.').map(Number);segDraft.valg[gi].muligheder.splice(mi,1);segRerender();return}
