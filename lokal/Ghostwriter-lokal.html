@@ -652,6 +652,34 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .numt select{padding:2px 4px}
 .nihssbtn+.neurobtn{margin-left:0}
 @media(max-width:620px){.nurow{grid-template-columns:1fr}}
+/*GW3*/
+.kdbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:10px 12px 0;position:relative}
+.kdtab{display:inline-flex;align-items:stretch;border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden;max-width:290px}
+.kdtab.on{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--surface))}
+.kdtab.stale .kdt{color:var(--warn,#c78a00)}
+.kdtab button{border:0;background:none;color:var(--fg);cursor:pointer;font:600 .8rem var(--sans);padding:6px 8px;min-height:0}
+.kdgo{display:flex;align-items:baseline;gap:6px;min-width:0}
+.kdn{font:700 .72rem var(--mono);color:var(--muted)}
+.kdl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.kdt{font:500 .72rem var(--sans);color:var(--muted)}
+.kdren,.kdx{color:var(--muted)!important;padding:6px 7px!important}
+.kdx.armed{color:var(--hit)!important;font-weight:800}
+.kdnew{border:1px dashed var(--line);background:none;color:var(--accent);font:700 .8rem var(--sans);border-radius:8px;padding:6px 10px;cursor:pointer}
+.kdclosed{position:relative}
+.kdcb{border:0;background:none;color:var(--muted);font:600 .78rem var(--sans);cursor:pointer;padding:6px}
+.kdmenu{position:absolute;top:100%;left:0;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:6px;min-width:250px;display:flex;flex-direction:column;gap:2px}
+.kdmenu button{display:flex;justify-content:space-between;gap:10px;text-align:left;border:0;background:none;color:var(--fg);padding:7px 8px;border-radius:6px;cursor:pointer;font:.84rem var(--sans)}
+.kdmenu button:hover{background:var(--sunk,var(--bg))}
+.kdmenu span{color:var(--muted);font-size:.76rem}
+.kdmenu .hint{margin:4px 8px;font-size:.74rem}
+#klxfer .pipx.inl{margin-top:18px;border:2px solid var(--go);border-radius:6px;overflow:hidden}
+#klxfer .pipx .xrow.next{box-shadow:inset 3px 0 0 var(--go);background:color-mix(in srgb,var(--go) 10%,var(--surface))}
+#klxfer .pipx .xrow{grid-template-columns:minmax(0,1fr) auto!important}
+#klxfer .pipx .xrow .xl{grid-column:1/-1}
+#klxfer .psum{margin-left:auto;font-size:.82rem;color:var(--muted)}
+#klxfer .plab{padding:6px 12px;font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--line)}
+#klxfer .xfoot{padding:8px 12px;border-top:1px solid var(--line)}
+.afmob [data-kl="klar"]{display:none!important}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -2554,6 +2582,147 @@ function klSwitch(type){
   JOURNAL=KL_TYPES[type].J;KL=klLoad(type);klDefaults();klDone.clear();klTarget=PLAN_KEY;klCaret=null;
   renderKLDraft();renderKLIns();toast(KL_TYPES[type].name);
 }
+/* ---------- Flere kladder (faner) ---------- */
+const KD_KEY='pasteplaner.kladder';
+const KD_TYPES=Object.keys(KL_TYPES);
+function kdNow(){const d={};for(const t of KD_TYPES){try{d[t]=JSON.parse(localStorage.getItem(KL_TYPES[t].ls)||'{}')||{}}catch(e){d[t]={}}}d[klType]=KL;return d}
+function kdFilled(d){return KD_TYPES.some(t=>{const o=d&&d[t]||{};return Object.keys(o).some(k=>!k.startsWith('__')&&String(o[k]||'').trim()&&!(t==='notat'&&(k===FREE_KEY||k===PLAN_KEY)&&String(o[k]).trim()===String(NOTAT_DEF()[k]||'').trim()))})}
+function kdLoadStore(){let s=null;try{s=JSON.parse(localStorage.getItem(KD_KEY)||'null')}catch(e){}
+  if(!s||!Array.isArray(s.list)||!s.list.length){const id=Math.random().toString(36).slice(2,9);s={list:[{id,label:'',created:Date.now(),updated:Date.now(),type:klType,d:kdNow()}],active:id,closed:[]}}
+  if(!Array.isArray(s.closed))s.closed=[];
+  const cut=Date.now()-24*3600e3;s.closed=s.closed.filter(r=>(r.closedAt||0)>cut);
+  if(!s.list.some(r=>r.id===s.active))s.active=s.list[0].id;
+  return s}
+let KD=kdLoadStore();
+const kdCur=()=>KD.list.find(r=>r.id===KD.active);
+function kdWrite(){try{localStorage.setItem(KD_KEY,JSON.stringify(KD))}catch(e){}}
+function kdSync(){const r=kdCur();if(!r)return;r.d=kdNow();r.type=klType;r.updated=Date.now();kdWrite()}
+// aktiv kladde ved start: læg dens data i type-nøglerne, hvis de afviger (fx efter synk fra en anden computer)
+(function(){const r=kdCur();if(!r||!r.d)return;let ch=false;for(const t of KD_TYPES){const v=JSON.stringify(r.d[t]||{});if((localStorage.getItem(KL_TYPES[t].ls)||'{}')!==v){try{localStorage.setItem(KL_TYPES[t].ls,v)}catch(e){}ch=true}}
+  if(ch||r.type!==klType){klType=KL_TYPES[r.type]?r.type:'optag';try{localStorage.setItem('pasteplaner.klType',klType)}catch(e){}JOURNAL=KL_TYPES[klType].J;KL=klLoad(klType)}})();
+kdWrite();
+{const _ks=klSave;klSave=function(){_ks.apply(this,arguments);kdSync();try{const r=kdCur(),l=document.querySelector('.kdtab.on .kdl');if(r&&l)l.textContent=kdLabel(r)}catch(_){}if(window.pipRender)pipRender()}}
+function kdLabel(r){
+  if(r.label)return r.label;
+  const d=r.d||{};const o=d[r.type]||{};
+  const pick=[kk('Årsag til henvendelsen','Årsag til henvendelsen'),FREE_KEY,kk('Procedure','Procedure'),kk('Aktuelt','Beskrivelse')];
+  for(const k of pick){const v=String(o[k]||'').replace(/^…\.?\s*indlæggelsesdøgn\.?/,'').trim();if(v){const l=v.split('\n')[0].trim();return l.length>26?l.slice(0,25)+'…':l}}
+  return 'Ny kladde';
+}
+const kdHm=t=>new Date(t).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
+function kdTabsHtml(){
+  const tabs=KD.list.map((r,i)=>{const on=r.id===KD.active;const stale=Date.now()-r.updated>12*3600e3;
+    return `<div class="kdtab${on?' on':''}${stale?' stale':''}" data-kdid="${r.id}" title="${esc(KL_TYPES[r.type]?KL_TYPES[r.type].name:'')} · oprettet kl. ${kdHm(r.created)}${stale?' · ikke rørt i over 12 timer':''}"><button class="kdgo" data-kdgo="${r.id}"><span class="kdn">${i+1}</span><span class="kdl">${esc(kdLabel(r))}</span><span class="kdt">${kdHm(r.created)}</span></button>${on?`<button class="kdren" data-kdren="${r.id}" title="Omdøb (skriv ikke navn/CPR)">✎</button>`:''}<button class="kdx" data-kdx="${r.id}" title="Afslut kladden">✕</button></div>`}).join('');
+  const cl=KD.closed.length?`<div class="kdclosed"><button class="kdcb" data-kdcl="1">Afsluttede (${KD.closed.length}) ▾</button></div>`:'';
+  return `<div class="kdbar" role="tablist" aria-label="Aktive kladder">${tabs}<button class="kdnew" data-kdnew="1" title="Ny kladde i en ny fane">＋ Ny kladde</button>${cl}</div>`;
+}
+function kdSwitch(id){
+  if(id===KD.active)return;const t=KD.list.find(r=>r.id===id);if(!t)return;
+  klSave();kdSync();KD.active=id;
+  for(const ty of KD_TYPES){try{localStorage.setItem(KL_TYPES[ty].ls,JSON.stringify((t.d&&t.d[ty])||{}))}catch(e){}}
+  klType=KL_TYPES[t.type]?t.type:'optag';try{localStorage.setItem('pasteplaner.klType',klType)}catch(e){}
+  JOURNAL=KL_TYPES[klType].J;KL=klLoad(klType);klDone.clear();klTarget=PLAN_KEY;klCaret=null;kdWrite();
+  renderKLDraft();renderKLIns();if(window.pipRender)pipRender();
+}
+function kdNew(){
+  klSave();kdSync();const id=Math.random().toString(36).slice(2,9);
+  KD.list.push({id,label:'',created:Date.now(),updated:Date.now(),type:'optag',d:{optag:{},notat:{},proc:{}}});
+  kdSwitch(id);toast('Ny kladde oprettet – de andre ligger i fanerne');
+}
+function kdClose(id){
+  const r=KD.list.find(x=>x.id===id);if(!r)return;if(id===KD.active)kdSync();
+  if(kdFilled(r.d)){r.closedAt=Date.now();KD.closed.unshift(r);KD.closed=KD.closed.slice(0,30)}
+  KD.list=KD.list.filter(x=>x!==r);
+  if(!KD.list.length){const nid=Math.random().toString(36).slice(2,9);KD.list.push({id:nid,label:'',created:Date.now(),updated:Date.now(),type:'optag',d:{optag:{},notat:{},proc:{}}})}
+  if(id===KD.active){KD.active='';const nx=KD.list[KD.list.length-1];KD.active='__';kdSwitch(nx.id)}else{kdWrite();renderKLDraft()}
+  toast(kdFilled(r.d)?'Kladden er afsluttet – kan genåbnes i 24 timer under Afsluttede':'Tom kladde lukket');
+}
+function kdReopen(id){const r=KD.closed.find(x=>x.id===id);if(!r)return;KD.closed=KD.closed.filter(x=>x!==r);delete r.closedAt;KD.list.push(r);kdSwitch(r.id);toast('Kladden er genåbnet')}
+function kdClosedMenu(btn){
+  const old=document.getElementById('kdmenu');if(old){old.remove();return}
+  const m=document.createElement('div');m.id='kdmenu';m.className='kdmenu';
+  m.innerHTML=KD.closed.map(r=>`<button data-kdre="${r.id}"><b>${esc(kdLabel(r))}</b><span>afsluttet kl. ${kdHm(r.closedAt)}</span></button>`).join('')+'<p class="hint">Afsluttede kladder slettes efter 24 timer.</p>';
+  btn.parentElement.appendChild(m);
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#kldraft'))return;
+  const g=e.target.closest('[data-kdgo]');if(g){kdSwitch(g.dataset.kdgo);return}
+  if(e.target.closest('[data-kdnew]')){kdNew();return}
+  const x=e.target.closest('[data-kdx]');if(x){const r=KD.list.find(q=>q.id===x.dataset.kdx);const filled=r&&(r.id===KD.active?kdFilled(kdNow()):kdFilled(r.d));
+    if(filled&&!x.classList.contains('armed')){x.classList.add('armed');x.textContent='Afslut?';setTimeout(()=>{if(x.isConnected){x.classList.remove('armed');x.textContent='✕'}},5000);return}
+    kdClose(x.dataset.kdx);return}
+  const rn=e.target.closest('[data-kdren]');if(rn){const r=kdCur();const v=prompt('Kort mærke til kladden (fx Z3 St. 204 brystsmerter) – ingen navne eller CPR:',r.label||kdLabel(r));if(v!==null){r.label=v.trim().slice(0,30);kdWrite();renderKLDraft()}return}
+  if(e.target.closest('[data-kdcl]')){kdClosedMenu(e.target.closest('[data-kdcl]'));return}
+  const re=e.target.closest('[data-kdre]');if(re){kdReopen(re.dataset.kdre);return}
+});
+window.addEventListener('storage',e=>{if(e.key!==KD_KEY||!e.newValue)return;try{const s=JSON.parse(e.newValue);if(!s||!Array.isArray(s.list))return;
+  const act=KD.active;const mine=kdCur();KD=s;if(!Array.isArray(KD.closed))KD.closed=[];
+  if(mine){const i=KD.list.findIndex(r=>r.id===mine.id);if(i>=0)KD.list[i]=mine;else KD.list.push(mine)}KD.active=act;renderKLDraft()}catch(_){}});
+
+/* ---------- Journal klar: minivindue / overførselsliste ---------- */
+window.klXferOn=false;
+let pipWin=null;
+function xferItems(){
+  const it=[];
+  for(const sec of JOURNAL){
+    for(const f of sec.f){const k=kk(sec.s,f),v=(KL[k]||'').trim();if(v)it.push({k,label:klLabel(k).replace(/^Objektiv undersøgelse standard › /,'Objektiv › '),v})}
+    const chs=chSummary(sec);if(chs.length)it.push({ch:true,label:sec.s,v:chs.join(' · ')});
+  }
+  return it;
+}
+function pipHtml(){
+  const it=xferItems();const cp=it.filter(x=>!x.ch);const done=cp.filter(x=>klDone.has(x.k)).length;
+  const next=cp.find(x=>!klDone.has(x.k));
+  const r=kdCur();
+  return `<div class="xfer pipx"><div class="xh"><span class="xt">Klar til overførsel</span><span class="psum">${cp.length?done+' af '+cp.length+' kopieret':'Intet udfyldt endnu'}</span><button class="btn sm" data-pfirst="1">Forfra</button></div>
+  <div class="plab">${esc(r?kdLabel(r):'')} · ${esc(KL_TYPES[klType].short)}</div>
+  ${it.map(x=>x.ch?`<div class="xrow ch"><div class="xl">${esc(x.label)}</div><div class="xv">Vælg i EPJ: ${esc(x.v)}</div></div>`:
+    `<div class="xrow${klDone.has(x.k)?' done':''}${next&&next.k===x.k?' next':''}" data-pk="${esc(x.k)}"><div class="xl">${esc(x.label)}</div><div class="xv">${esc(cpSafe(x.v))}</div><button class="btn sm${klDone.has(x.k)?'':' primary'}" data-pc="${esc(x.k)}">${klDone.has(x.k)?'✓ Kopieret':'Kopiér'}</button></div>`).join('')}
+  </div>`;
+}
+window.pipRender=function(){
+  if(window.klXferOn&&!pipWin)renderXferList();
+  if(!pipWin||pipWin.closed){pipWin=null;return}
+  const d=pipWin.document;d.documentElement.dataset.theme=document.documentElement.dataset.theme||'';d.documentElement.dataset.skin=document.documentElement.dataset.skin||'';
+  d.body.innerHTML=pipHtml();const n=d.querySelector('.xrow.next');if(n)n.scrollIntoView({block:'nearest'});
+};
+async function pipCopy(k,w){
+  const v=cpSafe((KL[k]||'').trim());if(!v)return;
+  let ok=false;try{await w.navigator.clipboard.writeText(v);ok=true}catch(e){try{const ta=w.document.createElement('textarea');ta.value=v;w.document.body.appendChild(ta);ta.select();ok=w.document.execCommand('copy');ta.remove()}catch(_){}}
+  if(!ok){toast('Kopiering blev blokeret');return}
+  klDone.add(k);const b=document.querySelector(`#kldraft [data-klc="${klEsc(k)}"]`);if(b){b.textContent='✓';b.closest('.klrow').classList.add('done')}
+  pipRender();
+}
+function renderXferList(){
+  const b=$('#klxfer');if(!b)return;if(!window.klXferOn){b.hidden=true;b.innerHTML='';return}
+  b.hidden=false;b.innerHTML=pipHtml().replace(/^<div class="xfer pipx">/,'<div class="pipx inl">').replace(/<\/div>\s*$/,'')+'<div class="xfoot"><button class="btn sm" data-xclose="1">Skjul listen</button></div></div>';
+}
+async function journalKlar(){
+  if(window.documentPictureInPicture&&!pipWin){
+    try{
+      const w=await documentPictureInPicture.requestWindow({width:380,height:560});
+      pipWin=w;
+      document.querySelectorAll('style').forEach(s=>w.document.head.appendChild(s.cloneNode(true)));
+      const st=w.document.createElement('style');st.textContent='body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans)}.xfer.pipx{margin:0;border:0;border-radius:0}.pipx .xh{position:sticky;top:0;z-index:2}.pipx .psum{font-size:.8rem;color:var(--muted);margin-left:auto}.pipx .plab{padding:6px 12px;font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--line)}.pipx .xrow{grid-template-columns:minmax(0,1fr) auto!important;cursor:pointer}.pipx .xrow .xl{grid-column:1/-1}.pipx .xrow .xv{max-height:4.3em;overflow:hidden;font-size:.82rem}.pipx .xrow.next{background:color-mix(in srgb,var(--go) 12%,var(--surface));box-shadow:inset 3px 0 0 var(--go)}.pipx .xrow.done{opacity:.55}.pipx .xrow .btn{align-self:center}';
+      w.document.head.appendChild(st);
+      w.addEventListener('click',e=>{const c=e.target.closest('[data-pc]')||(e.target.closest('.xrow[data-pk]')&&e.target.closest('.xrow[data-pk]'));if(c){pipCopy(c.dataset.pc||c.dataset.pk,w);return}
+        if(e.target.closest('[data-pfirst]')){klDone.clear();renderKLDraft();pipRender()}});
+      w.addEventListener('pagehide',()=>{pipWin=null});
+      pipRender();return;
+    }catch(e){}
+  }
+  if(pipWin){pipWin.focus();return}
+  window.klXferOn=true;renderXferList();const b=$('#klxfer');if(b)b.scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-kl="klar"]')){journalKlar();return}
+  if(e.target.closest('[data-xclose]')){window.klXferOn=false;renderXferList();return}
+  const c=e.target.closest('#klxfer [data-pc]');if(c){klCopy(c.dataset.pc);setTimeout(renderXferList,30);return}
+  if(e.target.closest('#klxfer [data-pfirst]')){klDone.clear();renderKLDraft();return}
+});
+
+{const _kc=klCopy;klCopy=async function(){const r=await _kc.apply(this,arguments);if(window.pipRender)pipRender();return r}}
+{const _sw=klSwitch;klSwitch=function(){_sw.apply(this,arguments);kdSync();if(window.pipRender)pipRender()}}
 function klSecOf(k){return JOURNAL.find(j=>k.startsWith(j.s+' › '))}
 function klLabel(k){const [s,f]=k.split(' › ');return (f===s||f==='Beskrivelse'||f==='Fritekst')?s:s+' › '+f}
 function klNormals(sec,field){
@@ -2598,13 +2767,14 @@ klWide.addEventListener('change',klPlaceActions);
 function klModeBar(side){return `<div class="klmode klmode-${side}"><div class="seg kltype">${Object.entries(KL_TYPES).map(([k,t])=>`<button data-kltype="${k}" aria-pressed="${klType===k}" title="${esc(t.name)}">${esc(t.short||t.name)}</button>`).join('')}</div><span class="klhr">${klType==='proc'?'':`<span class="nfgrp"><span class="nfml">Normalfund</span>${nfModeSeg()}<button class="btn sm kln" data-klallnorm="1" title="Indsæt normalfund i alle tomme felter i journalen (valgfrie felter som Mammae, Genitalia m.fl. springes over). Felter du har skrevet i, bliver ikke rørt.">✓ Indsæt i alle tomme felter</button></span>`}</span></div>`}
 function renderKLDraft(){
   const box=$('#kldraft');
-  let html=`<div class="card-h klmode-hd">${klModeBar('l')}</div>
+  let html=kdTabsHtml()+`<div class="card-h klmode-hd">${klModeBar('l')}</div>
   <div class="card-b">
     <div class="actions klact" style="margin-bottom:10px">
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
+      <button class="btn sm" data-kl="klar" title="Åbn et lille vindue med de udfyldte felter oven på EPJ – klik Kopiér ved hvert felt">Journal klar ▸</button>
       <button class="btn sm" data-kl="copyall">Kopiér hele kladden</button>
       <button class="btn sm jfin" data-jfin="1" title="Indsæt en mail sendt fra Ghostwriter mobil – kladden fordeles i felterne"><span class="ico"><img class="px v5" src="data:image/webp;base64,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" width="24" height="24" alt=""><span class="emo">📥</span></span>Indlæs fra mail</button>
-      <button class="btn danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ny kladde</button>
+      <button class="btn danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ryd kladde</button>
     </div>
     
     <div class="klsaved"><span id="klsum">${klSavedTxt()}</span></div>`;
@@ -2649,7 +2819,7 @@ function renderKLDraft(){
   klPhBar();renderXfer();klPlaceActions();
 }
 function renderXfer(){
-  const b=$('#klxfer');if(!b) return;b.hidden=true;b.innerHTML='';return;
+  renderXferList();return;
   let rows='',n=0;
   for(const sec of JOURNAL){
     for(const f of sec.f){const k=kk(sec.s,f),v=(KL[k]||'').trim();if(!v) continue;n++;
@@ -3076,9 +3246,16 @@ function neuroText(st){
     ab.forEach(x=>sent.push(cap(x).replace(/\.?$/,'.')));
     if(sent.length)out.push(sec.s+': '+sent.join(' '));
   }
+  if(out.length){
+    const pos=[];
+    for(const sec of NEURO)for(const [id,l] of sec.items)if(st.v[id]==='a')pos.push(l.replace(/^[IVX\/]+ /,'').toLowerCase()+': '+((st.t[id]||'').trim()||'afvigende'));
+    const sd={h:'hø.',v:'ve.'};
+    for(const [j,l] of MRC_J)for(const x of ['h','v']){const m=st.m[j+x];if(m!==undefined&&m!==''&&m!=='5')pos.push('nedsat kraft '+sd[x]+' '+l.toLowerCase()+' (MRC '+m+')')}
+    out.push('Samlet: '+(pos.length?'Positive fund: '+pos.join('; ')+'.':'Ingen afvigende fund ved de undersøgte punkter.'));
+  }
   return out.join('\n');
 }
-const NEURO_RE=new RegExp('^\\s*('+NEURO.map(s=>s.s).join('|')+'):');
+const NEURO_RE=new RegExp('^\\s*('+NEURO.map(s=>s.s).join('|')+'|Samlet):');
 function openNeuro(){
   const st=neuroState();
   const btn=(id,v,lbl)=>`<button class="nbtn nu" data-nuid="${id}" data-nuv="${v}" aria-pressed="${st.v[id]===v}">${lbl}</button>`;
@@ -3420,7 +3597,7 @@ $('#kl').addEventListener('click',async e=>{
   else if(a==='nextph'){if(klCaret)klNextPhGlobal(klCaret.k,klCaret.pos);else klNextPhGlobal(klOrder()[0],0)}
   else if(a==='first'){const k=klOrder().find(k=>(KL[k]||'').trim());if(k)klCopy(k);else toast('Kladden er tom')}
   else if(a==='clear'){
-    if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='Ja, ryd kladden';setTimeout(()=>{if(b.isConnected){b.classList.remove('armed');b.textContent='Ny kladde'}},6000);return}
+    if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='Ja, ryd kladden';setTimeout(()=>{if(b.isConnected){b.classList.remove('armed');b.textContent='Ryd kladde'}},6000);return}
     KL={};klDefaults();klDone.clear();klTarget=PLAN_KEY;klSave();renderKLDraft();renderKLIns();klRefreshRow(PLAN_KEY);toast('Kladden er ryddet');
   }
 });
