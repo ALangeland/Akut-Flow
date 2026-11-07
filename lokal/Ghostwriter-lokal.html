@@ -3562,12 +3562,16 @@ function segEditorHtml(p){
        <div class="sege-mf">${inp(gi+'.'+mi+'.hvornaar',m.hvornaar,'Hvornår (tooltip)')}${inp(gi+'.'+mi+'.kilde',m.kilde,'Kilde')}</div></div>`).join('')}
      <button class="btn sm" data-segam="${gi}">+ Valg i ${esc(g.gruppe||'gruppen')}</button></div>`).join('')}
    <button class="btn sm" data-segag="1">+ Ny gruppe</button>
-   <div class="actions" style="margin-top:12px"><button class="btn primary" data-segsave="1">Gem</button><button class="btn" data-segcancel="1">Annullér</button><span class="spacer"></span>${SEG_EDITS[key]?'<button class="btn sm nclr" data-segreset="1">Gendan ChatGPT-version</button>':''}</div>
+   <div class="actions" style="margin-top:12px"><button class="btn primary" data-segsave="1">Gem</button><button class="btn" data-segcancel="1">Annullér</button><span class="spacer"></span><button class="btn sm" data-segraw="1" title="Redigér anamnese, objektivt m.m. som tekst">Redigér øvrig tekst</button>${SEG_EDITS[key]?'<button class="btn sm nclr" data-segreset="1">Gendan ChatGPT-version</button>':''}</div>
   </div>`;
 }
 function segSetPath(path,val){const parts=path.split('.');if(parts[0]==='kerne'){segDraft.kerne=val;return}
   const g=segDraft.valg[+parts[0]];if(parts.length===2){g[parts[1]]=val;return}const m=g.muligheder[+parts[1]];m[parts[2]]=val}
 function segRerender(){const pv=document.querySelector('.segpv');const y=window.scrollY;renderPreview();window.scrollTo(0,y)}
+/* Redigér-knappen åbner klikvalgs-editoren for opdelte planer; originalteksten kan stadig redigeres */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act="edit"]');if(!b||b.dataset.raw)return;const p=byId(ui.sel);if(!p||p.segOff)return;const key=norm(p.title);if(!SEG_MAP.has(key))return;
+  e.preventDefault();e.stopImmediatePropagation();segEditing=key;segDraft=JSON.parse(JSON.stringify(SEG_MAP.get(key)));segRerender();const ed=document.querySelector('.seged');if(ed)ed.scrollIntoView({block:'start',behavior:'smooth'})},true);
+document.addEventListener('click',e=>{if(!e.target.closest('[data-segraw]'))return;segEditing=null;segDraft=null;renderPreview();const b=document.querySelector('[data-act="edit"]');if(b){b.dataset.raw='1';b.click()}});
 document.addEventListener('input',e=>{const i=e.target.closest('.seged [data-sp]');if(!i||!segDraft)return;segSetPath(i.dataset.sp,i.type==='checkbox'?i.checked:i.value)});
 document.addEventListener('change',e=>{const i=e.target.closest('.seged [data-sp]');if(!i||!segDraft)return;segSetPath(i.dataset.sp,i.type==='checkbox'?i.checked:i.value)});
 document.addEventListener('click',e=>{
