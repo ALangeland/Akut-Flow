@@ -843,6 +843,20 @@ html:not(.afmob) .klact .klnew.armed{opacity:1;color:#fff!important;background:v
 .unp{font-size:.78rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .btn.nclr.armed{background:#c62828!important;color:#fff!important}
 /*GW12*/
+.actions:has(#copyBtn){display:flex!important;flex-wrap:wrap;align-items:center;gap:8px!important}
+.actions:has(#copyBtn) .spacer,.actions:has(#copyBtn) .warnline:empty{display:none}
+.actions:has(#copyBtn) [data-act="edit"]{order:1;background:var(--go)!important;border-color:var(--go)!important;color:#1e2a35!important;height:38px;padding:0 18px!important;font-weight:700;border-radius:10px!important}
+[data-skin="basic"] .actions:has(#copyBtn) [data-act="edit"]{color:var(--on-accent,#fff)!important}
+.actions:has(#copyBtn) #copyBtn{order:2;background:transparent!important;border:1.5px solid var(--line)!important;color:var(--fg)!important;height:38px;padding:0 14px!important;border-radius:10px!important;font-weight:600}
+.actions:has(#copyBtn) :is([data-act="pin"],[data-act="chk"],[data-act="fav"]){order:3;border-radius:999px!important;padding:4px 10px!important;font-size:.78rem!important;background:transparent!important;border:1px solid var(--line)!important;color:var(--muted)!important}
+.actions:has(#copyBtn) [data-act="pin"]{margin-left:auto}
+.actions:has(#copyBtn) .ison{border-color:#2e9e44!important;color:#2e9e44!important;background:color-mix(in srgb,#2e9e44 10%,transparent)!important}
+.actions:has(#copyBtn) [data-act="dup"]{order:4}
+.actions:has(#copyBtn) [data-act="del"]{order:5}
+.actions:has(#copyBtn) :is([data-act="dup"],[data-act="del"]){background:none!important;border:0!important;padding:4px 6px!important;font-size:.8rem!important;color:var(--muted)!important;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px}
+.actions:has(#copyBtn) :is([data-act="dup"],[data-act="del"]):hover{text-decoration-color:currentColor}
+.actions:has(#copyBtn) [data-act="del"]{color:color-mix(in srgb,var(--hit,#d33) 85%,var(--fg))!important}
+.actions:has(#copyBtn) [data-act="del"].armed{background:var(--hit,#d33)!important;color:#fff!important;border-radius:8px;padding:5px 10px!important;text-decoration:none}
 #tabs .tabsep{height:1px;background:var(--line);margin:6px 4px}
 #tabs button[data-cat="NF"]{font-weight:700}
 #nf [data-nf="copysel"],#nf [data-nf="clear"],#nf label:has(#nfLab),#nf [data-nfall],#nf [data-nfgroup],#nf .nfrow>label{display:none!important}
@@ -2514,12 +2528,12 @@ function renderPreview(){
     </div>
     <div class="card-b">
       <div class="actions" style="margin-bottom:12px">
-        <button class="btn primary" id="copyBtn" data-act="copy" title="Kopiér (Enter)">Kopiér plan</button>
+        <button class="btn primary" id="copyBtn" data-act="copy" title="Kopiér planen (Enter)">Kopiér</button>
         <span class="warnline" id="missing"></span>
         <span class="spacer"></span>
-        <button class="btn sm" data-act="pin" title="Vis øverst under Alle">${p.pin?'📌 Fastgjort':'Fastgør øverst'}</button>
-        <button class="btn sm" data-act="chk" title="Markér, at du selv har læst planen igennem">${p.chk?'✓ Tjekket':'Markér som tjekket'}</button>
-        <button class="btn sm" data-act="fav" title="Favorit (F)">${p.fav?'★ Favorit':'☆ Favorit'}</button>
+        <button class="btn sm${p.pin?' ison':''}" data-act="pin" title="Vis øverst under Alle">📌 Fastgør</button>
+        <button class="btn sm${p.chk?' ison':''}" data-act="chk" title="Markér, at du selv har læst planen igennem">✓ Tjekket</button>
+        <button class="btn sm${p.fav?' ison':''}" data-act="fav" title="Favorit (F)">${p.fav?'★ Favorit':'☆ Favorit'}</button>
         <button class="btn sm" data-act="edit" title="Redigér (R)">Redigér</button>
         <button class="btn sm" data-act="dup">Duplikér</button>
         <button class="btn sm danger" data-act="del" id="delBtn">Slet</button>
