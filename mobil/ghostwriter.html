@@ -632,6 +632,15 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .topbar h1{line-height:1!important;position:relative;top:-1px}
 .brand{gap:8px!important}
 .brand .afhome{margin-right:0!important}
+</style><style>/*GW11CSS*/
+.gwbar{background:var(--surface);border-bottom:1px solid var(--line)}
+.gwbar:not(:has(button:not([hidden]))){display:none}
+.gwbar-in{max-width:1240px;margin:0 auto;padding:8px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gwbar-t{font:700 .72rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-right:6px}
+.gwbar button{background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:600 .84rem var(--sans);cursor:pointer}
+.gwbar button:hover{border-color:var(--accent);color:var(--accent)}
+.gwbar #backBtn{background:var(--accent);border-color:var(--accent);color:var(--on-accent,var(--bg))}
+.gwbar #backBtn:hover{color:var(--on-accent,var(--bg));filter:brightness(1.08)}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -4465,5 +4474,7 @@ new MutationObserver(later).observe(draft,{childList:true,subtree:true});
 function spy(){var ss=secs(),cur=-1;ss.forEach(function(s,i){if(s.getBoundingClientRect().top<140)cur=i});var as=nav.querySelectorAll('a[data-i]');for(var i=0;i<as.length;i++)as[i].classList.toggle('on',i===cur)}
 addEventListener('scroll',spy,{passive:true});
 build()})();</script>
-</body>
+<script>/*GW11*/(function(){var ids=['backBtn','newBtn','expBtn','impBtn'];var nav=document.querySelector('nav.afnav')||document.querySelector('.topbar');if(!nav)return;
+var bar=document.createElement('div');bar.className='gwbar';bar.innerHTML='<div class="gwbar-in"><span class="gwbar-t">Arkiv</span></div>';nav.after(bar);var inn=bar.firstChild;
+ids.forEach(function(i){var b=document.getElementById(i);if(b)inn.appendChild(b)});})();</script></body>
 </html>
