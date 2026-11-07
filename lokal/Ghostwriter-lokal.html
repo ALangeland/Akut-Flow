@@ -680,6 +680,32 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 #klxfer .plab{padding:6px 12px;font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--line)}
 #klxfer .xfoot{padding:8px 12px;border-top:1px solid var(--line)}
 .afmob [data-kl="klar"]{display:none!important}
+/*GW4*/
+.nuab{grid-column:1/-1;display:flex;flex-direction:column;gap:4px;margin:2px 0 4px}
+.nusug{display:flex;flex-wrap:wrap;gap:4px}
+.nsug{border:1px dashed var(--line);background:none;color:var(--fg);border-radius:999px;padding:2px 9px;font-size:.76rem;cursor:pointer}
+.nsug:hover{border-color:var(--accent);color:var(--accent)}
+.nufold{display:block;width:100%;text-align:left;border:0;background:none;padding:0;cursor:pointer}
+.nufold span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)}
+.nusec.folded{padding-bottom:4px}
+
+.kdbar{gap:8px!important;padding:12px 12px 2px!important}
+.kdtab{--tc:#2f6fd6;border:1.5px solid color-mix(in srgb,var(--tc) 45%,var(--line))!important;border-left:5px solid var(--tc)!important;border-radius:10px!important;max-width:320px!important}
+.kdtab.t-notat{--tc:#2e9e44}.kdtab.t-proc{--tc:#d9822b}
+.kdtab.on{background:color-mix(in srgb,var(--tc) 16%,var(--surface))!important;border-color:var(--tc)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--tc) 35%,transparent)!important}
+.kdtab:not(.on){opacity:.85}
+.kdgo{align-items:center!important;gap:8px!important;padding:6px 8px 6px 6px!important}
+.kdico{width:30px;height:30px;flex:none;background:center/contain no-repeat;image-rendering:pixelated}
+.kdtx{display:flex;flex-direction:column;align-items:flex-start;min-width:0;line-height:1.2}
+.kdl{font-size:.88rem!important;font-weight:700}
+.kdtab.on .kdl{color:var(--fg)}
+.kdt{font-size:.7rem!important;text-transform:uppercase;letter-spacing:.04em;color:color-mix(in srgb,var(--tc) 70%,var(--fg))!important}
+.kdnew{align-self:stretch;padding:6px 14px!important;font-size:.85rem!important}
+[data-skin="basic"] .kdico{display:inline-block!important;width:12px;height:12px;border-radius:50%;background:var(--tc)!important}
+[data-skin="basic"] .kdtab{--tc:#0b7285}[data-skin="basic"] .kdtab.t-notat{--tc:#2f8f4e}[data-skin="basic"] .kdtab.t-proc{--tc:#c26a1b}
+.kdico.t-optag{background-image:url(data:image/webp;base64,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)}
+.kdico.t-notat{background-image:url(data:image/webp;base64,UklGRoYMAABXRUJQVlA4WAoAAAAQAAAARwAARwAAQUxQSH4FAAABoHZtmyFJXtDzxptr27Zt27Zt27Zt27Zt27Z3uLsdb7zPh86IiuyNiAlAzwEjrXH8dQ/ce989x8wCQV6Ada//+KM7T914CgCCjkUbxSrvMDvoQARpCxjvbrb/9uQ2AdKJKABs5HRL/Y08DKFFwugvMZl7Mif50FiNdhAAWfq0xyKN2WRxDoR+imP4H9vd+ng9oKGWotnyNZJ0FhovgQIQTPx7ShmSxiNmBLSOYu4XSY/mLE3+yYgQoMGWNBY7/71hJgSpoNjwb1pir87BUyAAiis8ltHIwXshSE+KtUlj785/pu8X8ACtB3okL4JKDwGzDvLEKv/2E+h7TL2QHnketBd5hMY6v0+IAIi8WIPexy2gRYrVaKya/LUgABSXeqzAlH6aUKQkyONe4iV9PBpNy9KswshD0BQEzPgfPec07+ee/uM3E4oAQAj3MFryFvdc8o9GgOQarM/EwsEk3Z0kf1oQAS0ywf0k6RajkZ6hx3kRSg6iZVLfttNc+QtJ2qCPz50SAe0CrHn718PZ/68/6JnIvdDkFBcythlvBzD+/EstvvSck48MBORFgNGnXX6HU87aZcppPmLKHVF2fsmuYURFVgOKNSB/GGPu0LKLcpH7ooEEVQ1B0LMEbZqmGUGOKzm8pMEhJZdB0XnQN5lyB5dtRWtLfFUgXSnWYmK7cSNoTrEcU5tz0OSdhTDmJznnsGkRcgGT/ElvoXFjaEcNLqSx3fx5ERQKnqK1RZ7flWJZmue4K5qSBicytiW+20C6kDDmh0xsT/7DuJASxbL0NnqcA6GLBhfSmDUeBEWpYNyf6W2RB6PpQLEZI7PJvxw7SBEU13tsM76sUi9gqt885SK3gaKXdWltzjS7aC1pwqM0ZhOfboL0IBjnJ3oLjWegVlDsy8ispyEzI6BXxUWMbUw8HaFKANb+L3kuckcoKizhnqFxddEKAXM86XRmjbeikd4g4TVazh9FBcWkX9Od2eRfTyABFRvsUuApLgTtRTHKc+xj3o2rQFFTMN4v9DYa3xpdtKzBKA/TWBh5EhpUGvlzpgyNtwsayYgGTPIojYWR90ClDgIed8vRePdEQGgabZoAYJ2vaCxM/HACCajcYHOmAhq/22cKtI+xzqOksdD9hzmhqC0y2oeeCmjkoAdO2nWLrY+5+ysyJZYaNwWgKnXQYENaCd2YT8Zy535zTx4AqFRBGOF5WgnpFs0sWmJF//utc5ZrgFBFMd9/5kVdOvu/teOI0BpQ7Me+AUL3FBP5ytJQqSCKG9g3QFqT0Q5AkN4gobmF0QcOac5T0FSAiJ5N2gCiR+4FrQAR7PgnB7RbXBihAiRg2uv+8V68CxpfDFIDaIDPmXIpxmjs1rgmtE5Yl4lZZ//k3fjjCFUC7qVlnC+dc8mpG8/9CVMHzkGTIVQImHIovc190KQAMO6f9A6YuCa0QoMtaGyPvBIj6og6P7uJPAhNBcWlHjNuC4siYO7OLoJWgL7B1GZ8IwgGxAU1BOP/Sm+LPAnN/yZgdsslrg39H83pJasPlPO7Mm6NEYAQ5uvs4jpzpJLngKCCUf/o6ng0vQnG/zXHxCsnAzDdMf85uzRuVQOQV5gydP755E2vDWXH3jcPQgXFuR5zTOxv3Zi/JIIqyzEV0M2SsyNuAa0hMuKbbgUD0PjqiCI1oNiAAymlvvkQUDfo04wDJiVuB0UtTP8rrYpZTx7p20NRPWC5wYy9mZNuqcCTkR+uDEWHink/oZuXuDl5+WMkadHMLCaSPx01BhSdKsa7xEm35O7JzEk+uhyw/NXfMv/PC3tPDCg6DsCCF3/Pwu+uXAZQAKPPt+2Rl9155yUHrDU9ABV0LgGYYPWjb3/3q69euOH4dccHRAFVFDeCYlZQOCDiBgAAEB0AnQEqSABIAD5hJo9FJCIhFm5mIEAGBLIAXZoYBsCyHaEcp44ObtrPMX5s3pe/yu+Xbyr5N13/YqfiH0D+H4njSL9j5ed+fwTyYbrtzf+1/8HjI0h3xv2APzL6DefB6d/8fuFfzb+v+lr7LP279ln9lkQI1o3xmJs7gvkaKs0u93hfJF4WUW396aUk6ry1SiLQnNLSk7dyj4NqqUm8T3RiQnbbZ5JwGkc84fnL0u2TDUEE9Q9H6b/Q7y31EXaGlYkBjr2OJ7Nb7IxjnuZjjjlxp+M6gLyAAzQmXbv2llxlOW62xkFHjDGn8z0JtpbhgAD+/5L5+JIFlfQSUWoIAu2UtxU+CciPZP+Uz0x6cKrhOQG6ddXRjwHOZc2zT8wHtqt/Evort9jztp/W4Y7sXVTD9ZebSymt6p93LvRM8g/77dY84NpKW4DhwbkskQxMv2oFIli619dmj66y5px8mc0CmKUAhxiPnO6ZXM9//1zSt30QQh84eNWXE8tJ+f3D2buWWIvS/H4PO/3LBV4Qjv40gC46y9S1fUsdb+4PaV8+nIEjq+c8lxXv0n7NlHhljwbjxhhzxX9LEBrrhf+e7xXt95l1DF2Is9WuxhVh2VRnlCuWFSPwP+Tb6QakkErRM/Vvv2MSYyUdk6SG3bIUKILQH6Wq8tPDay/IhH/OLFrpxuM5CtyLIxgphdVs2XO8zOweD0yH/fO06Pg/hvhPdAXKSW7NUO2QfzoR2ZI4dHUeE9A/d6a75GxRd/rkCPWdd/HjsrU60XL9lLDdFIlZ67FQWfBVITr165cFHWfQacOQfv1/naJpWLxoV16P4gSY0svfrehIDOQDafuE36t1Ucp2JxTBacMuVexvltEkr9+ihyB3JH5/P3dB+/vfp8ePoub/hrPj/2+Q2vQnbgH1sBN5/EWe134JF/mXpj+CZgYN4DCBCfKn0rNIJPjxWAGuRsCeerrNMU9dVc5oUwjC99MEZYhxyI3+DCgzvxAOaWv0CN+ePMVb3ONQy3fQOdjNkZYHygibMeWNmpz3F4fSSXSrZo5TBhJ7DR+USlbNYHUDEQFJWtHmTZP1Dlvydr2GFODwkHAaosedpotHhx/yWDCOe+8+l1/3jiCmFzp0pmqCbA8w9zqHWSEMkM6+R4qS28jOsB0xEKzGrZxgOLCMpM1+2Lx32e+raKr2G8fa/MiI9laqSxYi2R4NPuYFXqjjqM4v3IGbYOkQNcSW6GCKKYORm6rWl4EJKlebvQxb/aNFr8jTKROPwHzZqRIrzlgFPU1r+eElVzQWx7rw5HVThF6uJkAhODlIRbnI2N4Vis/XvbeVgetvlqejny3uG+9AL8mT+Ac848MCb1izv41WEpAC2yQtIsn5iNvXNzuQ+CeOI6w1++ZHmTYxjlbvTUpkN9E6h+5TzlJUlztePxktPnn/CI+dWcXOT/w8/2dXygl3ZG/ohVu5GOeUe6/3lv7f8+f7R/kz150ZIi7wVPhR+U01vXqd/rAKQw/E2yjpYrVRkun4b/nF60d9fGKbOUa8SCQ3opz0J8stsA3fvn/v8Czafx/ZEiQqMrwNntudzh9623xvv/j0d7Kqr7Ma1skA3rZ4vxSmPHnhwA4Q7MiNbdgHMbsya97ERUugfBI9EJCyzekx48ntbTp0HYqVOKzvl6OR2NmGcxo23RLUgFjkN9ZE13Dpp8cuEc8EhNyKbO3kuo7PE46MlUo4Lk+IsE3D8DxVE6T9jh5oFoCKIsEZ0dSYquyqLaFPhhbKajNEuW26PoUEBQ/tsC7a4GoP+tyGKMdgmmN72BTPrLUnRJSRGgmZ1clsObxxmua89Z1oNrf2wcohOzbgaWafLueUUI1rhfjjScdoa+Y+GVjt0EjIdTrqI+E0oNp9/XeOXZ2G40D1vFzsxPkGZMLfR/RR3SuchqRaNShY6+dgUaz04kBxggbWUnefvletGJ0vS0nNyeCmwoN8p0PXJIJScT1ovpkoUSfb+vQHEdnuE9CU6HeA9D0D2InNCTvrFjwNw43iG/uNiWQcvDbD5WDkaPeENAv07dglbhH9Crqgilp0doalvzWK1htIoCWMkecxTzKdG7dxickBGPH7LPHTb4tglDm6pgFKUt2loofu1aCY0e6NLjRPVMzn0U+xPr427p1YdgM5MxfM+UOiUn7CSoMOj4qzQxh//yZdZeMTHfYT2P+35Irbn6VyMWIyn0gWmO15iGkYNi5xXVZpwdu+6DEwxkFOTN+V3/i98/KN+z+3O+CQ8PlwXEghs/w9OgX7buH/uNIGg14E4WzvWK/Lzr1fL1C28lFUF27T9xCAxPeX3z5p6Oct73noF35B0ndCXHMOSgAAAA==)}
+.kdico.t-proc{background-image:url(data:image/webp;base64,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)}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -1195,7 +1221,7 @@ PLAN
 Patienten er informeret om planen, accepterer og samtykker til denne.`},
 
 {id:'s-c-holter',cat:'C',sub:'Parkeret',title:"Holteroptagelse – beskrivelse",text:`PARAKLINIK
-EKG: Sinusrytme, frekvens …. Normal akse. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske T-takinversioner.
+EKG: Sinusrytme, frekvens …. Normal akse. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske invertede T-takker.
 Konklusion: Normalt EKG.
 
 Holteroptagelse (…):
@@ -1770,7 +1796,7 @@ Neurologisk: Normal gang og stand. Normal tonus, kraft, sensibilitet og reflekse
 Hud: Varm og tør. Ikke kold og klam. Ingen petekkier eller udslæt.
 
 PARAKLINIK
-EKG: Sinusrytme, frekvens …. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske T-takinversioner.
+EKG: Sinusrytme, frekvens …. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske invertede T-takker.
 Blodprøver: CRP …, leukocytter …, Hb …, K …, Na …, kreatinin …, eGFR ….
 U-stix: …
 POCT: COVID-19, RS-virus og influenza A/B ….
@@ -1850,7 +1876,7 @@ Neurologisk (svimmelhed): Ingen centrale tegn ved HINTS-undersøgelse.
 Hud: Varm og tør. Ikke kold og klam. Ingen petekkier eller udslæt.
 
 # EKG beskrivelse
-Beskrivelse: Sinusrytme. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske T-takinversioner.
+Beskrivelse: Sinusrytme. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske invertede T-takker.
 
 # Parakliniske undersøgelser
 A-gas: Normal syre-base-status. pH, pCO2, pO2, HCO3, BE og laktat inden for referenceområdet.
@@ -2014,6 +2040,7 @@ function loadLocal(){
   S=fresh();
 }
 function upgradeNormal(){
+  if(S.normal&&S.normal.includes('Beskrivelse: Sinusrytme. Smalle QRS-komplekser. Ingen ST-elevationer eller -depressioner. Ingen patologiske T-takinversioner.'))S.normal=S.normal.split('Ingen patologiske T-takinversioner.').join('Ingen patologiske invertede T-takker.');
   if((S.normalRev||1)>=NORMAL_REV) return false;
   if(S.normalEdited&&(S.normalRev||1)<6&&!/^Supplerende:.*allergi/mi.test(S.normal)){
     S.normal=S.normal.replace(/^(Medicinanamnese:.*?)\s*Ingen kendte medikamentelle allergier\.?/m,'$1');
@@ -2612,7 +2639,7 @@ function kdLabel(r){
 const kdHm=t=>new Date(t).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
 function kdTabsHtml(){
   const tabs=KD.list.map((r,i)=>{const on=r.id===KD.active;const stale=Date.now()-r.updated>12*3600e3;
-    return `<div class="kdtab${on?' on':''}${stale?' stale':''}" data-kdid="${r.id}" title="${esc(KL_TYPES[r.type]?KL_TYPES[r.type].name:'')} · oprettet kl. ${kdHm(r.created)}${stale?' · ikke rørt i over 12 timer':''}"><button class="kdgo" data-kdgo="${r.id}"><span class="kdn">${i+1}</span><span class="kdl">${esc(kdLabel(r))}</span><span class="kdt">${kdHm(r.created)}</span></button>${on?`<button class="kdren" data-kdren="${r.id}" title="Omdøb (skriv ikke navn/CPR)">✎</button>`:''}<button class="kdx" data-kdx="${r.id}" title="Afslut kladden">✕</button></div>`}).join('');
+    return `<div class="kdtab t-${r.type}${on?' on':''}${stale?' stale':''}" data-kdid="${r.id}" title="${esc(KL_TYPES[r.type]?KL_TYPES[r.type].name:'')} · oprettet kl. ${kdHm(r.created)}${stale?' · ikke rørt i over 12 timer':''}"><button class="kdgo" data-kdgo="${r.id}"><span class="kdico t-${r.type}" aria-hidden="true"></span><span class="kdtx"><span class="kdl">${esc(kdLabel(r))}</span><span class="kdt">${esc(KL_TYPES[r.type]?KL_TYPES[r.type].short:'')} · kl. ${kdHm(r.created)}</span></span></button>${on?`<button class="kdren" data-kdren="${r.id}" title="Omdøb (skriv ikke navn/CPR)">✎</button>`:''}<button class="kdx" data-kdx="${r.id}" title="Afslut kladden">✕</button></div>`}).join('');
   const cl=KD.closed.length?`<div class="kdclosed"><button class="kdcb" data-kdcl="1">Afsluttede (${KD.closed.length}) ▾</button></div>`:'';
   return `<div class="kdbar" role="tablist" aria-label="Aktive kladder">${tabs}<button class="kdnew" data-kdnew="1" title="Ny kladde i en ny fane">＋ Ny kladde</button>${cl}</div>`;
 }
@@ -2722,7 +2749,7 @@ document.addEventListener('click',e=>{
 });
 
 {const _kc=klCopy;klCopy=async function(){const r=await _kc.apply(this,arguments);if(window.pipRender)pipRender();return r}}
-{const _sw=klSwitch;klSwitch=function(){_sw.apply(this,arguments);kdSync();if(window.pipRender)pipRender()}}
+{const _sw=klSwitch;klSwitch=function(){_sw.apply(this,arguments);kdSync();renderKLDraft();if(window.pipRender)pipRender()}}
 function klSecOf(k){return JOURNAL.find(j=>k.startsWith(j.s+' › '))}
 function klLabel(k){const [s,f]=k.split(' › ');return (f===s||f==='Beskrivelse'||f==='Fritekst')?s:s+' › '+f}
 function klNormals(sec,field){
@@ -3203,34 +3230,88 @@ function nihssUpd(){const st=nihssState();const {s,n}=nihssTotal(st.v);const el=
 document.addEventListener('change',e=>{if(e.target&&e.target.id==='nOnlyAbn'){const st=nihssState();st.onlyAbn=e.target.checked;KL.__nihss=st;klSave();nihssUpd()}});
 
 /* ---------- Neurologisk undersøgelse (klik) – efter standardtekst, Hospitalsenhed Midt ---------- */
+// it: id, l=etiket, nt=normaltekst, cn=kranienerve, n/a=knaptekster, ab=fast tekst ved afvigelse, pre=præfiks til fund, sug=forslag
+const SIDE=['hø.','ve.'];
 const NEURO=[
- {s:'Bevidsthed',items:[['bev','Bevidsthed og orientering','vågen og orienteret'],['nak','Nakke-rygstivhed','ingen nakke-rygstivhed']]},
- {s:'Tale',items:[['afa','Afasi','ingen afasi'],['dys','Dysartri','ingen dysartri']]},
- {s:'Kranienerver',items:[['syn','II Syn og synsfelter','syn og synsfelter bevarede'],['pup','II/III Pupiller','pupiller egale'],['ojb','III/IV/VI Øjenbevægelser','normale øjenbevægelser uden nystagmus'],['sen5','V Ansigtssensibilitet','normal ansigtssensibilitet'],['mim','VII Mimik','normal mimik'],['hor','VIII Hørelse','hørelse bevaret'],['gan','IX/X Gane og svælg','normal ganebevægelighed og synkefunktion'],['acc','XI Skulderløft og hoveddrejning','normalt skulderløft og hoveddrejning'],['tun','XII Tunge','tungen frembringes midtstillet']]},
- {s:'Gang og stand',items:[['gangA','Stand og gang, åbne øjne','normal stand og gang med åbne øjne'],['gangL','Stand og gang, lukkede øjne','normal stand og gang med lukkede øjne']]},
- {s:'Motorik',items:[['atr','Atrofi','ingen atrofi'],['ton','Tonus','normal tonus'],['arm','Armtest (strakte arme)','armtest uden nedsynkning og uden pronation'],['ben','Bentest (strakte ben)','bentest uden nedsynkning']],mrc:true},
- {s:'Reflekser',items:[['bic','Biceps','biceps'],['tri','Triceps','triceps'],['bra','Brachioradialis','brachioradialis'],['pat','Patellar','patellar'],['aki','Akilles','akilles'],['pla','Plantarrespons','plantarrespons normal (fleksor) bilateralt']],refl:true},
- {s:'Cerebellart',items:[['fnf','Finger-næse-finger','normal finger-næse-finger'],['khf','Knæ-hæl','normal knæ-hæl']]},
- {s:'Ekstrapyramidalt',items:[['brk','Bradykinesi','ingen bradykinesi'],['rig','Rigiditet','ingen rigiditet'],['ufr','Ufrivillige bevægelser','ingen ufrivillige bevægelser']]},
- {s:'Sensibilitet',items:[['ber','Berøring','normal for berøring bilateralt'],['stk','Stik','normal for stik bilateralt'],['niv','Sensibilitetsniveau på truncus','intet sensibilitetsniveau på truncus']]}
+ {s:'Bevidsthed',items:[
+   {id:'bev',l:'Bevidsthed og orientering',nt:'vågen og orienteret',sug:['Desorienteret i tid','Desorienteret i sted','Desorienteret i egne data','Somnolent','Konfus']},
+   {id:'nak',l:'Nakke-rygstivhed',nt:'ingen nakke-rygstivhed',n:'Ingen',a:'Til stede',ab:'Nakke-rygstivhed'}]},
+ {s:'Tale',items:[
+   {id:'afa',l:'Afasi',nt:'ingen afasi',n:'Ingen',a:'Afasi',pre:'Afasi',sug:['ekspressiv','impressiv','global','let','svær']},
+   {id:'dys',l:'Dysartri',nt:'ingen dysartri',n:'Ingen',a:'Dysartri',pre:'Dysartri',sug:['let','moderat','svær']}]},
+ {s:'Kranienerver',lines:true,items:[
+   {id:'syn',cn:'II',l:'II - Syn og synsfelter',nt:'Normalt synsfelt og syn',sug:['Hemianopsi hø.','Hemianopsi ve.','Kvadrantanopsi','Nedsat visus hø.','Nedsat visus ve.']},
+   {id:'pup',cn:'II, III',l:'II, III - Pupiller',nt:'Pupiller egale',sug:['Anisokori','Lysstiv pupil hø.','Lysstiv pupil ve.','Miose','Mydriasis']},
+   {id:'ojb',cn:'III, IV, VI',l:'III, IV, VI - Øjenbevægelser',nt:'Normale øjenbevægelser uden nystagmus',sug:['Nystagmus','Blikparese','Deviation','Diplopi']},
+   {id:'sen5',cn:'V',l:'V - Ansigtssensibilitet',nt:'Normal ansigtssensibilitet',sug:['Nedsat sensibilitet hø.','Nedsat sensibilitet ve.']},
+   {id:'mim',cn:'VII',l:'VII - Mimik',nt:'Normal mimik',sug:['Central facialisparese hø.','Central facialisparese ve.','Perifer facialisparese hø.','Perifer facialisparese ve.']},
+   {id:'hor',cn:'VIII',l:'VIII - Hørelse',nt:'Hørelse bevaret',sug:['Nedsat hørelse hø.','Nedsat hørelse ve.']},
+   {id:'gan',cn:'IX, X',l:'IX, X - Gane og svælg',nt:'Normal ganebevægelighed',sug:['Asymmetrisk ganeløft','Uvula deviation mod hø.','Uvula deviation mod ve.']},
+   {id:'acc',cn:'XI',l:'XI - Skulderløft og hoveddrejning',nt:'Normal kraft ved skulderløft og hoveddrejning mod modstand',sug:['Nedsat kraft hø.','Nedsat kraft ve.']},
+   {id:'tun',cn:'XII',l:'XII - Tunge',nt:'Normal kraft af tungen, frembringes midtstillet',sug:['Deviation mod hø.','Deviation mod ve.','Atrofi','Fascikulationer']}]},
+ {s:'Gang og stand',items:[
+   {id:'gang',l:'Gang',nt:'normal gang',sug:['Bredsporet','Ataktisk','Hemiparetisk','Usikker','Kan ikke gå']},
+   {id:'romA',l:'Romberg, åbne øjne',nt:'Romberg negativ med åbne øjne',n:'Negativ',a:'Positiv',ab:'Romberg positiv med åbne øjne'},
+   {id:'romL',l:'Romberg, lukkede øjne',nt:'Romberg negativ med lukkede øjne',n:'Negativ',a:'Positiv',ab:'Romberg positiv med lukkede øjne'}]},
+ {s:'Motorik',mrc:true,items:[
+   {id:'atr',l:'Atrofi',nt:'ingen atrofi',n:'Ingen',a:'Atrofi',pre:'Atrofi',sug:['hø. side','ve. side','distalt','proksimalt']},
+   {id:'ton',l:'Tonus',nt:'normal tonus',sug:['Spastisk','Rigid','Nedsat tonus','hø.','ve.']},
+   {id:'arm',l:'Armtest (strakte arme)',nt:'armtest uden nedsynkning og uden pronation',pre:'Armtest',sug:['nedsynkning hø.','nedsynkning ve.','pronation hø.','pronation ve.']},
+   {id:'ben',l:'Benløft (NIHSS, 5 sek.)',nt:'benløft uden drift i 5 sek.',pre:'Benløft',sug:['drift hø.','drift ve.','rammer underlaget hø.','rammer underlaget ve.','ingen bevægelse mod tyngdekraften']}]},
+ {s:'Reflekser',refl:true,items:[
+   {id:'bic',l:'Biceps',nt:'biceps',pre:'Bicepsrefleks',sug:['øget hø.','øget ve.','nedsat hø.','nedsat ve.','ophævet']},
+   {id:'tri',l:'Triceps',nt:'triceps',pre:'Tricepsrefleks',sug:['øget hø.','øget ve.','nedsat hø.','nedsat ve.','ophævet']},
+   {id:'bra',l:'Brachioradialis',nt:'brachioradialis',pre:'Brachioradialisrefleks',sug:['øget hø.','øget ve.','nedsat hø.','nedsat ve.','ophævet']},
+   {id:'pat',l:'Patellar',nt:'patellar',pre:'Patellarrefleks',sug:['øget hø.','øget ve.','nedsat hø.','nedsat ve.','ophævet']},
+   {id:'aki',l:'Akilles',nt:'akilles',pre:'Akillesrefleks',sug:['øget hø.','øget ve.','nedsat hø.','nedsat ve.','ophævet']},
+   {id:'pla',l:'Plantarrespons',nt:'Negativ Babinski bilateralt',n:'Negativ Babinski',a:'Positiv Babinski',pre:'Positiv Babinski',sep:' ',sug:['hø.','ve.','bilateralt']}]},
+ {s:'Cerebellart',items:[
+   {id:'fnf',l:'Finger-næse-finger',nt:'normal finger-næse-finger',pre:'Finger-næse-finger',sug:['dysmetri hø.','dysmetri ve.','intentionstremor']},
+   {id:'khf',l:'Knæ-hæl',nt:'normal knæ-hæl',pre:'Knæ-hæl',sug:['ataksi hø.','ataksi ve.']}]},
+ {s:'Ekstrapyramidalt',fold:true,items:[
+   {id:'brk',l:'Bradykinesi',nt:'ingen bradykinesi',n:'Ingen',a:'Til stede',pre:'Bradykinesi',sug:['hø.','ve.','bilateralt']},
+   {id:'rig',l:'Rigiditet',nt:'ingen rigiditet',n:'Ingen',a:'Til stede',pre:'Rigiditet',sug:['tandhjulsfænomen','hø.','ve.']},
+   {id:'ufr',l:'Ufrivillige bevægelser',nt:'ingen ufrivillige bevægelser',n:'Ingen',a:'Til stede',pre:'Ufrivillige bevægelser',sug:['hviletremor','dyskinesier','myoklonier']}]},
+ {s:'Sensibilitet',items:[
+   {id:'ber',l:'Berøring',nt:'normal for berøring bilateralt',pre:'Berøring',sug:['nedsat hø.','nedsat ve.','nedsat distalt']},
+   {id:'stk',l:'Stik',nt:'normal for stik bilateralt',pre:'Stik',sug:['nedsat hø.','nedsat ve.','nedsat distalt']},
+   {id:'niv',l:'Sensibilitetsniveau på truncus',nt:'intet sensibilitetsniveau på truncus',n:'Intet',a:'Niveau',pre:'Sensibilitetsniveau svarende til',sug:['Th4','Th10','L1']}]}
 ];
 const MRC_J=[['sk','Skulderled'],['al','Albueled'],['ha','Håndled'],['ho','Hofteled'],['kn','Knæled'],['fo','Fodled']];
+let neuroExOpen=false;
 function neuroState(){const s=KL.__neuro;return (s&&s.v)?s:{v:{},t:{},m:{}}}
 const cap=x=>x?x.charAt(0).toUpperCase()+x.slice(1):x;
 const joinOg=(a,w)=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' '+(w||'og')+' '+a[a.length-1];
+function nuAb(it,st){const t=(st.t[it.id]||'').trim();
+  if(it.ab&&!t)return it.ab;
+  if(it.ab&&t)return it.ab+' ('+t+')';
+  if(it.pre)return it.pre+(t?(it.sep||(it.pre.endsWith('til')?' ':': '))+t:'');
+  return t?cap(t):it.l.replace(/^[IVX, ]+ - /,'')+' afvigende'}
 function neuroText(st){
-  const out=[];
+  const out=[],pos=[];
   for(const sec of NEURO){
+    const items=sec.items.filter(it=>st.v[it.id]);if(!items.length&&!sec.mrc)continue;
+    if(sec.lines){
+      const rows=[];const v=id=>st.v[id];
+      for(const it of items){
+        if(it.id==='acc'&&v('acc')==='n'&&v('tun')==='n'){rows.push('XI, XII: Normal kraft ved skulderløft, hoveddrejning mod modstand og af tungen.');continue}
+        if(it.id==='tun'&&v('acc')==='n'&&v('tun')==='n')continue;
+        if(v(it.id)==='n')rows.push(it.cn+': '+it.nt+'.');
+        else{const a=nuAb(it,st);rows.push(it.cn+': '+cap(a).replace(/\.?$/,'.'));pos.push(it.cn+': '+a)}
+      }
+      if(rows.length)out.push(sec.s+':\n'+rows.join('\n'));
+      continue;
+    }
     const norm=[],ingen=[],ab=[];
     if(sec.refl){
       const rn=[];
-      for(const [id,l,nt] of sec.items){const v=st.v[id];if(!v) continue;if(v==='n'){if(id==='pla')norm.push(nt);else rn.push(nt)}else ab.push(l+': '+((st.t[id]||'').trim()||'afvigende'))}
+      for(const it of items){if(st.v[it.id]==='n'){if(it.id==='pla')ab.push(it.nt);else rn.push(it.nt)}else{const a=nuAb(it,st);ab.push(a);pos.push(a)}}
       if(rn.length)norm.unshift((rn.length===1?rn[0]+'refleks':joinOg(rn.map((x,i)=>i<rn.length-1?x+'-':x))+'reflekser')+' normale og symmetriske');
     }else{
-      for(const [id,l,nt] of sec.items){const v=st.v[id];if(!v) continue;if(v==='n'){if(/^ingen /.test(nt))ingen.push(nt.slice(6));else norm.push(nt)}else ab.push(l+': '+((st.t[id]||'').trim()||'afvigende'))}
+      for(const it of items){if(st.v[it.id]==='n'){if(/^ingen /.test(it.nt))ingen.push(it.nt.slice(6));else norm.push(it.nt)}else{const a=nuAb(it,st);ab.push(a);pos.push(a)}}
     }
     let txt=joinOg(norm);
-    txt=txt.replace('normal stand og gang med åbne øjne og normal stand og gang med lukkede øjne','normal stand og gang med åbne og lukkede øjne')
+    txt=txt.replace(/Romberg negativ med åbne øjne og Romberg negativ med lukkede øjne/,'Romberg negativ med åbne og lukkede øjne')
       .replace(/normal for berøring bilateralt(,| og) normal for stik bilateralt/,'normal sensibilitet for berøring og stik bilateralt');
     if(ingen.length)txt=(txt?txt+', ':'')+'ingen '+joinOg(ingen,'eller');
     const sent=[];
@@ -3241,29 +3322,28 @@ function neuroText(st){
         if(all.length===12&&all.every(x=>x==='5'))sent.push('Kraft normal (MRC 5) i skulder-, albue-, hånd-, hofte-, knæ- og fodled bilateralt.');
         else{const seg=MRC_J.map(([j,l])=>{const h=st.m[j+'h'],v=st.m[j+'v'];if((h===undefined||h==='')&&(v===undefined||v===''))return null;return l.toLowerCase()+' '+(h||'–')+'/'+(v||'–')}).filter(Boolean);
           sent.push('Kraft (MRC hø./ve.): '+seg.join(', ')+'.')}
+        const sd={h:'hø.',v:'ve.'};
+        for(const [j,l] of MRC_J)for(const x of ['h','v']){const m=st.m[j+x];if(m!==undefined&&m!==''&&m!=='5')pos.push('nedsat kraft '+sd[x]+' '+l.toLowerCase()+' (MRC '+m+')')}
       }
     }
     ab.forEach(x=>sent.push(cap(x).replace(/\.?$/,'.')));
     if(sent.length)out.push(sec.s+': '+sent.join(' '));
   }
-  if(out.length){
-    const pos=[];
-    for(const sec of NEURO)for(const [id,l] of sec.items)if(st.v[id]==='a')pos.push(l.replace(/^[IVX\/]+ /,'').toLowerCase()+': '+((st.t[id]||'').trim()||'afvigende'));
-    const sd={h:'hø.',v:'ve.'};
-    for(const [j,l] of MRC_J)for(const x of ['h','v']){const m=st.m[j+x];if(m!==undefined&&m!==''&&m!=='5')pos.push('nedsat kraft '+sd[x]+' '+l.toLowerCase()+' (MRC '+m+')')}
-    out.push('Samlet: '+(pos.length?'Positive fund: '+pos.join('; ')+'.':'Ingen afvigende fund ved de undersøgte punkter.'));
-  }
+  if(out.length)out.push('Samlet: '+(pos.length?'Positive fund: '+pos.map(x=>cap(x)).join('; ')+'.':'Ingen afvigende fund ved de undersøgte punkter.').replace(/\.\.$/,'.'));
   return out.join('\n');
 }
-const NEURO_RE=new RegExp('^\\s*('+NEURO.map(s=>s.s).join('|')+'|Samlet):');
+const NEURO_RE=new RegExp('^\\s*(?:'+NEURO.map(s=>s.s).join('|')+'|Samlet|[IVX]+(?:, [IVX]+)*):');
 function openNeuro(){
   const st=neuroState();
-  const btn=(id,v,lbl)=>`<button class="nbtn nu" data-nuid="${id}" data-nuv="${v}" aria-pressed="${st.v[id]===v}">${lbl}</button>`;
+  const btn=(id,v,lbl)=>`<button class="nbtn nu" data-nuid="${id}" data-nuv="${v}" aria-pressed="${st.v[id]===v}">${esc(lbl)}</button>`;
   const secs=NEURO.map(sec=>{
-    let h=`<div class="nusec"><div class="nush">${esc(sec.s)}</div>`;
-    for(const [id,l,nt] of sec.items){
-      h+=`<div class="nurow"><div class="nul">${esc(l)}</div><div class="nuo">${btn(id,'n','Normal')}${btn(id,'a','Afvigende')}${st.v[id]?`<button class="nbtn nu nux" data-nuid="${id}" data-nuv="" title="Ikke undersøgt">✕</button>`:''}</div>
-        <input class="nut" data-nut="${id}" placeholder="Beskriv fund …" value="${esc(st.t[id]||'')}"${st.v[id]==='a'?'':' hidden'}></div>`;
+    const used=sec.items.some(it=>st.v[it.id]);const open=!sec.fold||neuroExOpen||used;
+    let h=`<div class="nusec${sec.fold?' fold':''}${open?'':' folded'}">${sec.fold?`<button class="nush nufold" data-nufold="1">${open?'▾':'▸'} ${esc(sec.s)} <span>– indgår ikke i standardundersøgelsen</span></button>`:`<div class="nush">${esc(sec.s)}</div>`}`;
+    if(!open)return h+'</div>';
+    for(const it of sec.items){
+      const ab=st.v[it.id]==='a';
+      h+=`<div class="nurow"><div class="nul">${esc(it.l)}</div><div class="nuo">${btn(it.id,'n',it.n||'Normal')}${btn(it.id,'a',it.a||'Afvigende')}${st.v[it.id]?`<button class="nbtn nu nux" data-nuid="${it.id}" data-nuv="" title="Ikke undersøgt">✕</button>`:''}</div>
+        ${ab?`<div class="nuab">${it.sug?`<div class="nusug">${it.sug.map(x=>`<button class="nsug" data-nusug="${it.id}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`:''}<input class="nut" data-nut="${it.id}" placeholder="${it.ab?'Uddyb (valgfrit) …':'Beskriv fund …'}" value="${esc(st.t[it.id]||'')}"></div>`:''}</div>`;
     }
     if(sec.mrc){
       const sel=(k)=>`<select class="numrc" data-mrc="${k}"><option value=""${!st.m[k]?' selected':''}>–</option>${[5,4,3,2,1,0].map(n=>`<option${st.m[k]===String(n)?' selected':''}>${n}</option>`).join('')}</select>`;
@@ -3271,7 +3351,7 @@ function openNeuro(){
     }
     return h+'</div>';
   }).join('');
-  pmOpen('Neurologisk undersøgelse',`<div class="nhead"><span class="ntot">Klik Normal eller Afvigende – kun undersøgte punkter skrives</span><button class="btn sm" data-nuall="1" title="Sæt alle ikke-valgte punkter til Normal og kraft til 5">Resten normal</button><button class="btn sm" data-nuclear="1">Nulstil</button></div><div class="nulist">${secs}</div><div class="nprev"><div class="nprevh">Tekst til journalen</div><pre id="nuprev"></pre></div>`+pmButtons('Indsæt i Neurologisk'));
+  pmOpen('Neurologisk undersøgelse',`<div class="nhead"><span class="ntot">Klik normal eller afvigende – kun undersøgte punkter skrives</span><button class="btn sm" data-nuall="1" title="Sæt alle ikke-valgte punkter til normal og kraft til 5 (ikke ekstrapyramidalt, medmindre det er foldet ud)">Resten normal</button><button class="btn sm" data-nuclear="1">Nulstil</button></div><div class="nulist">${secs}</div><div class="nprev"><div class="nprevh">Tekst til journalen</div><pre id="nuprev"></pre></div>`+pmButtons('Indsæt i Neurologisk'));
   neuroUpd();
   pmSave=()=>{
     const s=neuroState();KL.__neuro=s;const txt=neuroText(s);
@@ -3282,14 +3362,17 @@ function openNeuro(){
   };
 }
 function neuroUpd(){const p=$('#nuprev');if(p){const t=neuroText(neuroState());p.textContent=t||'Intet valgt endnu.'}}
+function neuroRe(focusId){const b=$('#pmBody');const sc=b?b.scrollTop:0;const d=$('#pmDlg');const sd=d?d.scrollTop:0;openNeuro();if(b)b.scrollTop=sc;if(d)d.scrollTop=sd;if(focusId){const i=document.querySelector(`[data-nut="${focusId}"]`);if(i){i.focus({preventScroll:true});i.setSelectionRange(i.value.length,i.value.length)}}}
 $('#pmDlg').addEventListener('click',e=>{
   const b=e.target.closest('[data-nuid]');
-  if(b){const st=neuroState();const id=b.dataset.nuid,v=b.dataset.nuv;if(v)st.v[id]=v;else{delete st.v[id];delete st.t[id]}KL.__neuro=st;klSave();
-    const row=b.closest('.nurow');const sc=$('#pmBody').scrollTop;openNeuro();$('#pmBody').scrollTop=sc;
-    if(v==='a'){const i=document.querySelector(`[data-nut="${id}"]`);if(i)i.focus()}return}
-  if(e.target.closest('[data-nuall]')){const st=neuroState();for(const sec of NEURO)for(const [id] of sec.items)if(!st.v[id])st.v[id]='n';for(const [j] of MRC_J)for(const sd of ['h','v'])if(!st.m[j+sd])st.m[j+sd]='5';KL.__neuro=st;klSave();const sc=$('#pmBody').scrollTop;openNeuro();$('#pmBody').scrollTop=sc;return}
-  if(e.target.closest('[data-mrcall]')){const st=neuroState();for(const [j] of MRC_J)for(const sd of ['h','v'])st.m[j+sd]='5';KL.__neuro=st;klSave();const sc=$('#pmBody').scrollTop;openNeuro();$('#pmBody').scrollTop=sc;return}
-  if(e.target.closest('[data-nuclear]')){KL.__neuro={v:{},t:{},m:{}};klSave();openNeuro();return}
+  if(b){const st=neuroState();const id=b.dataset.nuid,v=b.dataset.nuv;if(v)st.v[id]=v;else{delete st.v[id];delete st.t[id]}KL.__neuro=st;klSave();neuroRe(v==='a'?id:null);return}
+  const sg=e.target.closest('[data-nusug]');
+  if(sg){const st=neuroState();const id=sg.dataset.nusug,x=sg.dataset.v;const cur=(st.t[id]||'').trim();
+    if(!cur.split(/,\s*/).includes(x))st.t[id]=cur?cur+', '+x:x;KL.__neuro=st;klSave();neuroRe(id);return}
+  if(e.target.closest('[data-nufold]')){neuroExOpen=!neuroExOpen;neuroRe();return}
+  if(e.target.closest('[data-nuall]')){const st=neuroState();for(const sec of NEURO){if(sec.fold&&!neuroExOpen&&!sec.items.some(it=>st.v[it.id]))continue;for(const it of sec.items)if(!st.v[it.id])st.v[it.id]='n'}for(const [j] of MRC_J)for(const sd of ['h','v'])if(!st.m[j+sd])st.m[j+sd]='5';KL.__neuro=st;klSave();neuroRe();return}
+  if(e.target.closest('[data-mrcall]')){const st=neuroState();for(const [j] of MRC_J)for(const sd of ['h','v'])st.m[j+sd]='5';KL.__neuro=st;klSave();neuroRe();return}
+  if(e.target.closest('[data-nuclear]')){KL.__neuro={v:{},t:{},m:{}};neuroExOpen=false;klSave();openNeuro();return}
 });
 $('#pmDlg').addEventListener('input',e=>{const i=e.target.closest('[data-nut]');if(!i)return;const st=neuroState();st.t[i.dataset.nut]=i.value;KL.__neuro=st;clearTimeout(klSave.t);klSave.t=setTimeout(klSave,300);neuroUpd()});
 $('#pmDlg').addEventListener('change',e=>{const s=e.target.closest('[data-mrc]');if(!s)return;const st=neuroState();st.m[s.dataset.mrc]=s.value;KL.__neuro=st;klSave();neuroUpd()});
