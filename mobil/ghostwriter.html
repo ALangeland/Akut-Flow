@@ -777,6 +777,13 @@ html:not(.afmob) .klact :is(.jfmail,.klmailcfg),html:not(.afmob) .xfer .jfmail{d
 .klbtns .kln.kli{width:30px;height:30px;min-width:30px;padding:0!important;border-radius:50%!important;display:inline-grid!important;place-items:center;font-size:15px!important;font-weight:900;line-height:1;border:2px solid #2e9e44!important;color:#2e9e44!important;background:transparent!important}
 .klbtns .kln.kli:hover{background:#2e9e44!important;color:#fff!important}
 .klbtns .klnsel{border-radius:999px!important;border:2px solid #2e9e44!important;color:#2e9e44!important;font-weight:900;padding:2px 6px!important;background:transparent!important;min-width:0;width:auto}
+/*GW8*/
+.klbtns .klnm{position:relative}
+.klnmx{position:absolute;top:-6px;right:-6px;min-width:15px;height:15px;border-radius:8px;background:#2e9e44;color:#fff;font-size:9px;font-weight:800;display:grid;place-items:center;padding:0 3px}
+.klnmenu{z-index:200;max-width:420px}
+.klnmenu button{flex-direction:column;align-items:flex-start!important;gap:2px}
+.klnmenu button b{color:#2e9e44}
+.klnmenu button span{font-size:.78rem;color:var(--muted);white-space:normal}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
 <div style="padding:12px 16px"><p class="hint">Indsæt ChatGPT's svar. Format pr. plan: titel, en linje «Kategori: emne · ABCDE: C · Mappe: …», planteksten i en kodeblok og evt. «Instrukser / kilder» med linjer som Titel | URL. Flere planer kan indsættes på én gang.</p>
@@ -2910,7 +2917,7 @@ function renderKLDraft(){
         <div class="klbtns">
           ${f==='Neurologisk'?`<button class="btn sm nihssbtn" data-nihss="1" title="Udfyld NIHSS-skema med knapper">NIHSS${KL.__nihss&&KL.__nihss.ver===2&&KL.__nihss.v&&Object.keys(KL.__nihss.v).length?' '+nihssTotal(KL.__nihss.v).s:''}</button><button class="btn sm neurobtn" data-neuro="1" title="Neurologisk undersøgelse – klik normal/afvigende og kraftgrader">Neuro-us.</button>`:''}${f==='St.c.'?`<button class="btn sm stcbtn" data-stc="1" title="Klik hjertelyde og mislyde – med forklaringer">Mislyde</button>`:''}
           <button class="btn sm klpen" data-klpen="${esc(k)}" title="${ns.length?'Rediger standardnormalfund for feltet':'Opret standardnormalfund for feltet'}">✎</button>
-          ${ns.length?(ns.length===1?`<button class="btn sm kln kli" data-kln="${esc(k)}" title="Tilføj normalfund: ${esc(ns[0].body)}" aria-label="Tilføj normalfund">✓</button>`:`<select class="klnsel" data-klnsel="${esc(k)}" title="Tilføj normalfund"><option value="">✓ ▾</option>${ns.map((r,i)=>`<option value="${i}">${esc(r.label||r.body.slice(0,30))}</option>`).join('')}</select>`):'<span class="kln-ph"></span>'}
+          ${ns.length?(ns.length===1?`<button class="btn sm kln kli" data-kln="${esc(k)}" title="Tilføj normalfund: ${esc(ns[0].body)}" aria-label="Tilføj normalfund">✓</button>`:`<button class="btn sm kln kli klnm" data-klnm="${esc(k)}" title="Vælg normalfund: ${esc(ns.map(r=>r.label||r.body.slice(0,30)).join(' / '))}" aria-label="Vælg normalfund">✓<span class="klnmx">${ns.length}</span></button>`):'<span class="kln-ph"></span>'}
           <button class="btn sm klx" data-klx="${esc(k)}" title="Ryd feltet (kan fortrydes)" ${v.trim()?'':'disabled'}>✕</button>
           <button class="btn sm klc" data-klc="${esc(k)}" title="Kopiér feltet – Enter kopierer næste" ${v.trim()?'':'disabled'}>${klDone.has(k)?'✓':'Kopiér'}</button>
         </div>
@@ -3256,6 +3263,22 @@ $('#pmDlg').addEventListener('click',e=>{
     KL.__stc=s;klSave();const sc=$('#pmDlg').scrollTop;openStc();$('#pmDlg').scrollTop=sc;return}
   if(e.target.closest('[data-stcnorm]')){KL.__stc={rytme:'reg',tone:['norm'],mis:'ingen'};klSave();openStc();return}
   if(e.target.closest('[data-stcclr]')){KL.__stc={};klSave();openStc();return}
+});
+
+
+/* normalfund-valg som ✓-pille med menu */
+document.addEventListener('click',e=>{
+  const old=document.getElementById('klnmenu');
+  const o=e.target.closest('[data-klnmo]');
+  if(o&&old){const k=old.dataset.k;const [sn,f]=k.split(' › ');const r=klNormals(sn,f)[+o.dataset.klnmo];old.remove();if(r)klInsert(k,r.body||r.line,{normal:true,label:r.label});return}
+  const b=e.target.closest('[data-klnm]');
+  if(old){old.remove();if(b&&old.dataset.k===b.dataset.klnm)return}
+  if(!b)return;
+  const k=b.dataset.klnm;const [sn,f]=k.split(' › ');const ns=klNormals(sn,f);
+  const m=document.createElement('div');m.id='klnmenu';m.className='kdmenu klnmenu';m.dataset.k=k;
+  m.innerHTML=ns.map((r,i)=>`<button data-klnmo="${i}"><b>✓ ${esc(r.label||f)}</b><span>${esc((r.body||'').slice(0,90))}${(r.body||'').length>90?'…':''}</span></button>`).join('');
+  document.body.appendChild(m);const rc=b.getBoundingClientRect();
+  m.style.position='fixed';m.style.top=Math.min(rc.bottom+4,innerHeight-m.offsetHeight-8)+'px';m.style.left=Math.max(8,rc.right-m.offsetWidth)+'px';
 });
 
 function klOrder(){const o=[];JOURNAL.forEach(s=>s.f.forEach(f=>o.push(kk(s.s,f))));return o}
@@ -3839,7 +3862,7 @@ $('#kl').addEventListener('keydown',e=>{
   if(e.target.id==='klq'&&e.key==='Enter'){e.preventDefault();const f=$('#inslist .insbtn');if(f)f.click();return}
   if(e.target.id==='klq'&&e.key==='Escape'){klInsQ='';renderKLIns();return}
   const t=e.target.closest('textarea[data-k]');if(!t) return;
-  if(e.altKey&&(e.key==='n'||e.key==='N')){e.preventDefault();const b=document.querySelector(`#kldraft [data-kln="${klEsc(t.dataset.k)}"]`);if(b)b.click();else{const s=document.querySelector(`#kldraft [data-klnsel="${klEsc(t.dataset.k)}"]`);if(s)s.focus()}}
+  if(e.altKey&&(e.key==='n'||e.key==='N')){e.preventDefault();const b=document.querySelector(`#kldraft [data-kln="${klEsc(t.dataset.k)}"]`);if(b)b.click();else{const s=document.querySelector(`#kldraft [data-klnm="${klEsc(t.dataset.k)}"]`);if(s)s.click()}}
 });
 $('#kl').addEventListener('change',e=>{
   const il=e.target.closest('[data-ii]');
