@@ -865,33 +865,46 @@ body.tabsfold #tabs .tabfold{text-align:center;font-size:1.1rem;padding:6px 0}
 #nf .nfline:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
 #nf [data-nf="edit"]{margin-left:0}
 /*GW13*/
-.sinl .sie{display:inline-block;min-width:2ch;border-radius:5px;padding:1px 4px;margin:-1px -4px;outline:none;cursor:text;white-space:pre-wrap}
-.sinl .sie:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
-.sinl .sie:focus{background:var(--bg);box-shadow:0 0 0 2px var(--accent)}
+.sinl .sie{display:inline-block;min-width:2ch;border-radius:5px;padding:1px 4px;margin:-1px -4px;outline:none;cursor:text;white-space:pre-wrap;border-bottom:1px dashed transparent}
+.sinl .sie:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);border-bottom-color:var(--accent)}
+.sinl .sie:hover::after{content:" ✎";color:var(--accent);font-size:.75em}
+.sinl .sie:focus{background:var(--bg);box-shadow:0 0 0 2px var(--accent);border-bottom-color:transparent}
+.sinl .sie:focus::after{content:""}
 .sinl .sie:empty::before{content:attr(data-ph);color:var(--muted);font-style:italic}
 .sinl .sie-k{display:block;margin:0;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:.88rem/1.5 var(--sans)}
-.sig{border-top:1px dashed var(--line);padding:8px 0}
-.sigh{display:flex;align-items:center;gap:8px}
-.sie-gn{font-weight:800;font-size:.9rem}
-.sit{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;font:600 .72rem var(--sans);padding:1px 8px;cursor:pointer}
-.sit:hover{border-color:var(--accent);color:var(--accent)}
-.sigx{font-size:.76rem;color:var(--muted);margin:2px 0 6px}
-.sio{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;align-items:start;padding:5px 0}
-.sio.vj{opacity:.7}
-.sio.vj .sie-et::before{content:"ⓘ "}
-.siol{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
-.sie-et{border:1px solid var(--line)!important;border-radius:999px!important;padding:3px 10px!important;margin:0!important;font:600 .8rem var(--sans)}
-.sie-et.std{border-style:dashed!important;border-color:var(--accent)!important}
-.sioa{display:flex;gap:2px;opacity:0;transition:opacity .15s}
-.sio:hover .sioa,.sio:focus-within .sioa{opacity:1}
-.sib,.six{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:1px 5px;border-radius:5px}
-.sib.on{color:var(--accent)}
-.six:hover{color:#c62828}
-.sie-t{display:block!important;font:.86rem/1.45 var(--sans)}
-.siom{font-size:.74rem;color:var(--muted);margin-top:2px}
+.sig{border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden;background:color-mix(in srgb,var(--panel,var(--bg)) 70%,transparent)}
+.sigh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 10px;background:color-mix(in srgb,var(--accent) 9%,transparent);border-bottom:1px solid var(--line)}
+.sigh .spacer{flex:1}
+.sitag{font:700 .62rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.sie-gn{font-weight:800;font-size:.95rem}
+.siseg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex:none}
+.siseg button{border:0;background:var(--bg);color:var(--muted);font:600 .72rem var(--sans);padding:3px 9px;cursor:pointer}
+.siseg button+button{border-left:1px solid var(--line)}
+.siseg button.on{background:var(--accent);color:var(--bg);cursor:default}
+.siseg button:not(.on):hover{color:var(--text,inherit)}
+.sidel{border:0;background:none;color:#c62828;font:600 .72rem var(--sans);cursor:pointer;padding:3px 4px;opacity:.75}
+.sidel:hover{opacity:1;text-decoration:underline}
+.sif{display:grid;grid-template-columns:84px minmax(0,1fr);gap:8px;align-items:baseline;padding:2px 0;font-size:.78rem;color:var(--muted)}
+.sif>label{font:700 .6rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:2px}
+.sif-g{padding:6px 10px 2px}
+.sif-t{color:inherit}
+.sif-t .sie-t{display:block!important;margin:0!important;font:.87rem/1.45 var(--sans);color:var(--text,inherit);background:var(--bg);border:1px solid var(--line)!important;border-left:3px solid var(--accent)!important;border-radius:6px;padding:5px 9px}
+.sio.vj .sif-t .sie-t{border-left-color:var(--muted)!important;font-style:italic}
+.sio{margin:8px 10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.sio.isstd{border-color:color-mix(in srgb,#e0a100 60%,var(--line))}
+.sioh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.sioh .spacer{flex:1}
+.sichip{display:inline-flex;align-items:center;border:1.5px solid var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:999px;padding:3px 12px;font:700 .82rem var(--sans)}
+.sichip.std{border-color:#e0a100;color:#b07d00;background:color-mix(in srgb,#e0a100 14%,transparent)}
+.sio.vj .sichip{border-style:dashed;border-color:var(--muted);color:var(--muted);background:none}
+.sichip .sie-et{margin:0!important;padding:0 2px!important;color:inherit}
+.sistar{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:7px;font:600 .72rem var(--sans);padding:3px 9px;cursor:pointer}
+.sistar.on{background:#e0a100;border-color:#e0a100;color:#fff}
 .siv{font-size:.84rem;color:var(--muted);padding:2px 0}
-.siadd{border:1px dashed var(--line);background:none;color:var(--accent);border-radius:8px;font:600 .78rem var(--sans);padding:3px 10px;cursor:pointer;margin-top:4px}
-.sigh .six{opacity:.5}.sig:hover .sigh .six{opacity:1}
+.six{border:0;background:none;color:#c62828;cursor:pointer;font-size:.8rem;padding:1px 5px;opacity:.6}.six:hover{opacity:1}
+.siadd{display:block;margin:4px 10px 10px;border:1px dashed var(--accent);background:none;color:var(--accent);border-radius:8px;font:600 .78rem var(--sans);padding:5px 12px;cursor:pointer}
+.siadd:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.siaddg{margin:6px 0 10px;width:100%;padding:8px}
 .seggrp{border-top:1px dashed var(--line);padding:6px 0}
 .seggh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
 .seggh b{font-size:.84rem}
@@ -3600,12 +3613,18 @@ function segPreviewHtml(p){
    <div class="segl">Kerne – indsættes altid i Plan</div>${ed('kerne',sg.kerne,'sie-k','Kerne …')}
    ${(sg.vejledning||[]).length?`<div class="segl">Vejledning fra kernen – indsættes ikke</div>${sg.vejledning.map((v,vi)=>`<div class="siv">ⓘ ${ed('v.'+vi+'.tekst',v.tekst,'','Vejledning …')}<button class="six" data-sdv="${vi}" title="Slet">✕</button></div>`).join('')}`:''}
    <div class="segl">Valg – hvert klik i kladden indsætter teksten til højre</div>
-   ${sg.valg.map((g,gi)=>`<div class="sig"><div class="sigh">${ed(gi+'.gruppe',g.gruppe,'sie-gn','Gruppenavn')}<button class="sit" data-stype="${gi}" title="Skift mellem vælg én og vælg flere">${g.type==='en'?'vælg én':'vælg flere'}</button><button class="six" data-sdg="${gi}" title="Slet gruppen">✕</button></div>
-     <div class="sigx">${ed(gi+'.hjaelp',g.hjaelp,'sie-gx','Forklaring til gruppen …')}</div>
-     ${g.muligheder.map((m,mi)=>`<div class="sio${m.art==='vejledning'?' vj':''}"><div class="siol">${ed(gi+'.'+mi+'.etiket',m.etiket,'sie-et'+(m.standard?' std':''),'Knaptekst')}<div class="sioa"><button class="sib${m.standard?' on':''}" data-sstd="${gi}.${mi}" title="Førstevalg (vises med stiplet kant)">★</button><button class="sib${m.art==='vejledning'?' on':''}" data-sart="${gi}.${mi}" title="${m.art==='vejledning'?'Vejledning – indsættes ikke. Klik for at gøre til ordination':'Ordination – indsættes. Klik for at gøre til vejledning'}">ⓘ</button><button class="six" data-sdm="${gi}.${mi}" title="Slet valget">✕</button></div></div>
-       <div class="siot">${ed(gi+'.'+mi+'.tekst',m.tekst,'sie-t','Tekst der indsættes i Plan')}<div class="siom">${ed(gi+'.'+mi+'.hvornaar',m.hvornaar,'','Hvornår …')}<span> · </span>${ed(gi+'.'+mi+'.kilde',m.kilde,'','Kilde …')}</div></div></div>`).join('')}
-     <button class="siadd" data-sam="${gi}">+ valg</button></div>`).join('')}
-   <button class="siadd" data-sag="1">+ ny gruppe</button>
+   ${sg.valg.map((g,gi)=>`<div class="sig"><div class="sigh"><span class="sitag">Gruppe</span>${ed(gi+'.gruppe',g.gruppe,'sie-gn','Gruppenavn')}<span class="siseg" title="Må lægen vælge én eller flere i gruppen?"><button class="${g.type==='en'?'on':''}" data-stype="${gi}" data-to="en">Vælg én</button><button class="${g.type!=='en'?'on':''}" data-stype="${gi}" data-to="flere">Vælg flere</button></span><span class="spacer"></span><button class="sidel" data-sdg="${gi}">Slet gruppe</button></div>
+     <div class="sif sif-g"><label>Forklaring</label>${ed(gi+'.hjaelp',g.hjaelp,'sie-gx','Forklaring til gruppen …')}</div>
+     ${g.muligheder.map((m,mi)=>`<div class="sio${m.art==='vejledning'?' vj':''}${m.standard?' isstd':''}"><div class="sioh"><span class="sichip${m.standard?' std':''}">${m.standard?'★ ':''}${ed(gi+'.'+mi+'.etiket',m.etiket,'sie-et','Knaptekst')}</span>
+        <span class="spacer"></span>
+        <button class="sistar${m.standard?' on':''}" data-sstd="${gi}.${mi}" title="Førstevalg fremhæves i kladden">★ Førstevalg</button>
+        <span class="siseg" title="Ordination indsættes i Plan. Vejledning vises kun som hjælp."><button class="${m.art!=='vejledning'?'on':''}" data-sart="${gi}.${mi}" data-to="ordination">Ordination</button><button class="${m.art==='vejledning'?'on':''}" data-sart="${gi}.${mi}" data-to="vejledning">Vejledning</button></span>
+        <button class="sidel" data-sdm="${gi}.${mi}" title="Slet valget">Slet</button></div>
+       <div class="sif sif-t"><label>${m.art==='vejledning'?'Vises':'Indsættes'}</label>${ed(gi+'.'+mi+'.tekst',m.tekst,'sie-t','Tekst der indsættes i Plan')}</div>
+       <div class="sif"><label>Hvornår</label>${ed(gi+'.'+mi+'.hvornaar',m.hvornaar,'','Hvornår er valget relevant …')}</div>
+       <div class="sif"><label>Kilde</label>${ed(gi+'.'+mi+'.kilde',m.kilde,'','Kilde …')}</div></div>`).join('')}
+     <button class="siadd" data-sam="${gi}">+ Tilføj valg i «${esc(g.gruppe||'gruppen')}»</button></div>`).join('')}
+   <button class="siadd siaddg" data-sag="1">+ Ny gruppe</button>
    ${(sg.aendringer||[]).length?`<details class="segd"><summary>Ændringer fra gennemgangen (${sg.aendringer.length})</summary><ul>${sg.aendringer.map(a=>`<li><b>${esc(a.hvad)}</b><br><span>${esc(a.hvorfor)}</span>${a.kilde?`<br><i>${esc(a.kilde)}</i>`:''}</li>`).join('')}</ul></details>`:''}
    ${sg.bemaerkning?`<details class="segd"><summary>Bemærkning</summary><p>${esc(sg.bemaerkning)}</p></details>`:''}
    ${(sg.kilder||[]).length?`<div class="segsrc">${sg.kilder.map(k=>`<a href="${esc(k.link)}" target="_blank" rel="noopener">${esc(k.titel)}</a>`).join('')}</div>`:''}
@@ -3622,11 +3641,11 @@ document.addEventListener('focusout',e=>{const el=e.target.closest&&e.target.clo
 document.addEventListener('keydown',e=>{const el=e.target.closest&&e.target.closest('.sinl [data-ep]');if(!el)return;if(e.key==='Escape'){el.blur()}else if(e.key==='Enter'&&!e.shiftKey&&!/sie-[tk]/.test(el.className)&&!/\.tekst$|^kerne$|^v\./.test(el.dataset.ep)){e.preventDefault();el.blur()}});
 document.addEventListener('click',e=>{if(!e.target.closest('.sinl'))return;
   const t=(sel,fn)=>{const b=e.target.closest(sel);if(!b)return false;const w=segWork();if(!w)return true;fn(w,b);return true};
-  if(t('[data-stype]',(w,b)=>{const g=w.o.valg[+b.dataset.stype];g.type=g.type==='en'?'flere':'en';segCommit(w,true)}))return;
+  if(t('[data-stype]',(w,b)=>{const g=w.o.valg[+b.dataset.stype];g.type=b.dataset.to||(g.type==='en'?'flere':'en');segCommit(w,true)}))return;
   if(t('[data-sstd]',(w,b)=>{const [gi,mi]=b.dataset.sstd.split('.').map(Number);const m=w.o.valg[gi].muligheder[mi];m.standard=!m.standard;segCommit(w,true)}))return;
-  if(t('[data-sart]',(w,b)=>{const [gi,mi]=b.dataset.sart.split('.').map(Number);const m=w.o.valg[gi].muligheder[mi];m.art=m.art==='vejledning'?'ordination':'vejledning';segCommit(w,true)}))return;
+  if(t('[data-sart]',(w,b)=>{const [gi,mi]=b.dataset.sart.split('.').map(Number);const m=w.o.valg[gi].muligheder[mi];m.art=b.dataset.to||(m.art==='vejledning'?'ordination':'vejledning');segCommit(w,true)}))return;
   if(t('[data-sdm]',(w,b)=>{const [gi,mi]=b.dataset.sdm.split('.').map(Number);w.o.valg[gi].muligheder.splice(mi,1);if(!w.o.valg[gi].muligheder.length)w.o.valg.splice(gi,1);segCommit(w,true);toast('Valget er slettet')}))return;
-  if(t('[data-sdg]',(w,b)=>{if(!confirm('Slet gruppen og alle dens valg?'))return;w.o.valg.splice(+b.dataset.sdg,1);segCommit(w,true)}))return;
+  if(t('[data-sdg]',(w,b)=>{if(!confirm('Slet gruppen «'+(w.o.valg[+b.dataset.sdg].gruppe||'')+'» og alle dens valg?'))return;w.o.valg.splice(+b.dataset.sdg,1);segCommit(w,true)}))return;
   if(t('[data-sdv]',(w,b)=>{w.o.vejledning.splice(+b.dataset.sdv,1);segCommit(w,true)}))return;
   if(t('[data-sam]',(w,b)=>{const gi=+b.dataset.sam;w.o.valg[gi].muligheder.push({etiket:'Nyt valg',tekst:'- Rp. …',hvornaar:'',standard:false,kilde:'',art:'ordination'});segCommit(w,true,gi+'.'+(w.o.valg[gi].muligheder.length-1)+'.etiket')}))return;
   if(t('[data-sag]',(w,b)=>{w.o.valg.push({gruppe:'Ny gruppe',type:'flere',hjaelp:'',muligheder:[{etiket:'Nyt valg',tekst:'- Rp. …',hvornaar:'',standard:false,kilde:'',art:'ordination'}]});segCommit(w,true,(w.o.valg.length-1)+'.gruppe')}))return;
