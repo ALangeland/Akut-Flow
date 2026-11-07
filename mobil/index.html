@@ -144,17 +144,17 @@ main{max-width:1000px!important}
 @media (max-width:720px) and (prefers-color-scheme:light){:root:not([data-theme]) #themeToggle::before{content:"\263E"}}
 </style><script>try{document.documentElement.dataset.skin=localStorage.getItem('alb-skin')||'arkade'}catch(e){document.documentElement.dataset.skin='arkade'}</script><style>/*SKIN-BASIC*/
 :root[data-skin="basic"]{--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif!important;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace!important;
---bg:#f4f5f7!important;--surface:#ffffff!important;--sunk:#eef0f3!important;--fg:#1d2024!important;--muted:#5f6670!important;--line:#d9dde3!important;
---bar:#2b2f36!important;--bar-2:#3a3f47!important;--bar-fg:#ffffff!important;--bar-muted:#c9ced6!important;
---accent:#2563eb!important;--accent-soft:#e7eefc!important;--go:#2563eb!important;color-scheme:light}
-:root[data-skin="basic"][data-theme="dark"]{--bg:#141619!important;--surface:#1c1f23!important;--sunk:#111316!important;--fg:#e4e6e9!important;--muted:#9aa1ab!important;--line:#2f333a!important;
---bar:#3a404a!important;--bar-2:#2a2e35!important;--bar-fg:#ffffff!important;--bar-muted:#c3c8d0!important;
---accent:#6b9bf2!important;--accent-soft:#1f2b42!important;--go:#6b9bf2!important;color-scheme:dark}
+--bg:#eef2f4!important;--surface:#ffffff!important;--sunk:#e7edf0!important;--fg:#0f1c24!important;--muted:#3e4d57!important;--line:#c3cfd6!important;
+--bar:#0f3443!important;--bar-2:#164a5c!important;--bar-fg:#ffffff!important;--bar-muted:#b4ccd5!important;
+--accent:#0b7285!important;--accent-soft:#dbeff2!important;--go:#0b7285!important;--on-accent:#ffffff;color-scheme:light}
+:root[data-skin="basic"][data-theme="dark"]{--bg:#0c161b!important;--surface:#132129!important;--sunk:#0a1217!important;--fg:#e7eff2!important;--muted:#a9bcc5!important;--line:#25384225!important;--line:#263a44!important;
+--bar:#0a2631!important;--bar-2:#11323f!important;--bar-fg:#ffffff!important;--bar-muted:#a7c3cd!important;
+--accent:#46bfcb!important;--accent-soft:#123740!important;--go:#46bfcb!important;--on-accent:#05252b;color-scheme:dark}
 [data-skin="basic"] body{font-family:var(--sans)!important;background:var(--bg)!important;color:var(--fg)}
 [data-skin="basic"] :is(input,select,textarea,button){font-family:var(--sans)}
 [data-skin="basic"] :is(img.px,.ico,.afnav a img,.afbot a img,.hero img,.nutile img,.tile .ic,.avs,.gun,.hat,.afhome img){display:none!important}
 [data-skin="basic"] :is(.empty,.toast)::before{display:none!important;content:none!important}
-[data-skin="basic"] .topbar{border-bottom:1px solid var(--line)}
+
 [data-skin="basic"] .topbar h1{text-transform:none!important;letter-spacing:0!important;font-weight:700}
 [data-skin="basic"] .afnav{border-bottom:1px solid var(--line)}
 [data-skin="basic"] .afnav a{padding:10px 12px 8px!important}
@@ -162,9 +162,9 @@ main{max-width:1000px!important}
 [data-skin="basic"] .afnav a:hover{color:var(--fg)!important}
 [data-skin="basic"] .afbot a{font-size:.72rem!important}
 [data-skin="basic"] .afbot a.on{border-top-color:var(--accent)!important;color:var(--fg)!important}
-[data-skin="basic"] button.primary,[data-skin="basic"] .btn.primary{background:var(--accent)!important;border-color:var(--accent)!important;color:#fff!important}
+[data-skin="basic"] button.primary,[data-skin="basic"] .btn.primary{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--on-accent)!important}
 [data-skin="basic"] .tile{border-top-color:var(--line)!important}
-[data-skin="basic"] .afhome{display:inline-flex!important;align-items:center;justify-content:center;text-decoration:none;color:var(--bar-fg)!important;border:1px solid var(--line)!important;background:none!important;box-shadow:none!important}
+[data-skin="basic"] .afhome{display:inline-flex!important;align-items:center;justify-content:center;text-decoration:none;color:var(--bar-fg)!important;border:1px solid var(--bar-muted)!important;background:none!important;box-shadow:none!important}
 [data-skin="basic"] .afhome::after{content:"⌂";font:600 1.15rem/1 var(--sans)}
 [data-skin="basic"] .tile h2{text-transform:none!important;letter-spacing:0!important;font-size:1.08rem!important}
 [data-skin="basic"] #panBtns button{font-size:.8rem!important}
@@ -172,12 +172,21 @@ main{max-width:1000px!important}
 [data-skin="basic"] img[src^="data:image/webp"],[data-skin="basic"] img[src^="data:image/png"]{display:none!important}
 [data-skin="basic"] :is(#afmem-btn,#result,[data-kltype],[data-nfmode],[data-jfgo],.afmem-btn)::before{display:none!important;content:none!important}
 [data-skin="basic"] :is(.zzz.sl,.result,.side h3:first-of-type,#tabs button[data-cat="NF"] .k)::before{display:none!important;content:none!important}
-[data-skin="basic"] :is(.topbar,header.topbar){background:var(--surface)!important;color:var(--fg)!important}
+[data-skin="basic"] :is(.topbar,header.topbar){background:var(--bar)!important;color:var(--bar-fg)!important;border-bottom:0!important}
 [data-skin="basic"] .afnav,[data-skin="basic"] .afbot{background:var(--surface)!important}
-[data-skin="basic"] :is(.kltype,#kldraft .seg.nfmode) button[aria-pressed="true"]{color:#fff!important}
-[data-skin="basic"] :is(.topbar,.afnav,.afbot){--bar-fg:var(--fg);--bar-muted:var(--muted);--bar:var(--surface)}
+[data-skin="basic"] :is(.kltype,#kldraft .seg.nfmode) button[aria-pressed="true"]{color:var(--on-accent)!important}
+[data-skin="basic"] :is(.afnav,.afbot){--bar-fg:var(--fg);--bar-muted:var(--muted);--bar:var(--surface)}
+[data-skin="basic"] .topbar .solid,[data-skin="basic"] .topbar button.solid{background:#fff!important;color:var(--bar)!important}
 [data-skin="basic"] .kltype{background:var(--sunk)!important;border-color:var(--line)!important}
 [data-skin="basic"] .kltype button:not([aria-pressed="true"]){color:var(--muted)!important}
+
+[data-skin="basic"] .afnav a{color:var(--muted)!important;font-weight:600}
+[data-skin="basic"] .afnav a.on{color:var(--accent)!important}
+[data-skin="basic"] :is(.hint,.note,.muted,small){opacity:1!important}
+[data-skin="basic"] ::placeholder{color:color-mix(in srgb,var(--muted) 75%,transparent)!important;opacity:1}
+[data-skin="basic"] :is(input,select,textarea){border-color:var(--line)}
+[data-skin="basic"] :is(input,select,textarea,button):focus-visible{outline:2px solid var(--accent)!important;outline-offset:1px}
+[data-skin="basic"] .skinpick .sp-seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
