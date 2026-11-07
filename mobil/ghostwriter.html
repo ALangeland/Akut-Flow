@@ -976,7 +976,16 @@ body.tabsfold #tabs .tabfold{text-align:center;font-size:1.1rem;padding:6px 0}
 #ptext .hpill{margin:4px 0 1px}
 .secEd{display:flex;flex-direction:column;gap:3px}
 .secHd{display:flex;align-items:center}.secHd .spacer{flex:1}
-.secEd .hpill{align-self:flex-start;margin-top:8px}
+.secEd .hpill{align-self:flex-start}
+.secRow{display:flex;align-items:center;gap:4px;margin-top:8px}
+.secEd label.hsel{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:5px;width:auto}
+.hsel{position:relative;cursor:pointer;color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.hsel select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;font-size:16px}
+.hsel i{font-style:normal;font-size:.8em;opacity:.7}
+.hsel:hover{border-color:var(--accent)}
+.secadd{align-self:flex-start;margin-top:10px;border-style:dashed}.secadd::before{content:none}
+.secx{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.75rem;opacity:.5;padding:2px 4px}.secx:hover{opacity:1;color:#c62828}
+.sechint{font-size:.72rem;color:var(--muted);margin-left:8px}
 .secEd .secTa{min-height:0;resize:vertical;overflow:hidden;font:inherit;line-height:1.45}
 </style><dialog id="gwImpDlg" style="border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);max-width:min(720px,calc(100vw - 32px));width:100%;padding:0">
 <div style="display:flex;align-items:center;padding:10px 14px;background:var(--bar-2);color:#fff"><h2 style="margin:0;font-size:1rem">Importér planer fra ChatGPT</h2><button id="gwImpClose" type="button" aria-label="Luk" style="margin-left:auto;background:transparent;border:0;color:#fff;font-size:1.1rem">✕</button></div>
@@ -3691,25 +3700,57 @@ document.addEventListener('click',e=>{
 });
 {const _rp=renderPreview;renderPreview=function(){_rp.apply(this,arguments);try{const p=byId(ui.sel);const t=document.getElementById('ptext');if(p&&t&&SEG_MAP.has(norm(p.title))){t.insertAdjacentHTML('beforebegin',segPreviewHtml(p))}}catch(e){}}}
 
-/* ---------- Overskrifter som låste piller ---------- */
+/* ---------- Overskrifter som låste piller (vælges fra journalkonceptet) ---------- */
 const HEADRE=/^([A-ZÆØÅ][A-ZÆØÅ0-9 ,.\/&()–-]{2,}):?[ \t]*$/;
+const SEC_HEADS=['ÅRSAG TIL HENVENDELSEN','ANAMNESE','ABCDE','OBJEKTIVT','NEUROLOGISK UNDERSØGELSE','PARAKLINIK','KONKLUSION','PLAN'];
+const SEC_GEN=['Beskrivelse','Supplerende','Notat'];
+function secFields(){const G=[];JOURNAL_OPT.forEach(s=>{const fs=s.f.filter(f=>!SEC_GEN.includes(f)&&f!==s.s);
+    if(!fs.length||s.f.length===1)G.push({g:s.grp||'Øvrige',n:s.s,k:kk(s.s,s.f[0])});
+    else fs.forEach(f=>G.push({g:s.s,n:f,k:kk(s.s,f)}))});return G}
+let _hfMap=null;
+function headField(t){if(!_hfMap){_hfMap=new Map();secFields().forEach(x=>{if(!_hfMap.has(x.n.toUpperCase()))_hfMap.set(x.n.toUpperCase(),x.k)})}
+  const u=String(t).trim().replace(/:$/,'').toUpperCase();if(_hfMap.has(u))return _hfMap.get(u);
+  try{const a=aliasOf(u.toLowerCase());if(a&&a.k)return a.k}catch(_){}return null}
+function secIsHead(l){const t=l.trim();return HEADRE.test(t)&&/[A-ZÆØÅ]{3}/.test(t)}
 function secParse(t){const L=t.split('\n');let pre=null,cur=null;const secs=[];
-  L.forEach(l=>{if(HEADRE.test(l.trim())&&/[A-ZÆØÅ]{3}/.test(l)){cur={h:l,b:[]};secs.push(cur)}else if(cur)cur.b.push(l);else (pre=pre||[]).push(l)});
+  L.forEach(l=>{if(secIsHead(l)){cur={h:l.trim(),b:[]};secs.push(cur)}else if(cur)cur.b.push(l);else (pre=pre||[]).push(l)});
   secs.forEach(s=>{s.tail=0;while(s.b.length&&!s.b[s.b.length-1].trim()){s.b.pop();s.tail++}});return {pre,secs}}
 function secJoin(d){const out=[];if(d.pre)out.push(...d.pre);d.secs.forEach(s=>{out.push(s.h,...s.b);for(let i=0;i<s.tail;i++)out.push('')});return out.join('\n')}
 function secGrow(ta){ta.style.height='auto';ta.style.height=(ta.scrollHeight+2)+'px'}
+function secOpts(cur){const F=secFields();const groups={};F.forEach(x=>{(groups[x.g]=groups[x.g]||[]).push(x.n.toUpperCase())});
+  const all=new Set(SEC_HEADS.concat(F.map(x=>x.n.toUpperCase())));
+  const o=v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(v)}</option>`;
+  return (cur&&!all.has(cur)?`<optgroup label="Nuværende">${o(cur)}</optgroup>`:'')+
+    `<optgroup label="Overskrifter">${SEC_HEADS.map(o).join('')}</optgroup>`+
+    Object.keys(groups).map(g=>`<optgroup label="${esc(g)}">${groups[g].map(o).join('')}</optgroup>`).join('')}
+function secBuild(box,d,ta,focusLast){
+  const area=(i,v)=>`<textarea class="secTa" data-si="${i}" spellcheck="true" rows="1">${esc(v)}</textarea>`;
+  box.innerHTML=`<div class="secHd"><span class="lbl">Tekst</span><span class="sechint">Klik på en pille for at vælge et andet felt i journalkonceptet</span><span class="spacer"></span><button type="button" class="btn sm" data-secraw="1" title="Redigér hele teksten inkl. overskrifter">Ren tekst</button></div>`+
+   (d.pre?area('pre',d.pre.join('\n')):'')+
+   d.secs.map((s,i)=>{const h=s.h.replace(/:$/,'');const fk=SEC_HEADS.includes(h)?'':headField(h);
+     return `<div class="secRow"><label class="hpill hsel" title="${fk?'Indsættes i: '+esc(fk):'Overskrift'} – klik for at skifte"><select data-sh="${i}">${secOpts(h)}</select><span>${esc(h)}</span><i>▾</i></label><button type="button" class="secx" data-sx="${i}" title="Fjern overskriften – teksten bliver stående under feltet ovenover">✕</button></div>${area(i,s.b.join('\n'))}`}).join('')+
+   `<label class="hpill hsel secadd" title="Tilføj et felt fra journalkonceptet nederst"><select data-sadd="1"><option value="" selected>+ Tilføj felt …</option>${secOpts('')}</select><span>+ Tilføj felt</span></label>`;
+  box.querySelectorAll('.secTa').forEach(secGrow);
+  if(focusLast){const a=box.querySelectorAll('.secTa');const l=a[a.length-1];if(l){l.focus();l.scrollIntoView({block:'center'})}}
+}
 const _renderEditor0=renderEditor;
 renderEditor=function(p){_renderEditor0(p);const ta=$('#edText');if(!ta)return;
   const d=secParse(ta.value);if(!d.secs.length)return;
   const lab=ta.closest('label');const box=document.createElement('div');box.className='secEd';
-  const area=(i,v)=>`<textarea class="secTa" data-si="${i}" spellcheck="true" rows="1">${esc(v)}</textarea>`;
-  box.innerHTML=`<div class="secHd"><span class="lbl">Tekst</span><span class="spacer"></span><button type="button" class="btn sm" data-secraw="1" title="Redigér hele teksten inkl. overskrifter">Ren tekst</button></div>`+
-   (d.pre?area('pre',d.pre.join('\n')):'')+d.secs.map((s,i)=>`<div class="hpill" title="Overskrift – låst">${esc(s.h.trim().replace(/:$/,''))}</div>${area(i,s.b.join('\n'))}`).join('');
-  lab.style.display='none';lab.after(box);
-  box.querySelectorAll('.secTa').forEach(secGrow);
+  lab.style.display='none';lab.after(box);secBuild(box,d,ta);
+  const sync=()=>{ta.value=secJoin(d)};
   box.addEventListener('input',e=>{const t=e.target.closest('.secTa');if(!t)return;secGrow(t);
-    if(t.dataset.si==='pre')d.pre=t.value.split('\n');else d.secs[+t.dataset.si].b=t.value.split('\n');ta.value=secJoin(d)});
-  box.querySelector('[data-secraw]').addEventListener('click',()=>{box.remove();lab.style.display=''});
+    if(t.dataset.si==='pre')d.pre=t.value.split('\n');else d.secs[+t.dataset.si].b=t.value.split('\n');sync()});
+  box.addEventListener('change',e=>{const s=e.target.closest('select');if(!s)return;
+    if(s.dataset.sh!==undefined){d.secs[+s.dataset.sh].h=s.value;sync();secBuild(box,d,ta);return}
+    if(s.dataset.sadd&&s.value){if(d.secs.length){const L=d.secs[d.secs.length-1];if(!L.tail)L.tail=1}else if(d.pre&&d.pre.length&&d.pre[d.pre.length-1].trim())d.pre.push('');
+      d.secs.push({h:s.value,b:[''],tail:0});sync();secBuild(box,d,ta,true)}});
+  box.addEventListener('click',e=>{
+    if(e.target.closest('[data-secraw]')){box.remove();lab.style.display='';return}
+    const x=e.target.closest('[data-sx]');if(x){const i=+x.dataset.sx;const s=d.secs[i];const moved=s.b.concat(Array(s.tail).fill(''));
+      if(i>0){const P=d.secs[i-1];P.b=P.b.concat(Array(P.tail).fill(''),moved);P.tail=0;while(P.b.length&&!P.b[P.b.length-1].trim()){P.b.pop();P.tail++}}
+      else d.pre=(d.pre||[]).concat(moved);
+      d.secs.splice(i,1);sync();if(!d.secs.length){box.remove();lab.style.display='';return}secBuild(box,d,ta)}});
 };
 
 function klOrder(){const o=[];JOURNAL.forEach(s=>s.f.forEach(f=>o.push(kk(s.s,f))));return o}
@@ -4161,7 +4202,7 @@ function formatPara(text){
 }
 function routePlan(text){
   const lines=text.replace(/\r/g,'').split('\n');
-  const heads=lines.map(l=>l.trim()).filter(isHeading).map(l=>{const h=HEAD.find(([re])=>re.test(l));return h?h[1]:null});
+  const heads=lines.map(l=>l.trim()).filter(isHeading).map(l=>{const h=HEAD.find(([re])=>re.test(l));return h?h[1]:(headField(l)?'fld':null)});
   const known=heads.filter(Boolean).filter(h=>h!=='plan');
   let aliasHits=0;
   if(!known.length){ // tæl genkendte etiketter før PLAN
@@ -4179,7 +4220,7 @@ function routePlan(text){
     if(t&&isHeading(t)){
       const h=HEAD.find(([re])=>re.test(t));
       if(h){ctx=h[1];last=null;if(ctx==='abcde')push(F.at,'ABCDE');continue}
-      ctx='other';last=F.konk;push(F.konk,'');push(F.konk,t);continue;
+      {const fk=headField(t);if(fk){ctx='fld';last=fk;continue}}ctx='other';last=F.konk;push(F.konk,'');push(F.konk,t);continue;
     }
     if(ctx==='pre'&&t&&!seenTitle){seenTitle=true;
       if(/^AKUTKALD/i.test(t)){push(F.arsag,t.replace(/^AKUTKALD\s*[–-]\s*/i,''));continue}
@@ -4187,6 +4228,7 @@ function routePlan(text){
       if(admin){push(F.arsag,t.replace(/^ADMINISTRATIVT NOTAT\s*[–-]?\s*/i,''));last=F.arsag;continue}
       push(heads.includes('arsag')?F.konk:F.arsag,t);last=null;continue}
     if(!t){if(last)push(last,'');if(proc&&ctx==='pre')last=null;continue}
+    if(ctx==='fld'){push(last,raw.replace(/\s+$/,''));continue}
     if(ctx==='plan'||ctx==='konk'||ctx==='neuro'||ctx==='abcde'||ctx==='arsag'||ctx==='other'){push(last||CTX_DEFAULT[ctx]||F.konk,raw.replace(/\s+$/,''));continue}
     const m=t.match(/^([^:]{1,60}):\s*(.*)$/);
     if(m){
