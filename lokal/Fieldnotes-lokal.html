@@ -517,7 +517,7 @@ $('btnClearDone').onclick=()=>{
 /* ---------- versionshistorik ---------- */
 const APP_VERSION='2';
 const CHANGELOG=[
- {v:'2',d:'02.11.2026',items:['Fieldnotes er en del af Akut-Flow og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
+ {v:'2',d:'02.11.2026',items:['Fieldnotes er en del af Akuttøjskassen og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
  {v:'1',d:'31.10.2026',items:['Noter med patient, zone og stue (rullemenuer), CPR/tlf., afdeling og 5 prioriteter.','Færdig-markering, filtre, søgning, Kopiér overlevering, Skjul CPR og datafil (fieldnotes.json). Henter noter fra Vagtnoter første gang.']}
 ];
 (function(){const vb=$('verBtn');vb.textContent='v'+APP_VERSION+' · '+CHANGELOG[0].d;let seen='';try{seen=localStorage.getItem('fieldnotes.seenVersion')||''}catch(e){}if(seen!==APP_VERSION)vb.classList.add('new');
@@ -643,9 +643,9 @@ function lock(s){
   var p=document.getElementById('afl-p'),g=document.getElementById('afl-go'),st=document.getElementById('afl-s');
   if(s==='chk'){p.textContent='Tjekker forbindelsen til hukommelsesmappen …';g.hidden=true;st.textContent='';return}
   g.hidden=false;
-  if(s==='perm'){p.textContent='Hukommelsesmappen «'+(dir?dir.name:'')+'» skal godkendes igen på denne computer, før Akut-Flow kan bruges.';g.textContent='Giv adgang til «'+(dir?dir.name:'mappen')+'»';st.textContent=''}
+  if(s==='perm'){p.textContent='Hukommelsesmappen «'+(dir?dir.name:'')+'» skal godkendes igen på denne computer, før Akuttøjskassen kan bruges.';g.textContent='Giv adgang til «'+(dir?dir.name:'mappen')+'»';st.textContent=''}
   else if(s==='err'){p.textContent='Hukommelsesmappen kunne ikke læses. Prøv igen, eller vælg mappen på ny.';g.textContent='Prøv igen';st.textContent=''}
-  else{p.textContent='Akut-Flow gemmer alt i en mappe på din computer (fx i OneDrive), så du kan fortsætte på en anden computer. Vælg mappen for at komme i gang – det skal gøres én gang pr. computer.';g.textContent='Vælg hukommelsesmappe';st.textContent='Vælg den samme mappe på alle computere.'}
+  else{p.textContent='Akuttøjskassen gemmer alt i en mappe på din computer (fx i OneDrive), så du kan fortsætte på en anden computer. Vælg mappen for at komme i gang – det skal gøres én gang pr. computer.';g.textContent='Vælg hukommelsesmappe';st.textContent='Vælg den samme mappe på alle computere.'}
 }
 document.getElementById('afl-go').addEventListener('click',function(){if(state==='perm'||state==='err'){if(state==='err'&&!dir){connect();return}syncNow(true).then(function(){if(state==='err')connect()})}else connect()});
 ui('chk');

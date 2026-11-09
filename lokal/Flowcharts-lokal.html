@@ -840,9 +840,9 @@ function lock(s){
   var p=document.getElementById('afl-p'),g=document.getElementById('afl-go'),st=document.getElementById('afl-s');
   if(s==='chk'){p.textContent='Tjekker forbindelsen til hukommelsesmappen …';g.hidden=true;st.textContent='';return}
   g.hidden=false;
-  if(s==='perm'){p.textContent='Hukommelsesmappen «'+(dir?dir.name:'')+'» skal godkendes igen på denne computer, før Akut-Flow kan bruges.';g.textContent='Giv adgang til «'+(dir?dir.name:'mappen')+'»';st.textContent=''}
+  if(s==='perm'){p.textContent='Hukommelsesmappen «'+(dir?dir.name:'')+'» skal godkendes igen på denne computer, før Akuttøjskassen kan bruges.';g.textContent='Giv adgang til «'+(dir?dir.name:'mappen')+'»';st.textContent=''}
   else if(s==='err'){p.textContent='Hukommelsesmappen kunne ikke læses. Prøv igen, eller vælg mappen på ny.';g.textContent='Prøv igen';st.textContent=''}
-  else{p.textContent='Akut-Flow gemmer alt i en mappe på din computer (fx i OneDrive), så du kan fortsætte på en anden computer. Vælg mappen for at komme i gang – det skal gøres én gang pr. computer.';g.textContent='Vælg hukommelsesmappe';st.textContent='Vælg den samme mappe på alle computere.'}
+  else{p.textContent='Akuttøjskassen gemmer alt i en mappe på din computer (fx i OneDrive), så du kan fortsætte på en anden computer. Vælg mappen for at komme i gang – det skal gøres én gang pr. computer.';g.textContent='Vælg hukommelsesmappe';st.textContent='Vælg den samme mappe på alle computere.'}
 }
 document.getElementById('afl-go').addEventListener('click',function(){if(state==='perm'||state==='err'){if(state==='err'&&!dir){connect();return}syncNow(true).then(function(){if(state==='err')connect()})}else connect()});
 ui('chk');
