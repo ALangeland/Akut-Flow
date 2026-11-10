@@ -909,27 +909,40 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .topbtns .afmem-btn.ok{color:var(--bar-fg,#fff)}
 .topbtns #afmem-btn::before{display:none}
 </style><style>/*PD2*/
-main.pd2{max-width:1500px;margin:0 auto;padding:14px 16px 40px}
-.pd2-top{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:14px}
-.pd2-stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:10px}
-.pd2-stat b{font:700 1.6rem var(--mono);color:var(--go);line-height:1}
-.pd2-stat span{font-size:.8rem;color:var(--muted);line-height:1.2}
-.pd2-grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
-@media(max-width:900px){.pd2-grid{grid-template-columns:minmax(0,1fr)}}
+main.pd2{max-width:1600px;margin:0 auto;padding:12px 16px 40px}
+.pd2-top{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:10px}
+.pd2-stats{display:flex;gap:8px;flex-wrap:wrap}
+.pd2-stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:8px}
+.pd2-stat b{font:700 1.4rem var(--mono);color:var(--go);line-height:1}
+.pd2-stat span{font-size:.76rem;color:var(--muted);line-height:1.2}
+.pd2-sug{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.pd2-sg{display:flex;align-items:center;gap:10px;border-radius:10px;padding:6px 12px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.pd2-sg.ak{border-color:#d32f2f;background:color-mix(in srgb,#d32f2f 10%,transparent)}
+.pd2-sg small{display:block;font:700 .62rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.pd2-sg b{font-size:1rem}
+.pd2-lead{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pd2-lc{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 3px;font-size:.82rem}
+.pd2-lc .pd2-av{width:28px;height:28px;font-size:.72rem}
+.pd2-lc small{color:var(--muted)}
+.pd2-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:1000px){.pd2-grid{grid-template-columns:minmax(0,1fr)}}
 .pd2-h{display:flex;align-items:center;gap:8px;font:700 .74rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
-.pd2-h .sp{flex:1}
 .pd2-q{position:sticky;top:8px}
 .pd2-box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.fld{border:1px solid var(--line)!important;background:var(--bg)!important;color:var(--fg)!important;border-radius:6px!important;min-height:0!important;padding:4px 7px!important;font:400 .84rem var(--sans)!important;width:100%;box-sizing:border-box}
+.fld:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line))!important}
+.fld:focus{outline:none;border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+.fld::placeholder{color:var(--muted);opacity:.8}
+select.fld{width:auto;cursor:pointer}
 .pd2-form{display:flex;flex-direction:column;gap:8px}
 .pd2-form .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.pd2-form input,.pd2-form select{min-height:0;padding:6px 8px;font-size:.9rem}
-.pd2-form input[name=head]{flex:1;min-width:120px}
+.pd2-form .row input.fld{flex:1;width:auto;min-width:110px}
 .pd2-lbl{font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);min-width:52px}
 .pd2-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
 .pd2-seg button{border:0;border-radius:0;background:var(--bg);color:var(--muted);font:600 .74rem var(--sans);padding:4px 9px;min-height:0;cursor:pointer}
 .pd2-seg button+button{border-left:1px solid var(--line)}
 .pd2-seg button.on{background:var(--accent);color:var(--on-accent,#fff)}
-.tri{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;vertical-align:middle;background:var(--tc,#8a94a6)}
+.tri{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;vertical-align:middle;background:var(--tc,#8a94a6);cursor:pointer;padding:0;min-height:0}
 .tri[data-t=""]{background:transparent;border:1.5px dashed var(--muted)}
 .tri[data-t=roed]{--tc:#d32f2f}.tri[data-t=orange]{--tc:#f57c00}.tri[data-t=gul]{--tc:#fbc02d}.tri[data-t=groen]{--tc:#43a047}.tri[data-t=blaa]{--tc:#1e88e5}
 .pd2-tris{display:inline-flex;gap:4px}
@@ -939,75 +952,85 @@ main.pd2{max-width:1500px;margin:0 auto;padding:14px 16px 40px}
 .pd2-qc{border:1px solid var(--line);border-left:4px solid var(--tc,var(--line));border-radius:10px;padding:8px 10px;background:var(--bg);display:flex;flex-direction:column;gap:6px}
 .pd2-qc .l1{display:flex;align-items:center;gap:8px}
 .pd2-qc .l1 b{flex:1;min-width:0}
+.pd2-qc .meta{font-size:.72rem;color:var(--muted)}
 .pd2-qc .as{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .pd2-qc .as button{min-height:0;padding:3px 9px;font-size:.78rem}
+.pd2-qc .as button.ak{border-color:#d32f2f}
 .pd2-qc .as select{min-height:0;padding:3px 6px;font-size:.78rem;width:auto}
-.pd2-docs{display:flex;flex-direction:column;gap:16px}
-.pd2-dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
-.pd2-dc{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
-.pd2-dc.off{opacity:.55}
-.pd2-dh{display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
-.pd2-av{width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 .95rem var(--sans);color:#fff;background:var(--avc,#555)}
-.pd2-dn{flex:1;min-width:0}
-.pd2-dn b{display:block;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pd2-dn span{display:block;font-size:.76rem;color:var(--muted);line-height:1.25}
-.pd2-dn .til{color:var(--fg)}.pd2-dn .til.warn{color:#f57c00}.pd2-dn .til.over{color:#d32f2f}
-.pd2-cnt{min-width:42px;text-align:center;border-radius:8px;padding:4px 6px;font:700 1.25rem var(--mono);line-height:1;color:#fff;background:#43a047}
-.pd2-cnt small{display:block;font:700 .55rem var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.pd2-sec{margin-bottom:16px}
+.pd2-rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.pdr{display:grid;grid-template-columns:300px minmax(0,1fr);border-top:1px solid var(--line)}
+.pdr:first-child{border-top:0}
+.pdr.off{opacity:.55}
+.pdr-doc{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-right:1px solid var(--line);background:color-mix(in srgb,var(--bg) 35%,transparent)}
+.pd2-av{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 .9rem var(--sans);color:#fff;background:var(--avc,#555)}
+.pd2-dn{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pd2-dn b{font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd2-dn .meta{font-size:.74rem;color:var(--muted)}
+.pd2-dn .til.warn{color:#f57c00}.pd2-dn .til.over{color:#d32f2f}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;border-radius:999px;padding:1px 8px;font:700 .66rem var(--sans);border:1px solid var(--line);background:var(--bg);color:var(--fg);white-space:nowrap}
+.pill.lv{background:var(--surface);color:var(--fg);border-color:color-mix(in srgb,var(--fg) 35%,transparent)}
+.pill.sp{border-color:color-mix(in srgb,var(--pc) 70%,transparent);background:color-mix(in srgb,var(--pc) 22%,transparent)}
+.pill.ak{border-color:#d32f2f;color:#fff;background:#d32f2f;cursor:pointer}
+.pill.ak.no{background:none;color:var(--muted);border-style:dashed}
+.pill.ns{border-style:dashed;color:var(--muted)}
+.pd2-cnt{min-width:38px;text-align:center;border-radius:8px;padding:4px 6px;font:700 1.15rem var(--mono);line-height:1;color:#fff;background:#43a047}
+.pd2-cnt small{display:block;font:700 .52rem var(--sans);letter-spacing:.06em;text-transform:uppercase}
 .pd2-cnt.c1{background:#1e88e5}.pd2-cnt.c2{background:#f57c00}.pd2-cnt.c3{background:#d32f2f}
-.pd2-dm{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:2px 4px;min-height:0}
-.pd2-pl{display:flex;flex-direction:column}
-.pd2-p{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 8px;align-items:center;padding:7px 12px;border-bottom:1px dashed var(--line)}
-.pd2-p:last-child{border-bottom:0}
-.pd2-p .mid{display:flex;flex-direction:column;min-width:0}
-.pd2-p .hd{font-weight:600;font-size:.88rem;outline:none;border-radius:4px;padding:0 3px;margin:0 -3px;cursor:text;min-height:1.2em}
-.pd2-p .hd:empty::before{content:"Overskrift …";color:var(--muted);font-weight:400;font-style:italic}
-.pd2-p .hd:focus{box-shadow:0 0 0 2px var(--accent);background:var(--bg)}
-.pd2-p .meta{display:flex;gap:6px;align-items:center;font-size:.72rem;color:var(--muted);flex-wrap:wrap}
-.pd2-p .meta select{min-height:0;padding:0 2px;font-size:.72rem;width:auto;border:0;background:transparent;color:var(--muted);cursor:pointer}
-.pd2-p .nt{outline:none;border-radius:4px;padding:0 3px;cursor:text;min-width:3ch}
-.pd2-p .nt:empty::before{content:"+ note";opacity:.6}
-.pd2-p .nt:focus{box-shadow:0 0 0 2px var(--accent);background:var(--bg);color:var(--fg)}
-.pd2-p .rt{display:flex;gap:4px;align-items:center}
-.pd2-st{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;font:600 .74rem var(--sans);cursor:pointer;white-space:nowrap;background:var(--bg)}
+.pd2-dm{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0 4px;min-height:0;line-height:1}
+.pdr-pts{display:flex;gap:8px;padding:8px;overflow-x:auto;align-items:stretch}
+.pdc{flex:none;width:200px;display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-top:4px solid var(--tc,var(--line));border-radius:8px;padding:6px 7px;background:var(--bg)}
+.pdc .r1,.pdc .r3{display:flex;gap:5px;align-items:center}
+.pdc .tm{margin-left:auto;font:.7rem var(--mono);color:var(--muted);white-space:nowrap}
+.pdc .r3 .sp{flex:1}
+.pdc select.fld{flex:1;max-width:110px}
+.pdc input.hd{font-weight:600!important}
+.pdc input.nt{font-size:.74rem!important}
+.pdc-add{flex:none;width:44px;border:1px dashed var(--line);border-radius:8px;background:none;color:var(--muted);font-size:1.3rem;cursor:pointer;min-height:0}
+.pdc-add:hover{border-color:var(--accent);color:var(--accent)}
+.pd2-st{position:relative;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 8px 2px 5px;font:600 .72rem var(--sans);cursor:pointer;white-space:nowrap;background:var(--surface)}
 .pd2-st select{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
-.pd2-dots{display:inline-flex;gap:2px}.pd2-dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.pd2-dots i.f{background:#3f6fb5}
-.pd2-st[data-s=vej]{border-style:dashed}.pd2-st[data-s=pl]{border-color:#3f6fb5}
-.pd2-ib{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);cursor:pointer;min-height:0;padding:1px 6px;font-size:.78rem}
+.pd2-dots{display:inline-flex;gap:2px}.pd2-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.pd2-dots i.f{background:var(--accent)}
+.pd2-st[data-s=vej]{border-style:dashed;border-color:#d32f2f}.pd2-st[data-s=pl]{border-color:var(--accent)}
+.pd2-ib{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);cursor:pointer;min-height:0;padding:1px 6px;font-size:.76rem;line-height:1.4}
 .pd2-ib:hover{color:var(--fg);border-color:var(--accent)}
 .pd2-ib.ok:hover{color:#fff;background:#43a047;border-color:#43a047}
-.pd2-mv{width:auto;min-height:0;padding:1px 2px;font-size:.72rem;max-width:26px;border-radius:6px}
-.pd2-df{padding:6px 12px 10px;display:flex;gap:6px;flex-wrap:wrap}
-.pd2-df button{min-height:0;padding:3px 9px;font-size:.76rem}
-.pd2-empty{color:var(--muted);font-size:.84rem;padding:8px 12px}
-.pd2-docform{display:grid;grid-template-columns:2fr 2fr 1fr 1.2fr auto;gap:8px;align-items:end;margin-bottom:12px}
-.pd2-docform label{display:flex;flex-direction:column;gap:3px;font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.pd2-docform input,.pd2-docform select{min-height:0;padding:6px 8px;font:400 .9rem var(--sans);text-transform:none;letter-spacing:0}
-@media(max-width:800px){.pd2-docform{grid-template-columns:1fr 1fr}}
+.pd2-mv{appearance:none;-webkit-appearance:none;width:28px;text-align:center;padding:1px 3px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;min-height:0;font-size:.76rem}
+.pd2-empty{color:var(--muted);font-size:.82rem;padding:8px 4px;align-self:center}
+.pd2-docform{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;margin-bottom:12px}
+.pd2-docform>label{display:flex;flex-direction:column;gap:3px;font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pd2-docform input,.pd2-docform select{min-height:0;padding:6px 8px;font:400 .88rem var(--sans);text-transform:none;letter-spacing:0}
+.pd2-docform .chk{grid-column:1/5;display:flex;gap:14px;flex-wrap:wrap;font-size:.84rem}
+.pd2-docform .chk label{display:flex;gap:5px;align-items:center}
+.pd2-docform .act{grid-column:5/7;display:flex;gap:6px;justify-content:flex-end}
+@media(max-width:1000px){.pd2-docform{grid-template-columns:1fr 1fr}.pd2-docform .chk,.pd2-docform .act{grid-column:1/-1}}
+details.pd2-kir>summary{cursor:pointer;list-style:none}
 .pd2-log summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.84rem}
 .pd2-log ul{list-style:none;padding:0;margin:8px 0 0;font-size:.8rem;display:flex;flex-direction:column;gap:4px}
 .pd2-log li{display:flex;gap:8px;align-items:center}
 .pd2-log li span{flex:1}
-dialog.pd2-dlg{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:0;width:min(980px,96vw);max-height:92vh}
+dialog.pd2-dlg{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--fg);padding:0;width:min(1000px,96vw);max-height:92vh}
 dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
-.pd2-dlg .dh{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.pd2-dlg .dh{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line)}
 .pd2-dlg .dh b{flex:1;font-size:1.05rem}
-.pd2-dlg .db{padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;overflow:auto;max-height:calc(92vh - 120px)}
+.pd2-dlg .db{padding:12px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;overflow:auto;max-height:calc(92vh - 140px)}
 @media(max-width:800px){.pd2-dlg .db{grid-template-columns:minmax(0,1fr)}}
-.pd2-dlg .df{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.pd2-drop{border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;color:var(--muted);cursor:pointer}
+.pd2-dlg .df{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
+.pd2-drop{border:2px dashed var(--line);border-radius:10px;padding:8px 10px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.84rem}
 .pd2-drop.hot{border-color:var(--accent);color:var(--fg)}
-.pd2-drop img{max-width:100%;max-height:300px;display:block;margin:8px auto 0;border-radius:6px}
-#pdImpText{width:100%;min-height:340px;font:.8rem/1.45 var(--mono)}
-.pd2-prog{font-size:.8rem;color:var(--muted)}
-.pd2-prev{font-size:.8rem;display:flex;flex-direction:column;gap:4px;max-height:420px;overflow:auto}
+.pd2-drop img{height:64px;width:auto;border-radius:4px;flex:none;order:-1}
+#pdImpText{width:100%;min-height:380px;font:.78rem/1.45 var(--mono)}
+.pd2-prog{font-size:.8rem;color:var(--muted);margin:6px 0}
+.pd2-prev{font-size:.8rem;display:flex;flex-direction:column;gap:3px;max-height:330px;overflow:auto}
 .pd2-prev label{display:flex;gap:6px;align-items:center}
 .pd2-prev .sec{font:700 .66rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:6px}
-.pd2-help{font-size:.76rem;color:var(--muted);margin:6px 0 0}
+.pd2-prev .nos{font-size:.7rem;color:var(--muted)}
+.pd2-help{font-size:.74rem;color:var(--muted);margin:6px 0 0}
+.repl{font-size:.84rem;max-width:620px}
+.willend{font-size:.76rem;color:#f57c00;margin-top:3px}
 .pd2-old{margin-top:24px;font-size:.76rem;color:var(--muted)}
 .pd2-old a{color:inherit}
-.pd2-dots i.f{background:var(--accent)}
-.pd2-mv{appearance:none;-webkit-appearance:none;width:30px;max-width:30px;text-align:center;padding:1px 4px;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1016,32 +1039,35 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
 </div></header>
 
 <main class="pd2">
-  <div class="pd2-top" id="pdStats"></div>
+  <div class="pd2-top"><div class="pd2-stats" id="pdStats"></div><div class="pd2-sug" id="pdSug"></div></div>
+  <div class="pd2-lead" id="pdLead"></div>
   <div class="pd2-grid">
     <section class="pd2-q">
       <h2 class="pd2-h">Nye patienter – ikke fordelt</h2>
       <div class="pd2-box">
         <form class="pd2-form" id="pdNewPt" autocomplete="off">
-          <div class="row"><input name="head" maxlength="60" placeholder="Overskrift, fx Brystsmerter"><select name="room" id="pdRoom" title="Stue"></select></div>
+          <div class="row"><input class="fld" name="head" maxlength="60" placeholder="Problematik, fx Brystsmerter"><select class="fld" name="room" id="pdRoom" title="Stue"></select></div>
           <div class="row"><span class="pd2-lbl">Triage</span><span class="pd2-tris" id="pdTriNew"></span></div>
-          <div class="row"><span class="pd2-lbl">Status</span><span class="pd2-seg" id="pdStNew"><button type="button" data-v="vej">På vej</button><button type="button" data-v="ank" class="on">Ankommet</button><button type="button" data-v="tri">Triageret</button></span></div>
-          <div class="row"><input name="note" maxlength="60" placeholder="Note (valgfri)" style="flex:1"><button class="primary" type="submit">Tilføj</button></div>
+          <div class="row"><span class="pd2-lbl">Status</span><span class="pd2-seg" id="pdStNew"><button type="button" data-v="vej">🚑 På vej</button><button type="button" data-v="ank" class="on">Ankommet</button><button type="button" data-v="tri">Triageret</button></span></div>
+          <div class="row"><input class="fld" name="note" maxlength="60" placeholder="Note (valgfri)" style="flex:1"><button class="primary" type="submit">Tilføj</button></div>
         </form>
         <div class="pd2-ql" id="pdQueue"></div>
       </div>
-      <details class="pd2-log pd2-box" style="margin-top:12px" id="pdLogBox"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
+      <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
     </section>
     <section>
-      <h2 class="pd2-h">Forvagter<span class="sp"></span></h2>
       <form class="pd2-docform pd2-box" id="pdDocForm" autocomplete="off" hidden>
-        <label>Navn<input name="name" list="pdKnown" required placeholder="Fornavn Efternavn"><datalist id="pdKnown"></datalist></label>
+        <label>Navn<input name="name" list="pdKnown" required placeholder="Fornavn Efternavn (XX)"><datalist id="pdKnown"></datalist></label>
         <label>Niveau – speciale<input name="lvl" list="pdLvls" placeholder="Læge - Akut medicin"><datalist id="pdLvls"></datalist></label>
+        <label>Specialer (piller)<input name="spec" placeholder="fx Lunge, Gas – tom = fra niveau"></label>
+        <label>Tlf.<input name="tlf" inputmode="tel" maxlength="12"></label>
         <label>Til kl.<input name="until" type="time"></label>
-        <label>Gruppe<select name="grp"><option>Forvagt</option><option>Forvagt (speciale)</option><option>ASA vagthavende</option><option>Andre</option></select></label>
-        <span style="display:flex;gap:6px"><button class="primary" type="submit">Gem</button><button type="button" data-pdcancel="1">Annullér</button></span>
+        <label>Gruppe<select name="grp"><option>Forvagt</option><option>Forvagt (speciale)</option><option>ASA vagthavende</option><option>Koordinerende læge</option><option>Akut bagvagt</option><option>Andre</option></select></label>
+        <div class="chk"><label><input type="checkbox" name="sug"> Foreslås til patienter</label><label><input type="checkbox" name="akk"> Akut kursus bestået – kan tage akutkald</label><label><input type="checkbox" name="kir"> Kirurgisk – eget overblik</label></div>
+        <span class="act"><button class="primary" type="submit">Gem</button><button type="button" data-pdcancel="1">Annullér</button></span>
       </form>
-      <div class="pd2-docs" id="pdDocs"></div>
-      <p class="pd2-old">Patienter registreres kun med overskrift, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="https://alangeland.github.io/Akut-Flow/patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a> (kompleksitet og soveplan).</p>
+      <div id="pdBoard"></div>
+      <p class="pd2-old">Patienter registreres kun med problematik, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="https://alangeland.github.io/Akut-Flow/patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a> (kompleksitet og soveplan).</p>
     </section>
   </div>
 </main>
@@ -1049,17 +1075,17 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
   <div class="dh"><b>Importér fra Clinical Tasking</b><button type="button" class="pd2-dm" data-pdclose="1" aria-label="Luk">✕</button></div>
   <div class="db">
     <div>
-      <div class="pd2-drop" id="pdDrop" tabindex="0">Indsæt screenshot (Ctrl+V), træk det herind eller <u>vælg billede</u><input type="file" id="pdFile" accept="image/*" hidden></div>
+      <div class="pd2-drop" id="pdDrop" tabindex="0"><span>Indsæt screenshot (Ctrl+V), træk det herind eller <u>vælg billede</u></span><input type="file" id="pdFile" accept="image/*" hidden></div>
       <p class="pd2-prog" id="pdProg"></p>
-      <p class="pd2-help">Billedet læses i din browser og sendes ingen steder hen. Forvagternes navne, niveau, speciale, fri-tid samt status og triagefarve for hver patient aflæses. Ret teksten til højre, hvis noget er læst forkert.</p>
       <div class="pd2-prev" id="pdPrev"></div>
+      <p class="pd2-help">Billedet læses i din browser og sendes ingen steder hen.</p>
     </div>
     <div>
       <textarea id="pdImpText" spellcheck="false" placeholder="## Forvagt&#10;Emma Lundby Kragh | Lægestuderende - Akut medicin | 22:00&#10;  - Modtagelse | gul&#10;  - Modtaget | orange | Brystsmerter"></textarea>
-      <p class="pd2-help">Format: «## Gruppe», derefter «Navn | Niveau - speciale | til kl.» og en linje pr. patient: «- Status | triagefarve | overskrift». Status: På vej, Ankommet, Triageret, Modtagelse, Modtaget, Plan lagt. Farver: rød, orange, gul, grøn, blå.</p>
+      <p class="pd2-help">Ret teksten, hvis noget er læst forkert. Format: «## Gruppe», «Navn | Niveau - speciale | til kl.» og en linje pr. patient: «- Status | triagefarve | problematik».</p>
     </div>
   </div>
-  <div class="df"><label><input type="checkbox" id="pdImpRepl" checked> Patienter, der ikke længere står i Clinical Tasking, afsluttes</label><span style="flex:1"></span><button type="button" data-pdclose="1">Annullér</button><button type="button" class="primary" id="pdImpGo">Indlæs</button></div>
+  <div class="df"><div class="repl"><label><input type="checkbox" id="pdImpRepl" checked> Patienter, der ikke længere står i Clinical Tasking, afsluttes</label><div id="pdWillEnd" class="willend"></div></div><span style="flex:1"></span><button type="button" data-pdclose="1">Annullér</button><button type="button" class="primary" id="pdImpGo">Indlæs</button></div>
 </dialog>
 
 <script>/* Clinical Tasking-screenshot → tekstformat. full: linjer fra hele billedet, col: linjer fra statuskolonnen (samme y-skala).
@@ -1126,87 +1152,115 @@ function avc(n){let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;re
 function untilInfo(d){if(!d.until)return null;const [h,m]=d.until.split(':').map(Number);const now=new Date();const t=new Date(now);t.setHours(h,m,0,0);
   if(t-now<-12*3600e3)t.setDate(t.getDate()+1);if(t-now>12*3600e3)t.setDate(t.getDate()-1);const left=t-now;return {left,txt:left>0?`til kl. ${d.until} · ${dur(left)} tilbage`:`til kl. ${d.until} · gået`,cls:left<=0?'over':left<30*60e3?'warn':''}}
 const busy=id=>ptsOf(id).reduce((a,p)=>a+(p.st==='pl'?.5:1),0);
-function suggest(){return onDocs().filter(d=>{const u=untilInfo(d);return !u||u.left>20*60e3}).sort((a,b)=>busy(a.id)-busy(b.id)||ptsOf(a.id).length-ptsOf(b.id).length||((a.lastAt||0)-(b.lastAt||0)))}
+/* ---------- afledte egenskaber ---------- */
+const SPECS=[[/kirurgi|\bMTK\b/i,'Kir','#8d99a6'],[/ortopæd/i,'Orto','#8d99a6'],[/lunge/i,'Lunge','#3b8fd9'],[/gastro|\bgas\b/i,'Gas','#c9a227'],[/nefro|nyre/i,'Nyre','#8e6cc9'],[/endokrin|\bendo\b/i,'Endo','#d16ba5'],[/hæmato|\bhæm\b/i,'Hæm','#d9534f'],[/infekt|\binf\b/i,'Inf','#3fae5a'],[/akut med/i,'Akut','#e07b39'],[/geriatri|\bgeri\b/i,'Geri','#7f8c8d'],[/kardio|\bkard\b/i,'Kard','#c0392b'],[/neuro/i,'Neuro','#16a085'],[/reuma/i,'Reuma','#a0522d']];
+const specColor=n=>(SPECS.find(x=>x[1].toLowerCase()===String(n).toLowerCase())||[0,0,'#7f8c8d'])[2];
+const lvlPart=d=>String(d.lvl||'').split(/\s+-\s+/)[0];
+function specsOf(d){if(Array.isArray(d.spec)&&d.spec.length)return d.spec;const sp=String(d.lvl||'').split(/\s+-\s+/).slice(1).join(' - ');const out=[];
+  sp.split(/,|\bog\b(?! tarm)/i).forEach(t=>{const m=SPECS.find(x=>x[0].test(t));if(m&&!out.includes(m[1]))out.push(m[1])});
+  if(!out.length){const m=SPECS.find(x=>x[0].test(sp));if(m)out.push(m[1])}return out}
+function lvlShort(d){const l=lvlPart(d);return /intro/i.test(l)?'Intro':/speciall/i.test(l)?'Speciallæge':/overl/i.test(l)?'Overlæge':/reservel/i.test(l)?'Reservelæge':/\bkbu/i.test(l)?'KBU':/\bhu\b/i.test(l)?'HU':/vikar/i.test(l)?'Vikar':/stud/i.test(l)?'Stud.':l?'Læge':''}
+const isStudVik=d=>/stud|vikar/i.test(lvlPart(d));
+const canAk=d=>/intro/i.test(lvlPart(d))||!!d.akk;
+const isLead=d=>/koordinerende|bagvagt/i.test(d.grp||'');
+const isKir=d=>!!d.kir;
+function shortName(n){n=String(n||'');const m=n.match(/\(([A-ZÆØÅ]{2,4})\)/);const tag=m?m[1]:'';
+  const w=n.replace(/\(.*$/,'').replace(/[….]+$/,'').trim().split(/\s+/).filter(Boolean);if(!w.length)return n;
+  const rest=w.slice(1).map(x=>x.split('-').map(y=>(y[0]||'').toUpperCase()).join('-')+'.').join('');return w[0]+(rest?' '+rest:'')+(tag?' ('+tag+')':'')}
+const sugPool=()=>onDocs().filter(d=>!d.nosug&&!isKir(d)).filter(d=>{const u=untilInfo(d);return !u||u.left>20*60e3});
+const byLoad=(a,b)=>busy(a.id)-busy(b.id)||ptsOf(a.id).length-ptsOf(b.id).length||((a.lastAt||0)-(b.lastAt||0));
+function suggest(){return sugPool().sort(byLoad)}
+function suggestAk(){return sugPool().filter(canAk).sort(byLoad)}
 /* ---------- render ---------- */
 let newTri='',newSt='ank';
 function render(){
-  const q=S.pts.filter(p=>!p.doc);const act=S.pts.filter(p=>p.doc);
-  $('#pdStats').innerHTML=[[onDocs().length,'forvagter på arbejde'],[q.length,'ikke fordelt'],[act.length,'hos forvagterne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet i vagten']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('');
+  const med=onDocs().filter(d=>!isKir(d));const medIds=new Set(med.map(d=>d.id));
+  const q=S.pts.filter(p=>!p.doc);const act=S.pts.filter(p=>p.doc&&medIds.has(p.doc));
+  $('#pdStats').innerHTML=[[med.filter(d=>!isLead(d)).length,'forvagter'],[q.length,'ikke fordelt'],[act.length,'hos forvagterne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('');
+  const s1=suggest()[0],s2=suggestAk()[0];
+  $('#pdSug').innerHTML=`<div class="pd2-sg"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd2-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd2-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
+  $('#pdLead').innerHTML=onDocs().filter(isLead).map(d=>{const u=untilInfo(d);return `<span class="pd2-lc" title="${esc(d.name)} – ${esc(d.lvl||'')}"><span class="pd2-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><span><small>${esc(d.grp)}</small> <b>${esc(shortName(d.name))}</b>${d.tlf?` · ☎ ${esc(d.tlf)}`:''}${u?` · <small>${esc(u.txt)}</small>`:''}</span><button class="pd2-dm" data-dedit="${d.id}" title="Ret">⋯</button></span>`}).join('');
   $('#pdTriNew').innerHTML=TRI.map(t=>`<button type="button" data-tn="${t[0]}" class="${t[0]===newTri?'on':''}" title="${t[1]}"><span class="tri" data-t="${t[0]}"></span></button>`).join('');
   $$('#pdStNew button').forEach(b=>b.classList.toggle('on',b.dataset.v===newSt));
-  const sg=suggest();
-  $('#pdQueue').innerHTML=q.length?q.map(p=>`<div class="pd2-qc" style="--tc:${triCol(p.tri)}" data-pid="${p.id}"><div class="l1"><span class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></span><b>${esc(p.head||'Ny patient')}</b>${stPill(p)}<button class="pd2-ib" data-del="${p.id}" title="Slet">✕</button></div>
-     <div class="pd2-p" style="padding:0;border:0;display:block"><div class="meta">${p.room?esc(roomTxt(p.room))+' · ':''}${esc(stOf(p.st)[1].toLowerCase())} ${hm(p.ts||p.t0)} (${dur(Date.now()-(p.ts||p.t0))})${p.note?' · '+esc(p.note):''}</div></div>
-     <div class="as">${sg.slice(0,3).map(d=>`<button type="button" data-asg="${p.id}|${d.id}" title="Tildel">→ ${esc(d.name.split(' ')[0])} <small>(${ptsOf(d.id).length})</small></button>`).join('')}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(d.name)} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`).join('')
+  const sg=suggest(),sa=suggestAk();
+  $('#pdQueue').innerHTML=q.length?q.map(p=>{const ak=p.st==='vej';const first=ak?sa[0]:sg[0],second=ak?sg[0]:sa[0];
+    const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="Tildel ${esc(d.name)}">${isAk?'🚑 ':'→ '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
+    return `<div class="pd2-qc" style="--tc:${triCol(p.tri)}"><div class="l1"><button type="button" class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><b>${esc(p.head||'Ny patient')}</b>${stPill(p)}<button class="pd2-ib" data-del="${p.id}" title="Slet">✕</button></div>
+     <div class="meta">${p.room?esc(roomTxt(p.room))+' · ':''}${esc(stOf(p.st)[1].toLowerCase())} ${hm(p.ts||p.t0)} (${dur(Date.now()-(p.ts||p.t0))})${p.note?' · '+esc(p.note):''}</div>
+     <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${med.concat(onDocs().filter(isKir)).map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
     :'<div class="pd2-empty">Ingen ufordelte patienter.</div>';
-  const groups=[];onDocs().forEach(d=>{const g=d.grp||'Forvagt';if(!groups.includes(g))groups.push(g)});
-  const order=['Forvagt','Forvagt (speciale)','ASA vagthavende','Andre'];groups.sort((a,b)=>(order.indexOf(a)+99)%99-(order.indexOf(b)+99)%99);
-  $('#pdDocs').innerHTML=(onDocs().length?groups.map(g=>`<div><h2 class="pd2-h">${esc(g)}</h2><div class="pd2-dg">${onDocs().filter(d=>(d.grp||'Forvagt')===g).map(docCard).join('')}</div></div>`).join('')
-     :`<div class="pd2-box pd2-empty">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+
-     (S.docs.some(d=>d.on===false)?`<div><h2 class="pd2-h">Ikke på arbejde</h2><div class="pd2-df" style="padding:0">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" data-don="${d.id}">+ ${esc(d.name)}</button>`).join('')}</div></div>`:'');
+  const board=med.filter(d=>!isLead(d)||ptsOf(d.id).length||!d.nosug);const kir=onDocs().filter(isKir);
+  $('#pdBoard').innerHTML=`<div class="pd2-sec"><h2 class="pd2-h">Forvagter <span style="font-weight:400;text-transform:none;letter-spacing:0">· klik på felterne for at skrive</span></h2><div class="pd2-rows">${board.length?board.map(docRow).join(''):'<div class="pd2-empty" style="padding:14px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>'}</div></div>`+
+    (kir.length?`<details class="pd2-sec pd2-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd2-rows">${kir.map(docRow).join('')}</div></details>`:'')+
+    (S.docs.some(d=>d.on===false)?`<div class="pd2-sec"><h2 class="pd2-h">Ikke på vagt</h2><div class="pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd2-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
   const L=S.log.slice().sort((a,b)=>b.tEnd-a.tEnd).slice(0,40);
   $('#pdLogSum').textContent=`Afsluttede (${S.log.length})`;
-  $('#pdLog').innerHTML=L.map(l=>`<li><span class="tri" data-t="${l.tri||''}"></span><span>${hm(l.tEnd)} · ${esc(l.head||'Patient')} · ${esc(l.docName||'')}</span><button class="pd2-ib" data-undo="${l.id}">Fortryd</button></li>`).join('')||'<li class="pd2-empty">Ingen endnu.</li>';
+  $('#pdLog').innerHTML=L.map(l=>`<li><span class="tri" data-t="${l.tri||''}"></span><span>${hm(l.tEnd)} · ${esc(l.head||'Patient')} · ${esc(shortName(l.docName||''))}</span><button class="pd2-ib" data-undo="${l.id}">Fortryd</button></li>`).join('')||'<li class="pd2-empty">Ingen endnu.</li>';
   $('#pdKnown').innerHTML=S.known.map(k=>`<option value="${esc(k.name)}">`).join('');
   $('#pdLvls').innerHTML=[...new Set(S.known.map(k=>k.lvl).filter(Boolean).concat(['Læge - Akut medicin','Introlæge - Akut medicin','Lægestuderende - Akut medicin','Vikar for læge, medicinstuderende - Akut medicin']))].map(v=>`<option value="${esc(v)}">`).join('');
 }
+const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''};
 const triCol=t=>({roed:'#d32f2f',orange:'#f57c00',gul:'#fbc02d',groen:'#43a047',blaa:'#1e88e5'}[t]||'var(--line)');
 function stPill(p){const s=stOf(p.st);return `<label class="pd2-st" data-s="${s[0]}" title="Status – klik for at skifte"><span class="pd2-dots">${[1,2,3].map(i=>`<i class="${s[2]>=i?'f':''}"></i>`).join('')}</span>${s[1]}<select data-st="${p.id}">${ST.map(x=>`<option value="${x[0]}"${x[0]===s[0]?' selected':''}>${x[1]}</option>`).join('')}<option value="__end">✓ Afslut</option></select></label>`}
-function docCard(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;
-  return `<div class="pd2-dc" data-did="${d.id}"><div class="pd2-dh"><span class="pd2-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd2-dn"><b title="${esc(d.name)}">${esc(d.name)}</b><span>${esc(d.lvl||'')}</span>${u?`<span class="til ${u.cls}">${esc(u.txt)}</span>`:''}</div>
-    <span class="pd2-cnt ${n>=3?'c3':n==2?'c2':n==1?'c1':''}" title="Aktive patienter">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd2-dm" data-dedit="${d.id}" title="Ret forvagt">⋯</button></div>
-    <div class="pd2-pl">${P.length?P.map(p=>ptRow(p,d)).join(''):'<div class="pd2-empty">Ingen patienter.</div>'}</div>
-    <div class="pd2-df"><button type="button" data-addp="${d.id}">+ Igangværende patient</button><span style="flex:1"></span><button type="button" data-doff="${d.id}" title="Fjern fra vagten (patienterne går tilbage til ufordelte)">Gået hjem</button></div></div>`}
-function ptRow(p,d){return `<div class="pd2-p" data-pid="${p.id}"><span class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></span>
-  <div class="mid"><div class="hd" contenteditable="plaintext-only" spellcheck="false" data-hd="${p.id}">${esc(p.head||'')}</div>
-   <div class="meta"><select data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span title="Startet kl. ${hm(p.t0)}">${hm(p.t0)} · ${dur(Date.now()-p.t0)}</span><span class="nt" contenteditable="plaintext-only" data-nt="${p.id}">${esc(p.note||'')}</span></div></div>
-  <div class="rt">${stPill(p)}<select class="pd2-mv" data-mv="${p.id}" title="Flyt til anden forvagt eller tilbage til ufordelte"><option value="">⇄</option><option value="__q">Tilbage til ufordelte</option>${onDocs().filter(x=>x.id!==d.id).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select><button class="pd2-ib ok" data-end="${p.id}" title="Afslut – patienten forsvinder fra listen">✓</button></div></div>`}
+function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;const lv=lvlShort(d);
+  const pills=(lv?`<span class="pill lv">${esc(lv)}</span>`:'')+specsOf(d).map(x=>`<span class="pill sp" style="--pc:${specColor(x)}">${esc(x)}</span>`).join('')+
+    (/intro/i.test(lvlPart(d))?'<span class="pill ak" title="Introlæge – kan tage akutkald">🚑 Akutkald</span>':isStudVik(d)?`<button type="button" class="pill ak${d.akk?'':' no'}" data-akk="${d.id}" title="Akut kursus bestået? Klik for at skifte">🚑 ${d.akk?'Akut kursus ✓':'Akut kursus?'}</button>`:d.akk?'<span class="pill ak">🚑 Akutkald</span>':'')+
+    (d.nosug?'<span class="pill ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
+  return `<div class="pdr" data-did="${d.id}"><div class="pdr-doc"><span class="pd2-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd2-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}</b><div class="pills">${pills}</div><span class="meta">${u?`<span class="til ${u.cls}">${esc(u.txt)}</span>`:''}${d.tlf?`${u?' · ':''}☎ ${esc(d.tlf)}`:''}</span></div>
+    <span class="pd2-cnt ${cc(d)}" title="Aktive patienter">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd2-dm" data-dedit="${d.id}" title="Ret forvagt">⋯</button></div>
+    <div class="pdr-pts">${P.map(p=>ptCell(p,d)).join('')}<button type="button" class="pdc-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
+function ptCell(p,d){return `<div class="pdc" style="--tc:${triCol(p.tri)}" data-pid="${p.id}"><div class="r1"><button type="button" class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><select class="fld" data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span class="tm" title="Startet kl. ${hm(p.t0)}">${dur(Date.now()-p.t0)}</span></div>
+  <input class="fld hd" data-hd="${p.id}" value="${esc(p.head||'')}" maxlength="60" placeholder="Problematik">
+  <div class="r3">${stPill(p)}<span class="sp"></span><select class="pd2-mv" data-mv="${p.id}" title="Flyt til anden forvagt eller tilbage til ufordelte"><option value="">⇄</option><option value="__q">Tilbage til ufordelte</option>${onDocs().filter(x=>x.id!==d.id).map(x=>`<option value="${x.id}">${esc(shortName(x.name))}</option>`).join('')}</select><button class="pd2-ib ok" data-end="${p.id}" title="Afslut – patienten forsvinder fra listen">✓</button></div>
+  <input class="fld nt" data-nt="${p.id}" value="${esc(p.note||'')}" maxlength="60" placeholder="Note"></div>`}
 /* ---------- handlinger ---------- */
 function endPt(id){const p=S.pts.find(x=>x.id===id);if(!p)return;const d=docOf(p.doc);S.log.push(Object.assign({},p,{tEnd:Date.now(),docName:d?d.name:''}));S.pts=S.pts.filter(x=>x!==p);save();render()}
-function addKnown(d){const k=S.known.find(x=>nkey(x.name)===nkey(d.name));if(k){k.name=d.name;k.lvl=d.lvl;k.grp=d.grp}else S.known.push({name:d.name,lvl:d.lvl,grp:d.grp})}
+function addKnown(d){const k=S.known.find(x=>nkey(x.name)===nkey(d.name));const v={name:d.name,lvl:d.lvl,grp:d.grp,akk:!!d.akk,kir:!!d.kir,nosug:!!d.nosug,tlf:d.tlf||'',spec:d.spec||null};if(k)Object.assign(k,v);else S.known.push(v)}
+function defaults(d){if(d.kir===undefined)d.kir=/kirurgi|\bMTK\b|ortopæd/i.test(d.lvl||'');if(d.nosug===undefined)d.nosug=isLead(d);const k=S.known.find(x=>nkey(x.name)===nkey(d.name));if(k&&d.akk===undefined)d.akk=!!k.akk;if(k&&!d.tlf&&k.tlf)d.tlf=k.tlf}
 let editDoc=null;
 function openDocForm(d){editDoc=d?d.id:null;const f=$('#pdDocForm');f.hidden=false;f.name.value=d?d.name:'';f.lvl.value=d?d.lvl||'':'';f.until.value=d?d.until||'':'';f.grp.value=d?d.grp||'Forvagt':'Forvagt';
+  f.spec.value=d&&Array.isArray(d.spec)?d.spec.join(', '):'';f.tlf.value=d?d.tlf||'':'';f.sug.checked=d?!d.nosug:true;f.akk.checked=d?!!d.akk:false;f.kir.checked=d?!!d.kir:false;
   f.querySelector('[type=submit]').textContent=d?'Gem':'Tilføj';let x=f.querySelector('[data-ddel]');if(x)x.remove();
-  if(d)f.lastElementChild.insertAdjacentHTML('beforeend',`<button type="button" data-ddel="${d.id}" style="color:#c62828">Slet</button>`);f.name.focus();f.scrollIntoView({block:'nearest'})}
-$('#pdDocForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const v={name:f.name.value.trim(),lvl:f.lvl.value.trim(),until:f.until.value,grp:f.grp.value};if(!v.name)return;
+  if(d)f.querySelector('.act').insertAdjacentHTML('beforeend',`<button type="button" data-ddel="${d.id}" style="color:#c62828">Slet</button>`);f.name.focus();window.scrollTo({top:0,behavior:'smooth'})}
+$('#pdDocForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const sp=f.spec.value.split(',').map(x=>x.trim()).filter(Boolean).map(x=>{const m=SPECS.find(s=>s[0].test(x)||s[1].toLowerCase()===x.toLowerCase());return m?m[1]:x});
+  const v={name:f.name.value.trim(),lvl:f.lvl.value.trim(),until:f.until.value,grp:f.grp.value,tlf:f.tlf.value.trim(),spec:sp.length?sp:null,nosug:!f.sug.checked,akk:f.akk.checked,kir:f.kir.checked};if(!v.name)return;
   let d=editDoc&&docOf(editDoc);if(!d){d=S.docs.find(x=>nkey(x.name)===nkey(v.name));if(!d){d={id:uid()};S.docs.push(d)}}Object.assign(d,v,{on:true});addKnown(d);save();f.hidden=true;editDoc=null;render()});
-$('#pdDocForm').name.addEventListener('change',e=>{const k=S.known.find(x=>x.name===e.target.value);if(k){const f=$('#pdDocForm');if(!f.lvl.value)f.lvl.value=k.lvl||'';f.grp.value=k.grp||'Forvagt'}});
+$('#pdDocForm').name.addEventListener('change',e=>{const k=S.known.find(x=>x.name===e.target.value);if(k){const f=$('#pdDocForm');if(!f.lvl.value)f.lvl.value=k.lvl||'';f.grp.value=k.grp||'Forvagt';f.akk.checked=!!k.akk;f.kir.checked=!!k.kir;f.sug.checked=!k.nosug;if(!f.tlf.value)f.tlf.value=k.tlf||''}});
 $('#pdNewPt').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const head=f.head.value.trim(),note=f.note.value.trim();
-  if(CPR.test(head+' '+note)){alert('Det ligner et CPR-nummer. Skriv kun overskrift, stue og en kort note.');return}
-  const now=Date.now();S.pts.push({id:uid(),doc:null,st:newSt,tri:newTri,head,room:f.room.value,note,t0:now,ts:now});f.head.value='';f.note.value='';newTri='';newSt='ank';save();render();f.head.focus()});
-function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;p.doc=did;p.t0=Date.now();if(['vej','ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
+  if(CPR.test(head+' '+note)){alert('Det ligner et CPR-nummer. Skriv kun problematik, stue og en kort note.');return}
+  const now=Date.now();S.pts.push({id:uid(),doc:null,st:newSt,tri:newTri,head,room:f.room.value,note,t0:now,ts:now});f.head.value='';f.note.value='';f.room.value='';newTri='';newSt='ank';save();render();f.head.focus()});
+function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;p.doc=did;p.t0=Date.now();if(['ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
 document.addEventListener('click',e=>{const t=e.target;let b;
   if(b=t.closest('[data-tn]')){newTri=b.dataset.tn;render();return}
   if(b=t.closest('#pdStNew [data-v]')){newSt=b.dataset.v;render();return}
   if(b=t.closest('[data-asg]')){const [p,d]=b.dataset.asg.split('|');assign(p,d);return}
   if(b=t.closest('[data-tric]')){const p=S.pts.find(x=>x.id===b.dataset.tric);if(p){const i=TRI.findIndex(x=>x[0]===(p.tri||''));p.tri=TRI[(i+1)%TRI.length][0];save();render()}return}
+  if(b=t.closest('[data-akk]')){const d=docOf(b.dataset.akk);if(d){d.akk=!d.akk;addKnown(d);save();render()}return}
   if(b=t.closest('[data-end]')){endPt(b.dataset.end);return}
   if(b=t.closest('[data-del]')){if(confirm('Slet patienten fra listen?')){S.pts=S.pts.filter(x=>x.id!==b.dataset.del);save();render()}return}
   if(b=t.closest('[data-undo]')){const l=S.log.find(x=>x.id===b.dataset.undo);if(l){S.log=S.log.filter(x=>x!==l);const p=Object.assign({},l);delete p.tEnd;delete p.docName;if(p.doc&&!docOf(p.doc))p.doc=null;S.pts.push(p);save();render()}return}
   if(b=t.closest('[data-addp]')){const now=Date.now();const p={id:uid(),doc:b.dataset.addp,st:'mtg',tri:'',head:'',room:'',note:'',t0:now,ts:now};S.pts.push(p);save();render();const h=document.querySelector(`[data-hd="${p.id}"]`);if(h)h.focus();return}
   if(b=t.closest('[data-dedit]')){openDocForm(docOf(b.dataset.dedit));return}
-  if(b=t.closest('[data-doff]')){const d=docOf(b.dataset.doff);if(!d)return;const P=ptsOf(d.id);if(P.length&&!confirm(`${d.name} har ${P.length} patient(er). De flyttes tilbage til ufordelte.`))return;P.forEach(p=>p.doc=null);d.on=false;save();render();return}
   if(b=t.closest('[data-don]')){const d=docOf(b.dataset.don);if(d){d.on=true;save();render()}return}
-  if(b=t.closest('[data-ddel]')){const d=docOf(b.dataset.ddel);if(d&&confirm('Slet '+d.name+' fra vagten?')){ptsOf(d.id).forEach(p=>p.doc=null);S.docs=S.docs.filter(x=>x!==d);$('#pdDocForm').hidden=true;save();render()}return}
+  if(b=t.closest('[data-ddel]')){const d=docOf(b.dataset.ddel);if(d&&confirm('Fjern '+d.name+' fra vagten? Patienterne går tilbage til ufordelte.')){ptsOf(d.id).forEach(p=>p.doc=null);d.on=false;$('#pdDocForm').hidden=true;save();render()}return}
   if(t.closest('[data-pdcancel]')){$('#pdDocForm').hidden=true;editDoc=null;return}
 });
 document.addEventListener('change',e=>{const t=e.target;
   if(t.dataset.st){const p=S.pts.find(x=>x.id===t.dataset.st);if(!p)return;if(t.value==='__end'){endPt(p.id);return}p.st=t.value;p.ts=Date.now();save();render();return}
   if(t.dataset.asgs){if(t.value)assign(t.dataset.asgs,t.value);return}
-  if(t.dataset.room!==undefined&&t.dataset.room){const p=S.pts.find(x=>x.id===t.dataset.room);if(p){p.room=t.value;save();render()}return}
+  if(t.dataset.room){const p=S.pts.find(x=>x.id===t.dataset.room);if(p){p.room=t.value;save()}return}
   if(t.dataset.mv){const p=S.pts.find(x=>x.id===t.dataset.mv);if(!p||!t.value)return;if(t.value==='__q')p.doc=null;else{p.doc=t.value;const d=docOf(t.value);if(d)d.lastAt=Date.now()}save();render();return}
+  const k=t.dataset.hd?'head':t.dataset.nt?'note':null;if(k){const p=S.pts.find(x=>x.id===(t.dataset.hd||t.dataset.nt));if(!p)return;const v=t.value.replace(/\s+/g,' ').trim().slice(0,60);
+    if(CPR.test(v)){alert('Det ligner et CPR-nummer – det gemmes ikke.');t.value=p[k]||'';return}p[k]=v;save()}
 });
-document.addEventListener('focusout',e=>{const t=e.target;if(!t.dataset)return;const k=t.dataset.hd?'head':t.dataset.nt?'note':null;if(!k)return;const p=S.pts.find(x=>x.id===(t.dataset.hd||t.dataset.nt));if(!p)return;
-  const v=t.innerText.replace(/\s+/g,' ').trim().slice(0,60);if(CPR.test(v)){alert('Det ligner et CPR-nummer – det gemmes ikke.');t.innerText=p[k]||'';return}if(v!==(p[k]||'')){p[k]=v;save()}});
 document.addEventListener('keydown',e=>{const t=e.target;if(t.dataset&&(t.dataset.hd||t.dataset.nt)&&e.key==='Enter'){e.preventDefault();t.blur()}});
 $('#pdRoom').innerHTML=roomOpts('');
-/* topknapper */
 const tb=id=>document.getElementById(id);
 if(tb('pdAddDoc'))tb('pdAddDoc').addEventListener('click',()=>openDocForm(null));
-if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter og loggen ryddes. Forvagterne sættes som ikke på arbejde (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
+if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter og loggen ryddes. Lægerne sættes som ikke på vagt (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
 /* ---------- import ---------- */
 const dlg=$('#pdImp');
-if(tb('pdImport'))tb('pdImport').addEventListener('click',()=>{$('#pdImpText').value='';$('#pdPrev').innerHTML='';$('#pdProg').textContent='';$('#pdDrop').querySelector('img')?.remove();dlg.showModal();$('#pdDrop').focus()});
+if(tb('pdImport'))tb('pdImport').addEventListener('click',()=>{$('#pdImpText').value='';$('#pdPrev').innerHTML='';$('#pdProg').textContent='';$('#pdDrop').querySelector('img')?.remove();dlg.showModal();willEnd();$('#pdDrop').focus()});
 dlg.addEventListener('click',e=>{if(e.target.closest('[data-pdclose]'))dlg.close()});
 $('#pdDrop').addEventListener('click',()=>$('#pdFile').click());
 $('#pdFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)ocrFile(f);e.target.value=''});
@@ -1245,13 +1299,17 @@ function parseText(t){const out=[];let grp='Forvagt',cur=null;
     if(/^[-•*]/.test(r)){if(!cur)return;const [st,tri,head]=r.replace(/^[-•*]\s*/,'').split('|').map(x=>x.trim());cur.pts.push({st:stByName(st)||'mtg',tri:triByName(tri),head:(head||'').replace(CPR,'')});return}
     const [name,lvl,until]=r.split('|').map(x=>x.trim());if(!name)return;const m=(until||'').match(/(\d{1,2})[.:](\d{2})/);
     cur={name,lvl:lvl||'',until:m?p2(m[1])+':'+m[2]:'',grp,pts:[]};out.push(cur)});return out}
-const isFv=g=>/forvagt|asa/i.test(g);
+const isFv=g=>/forvagt|asa|koordinerende|bagvagt/i.test(g);
 function preview(){const D=parseText($('#pdImpText').value);let g=null;
-  $('#pdPrev').innerHTML=D.length?D.map((d,i)=>(d.grp!==g?`<div class="sec">${esc(g=d.grp)}</div>`:'')+`<label><input type="checkbox" data-pi="${i}"${isFv(d.grp)?' checked':''}> <b>${esc(d.name)}</b> · ${d.pts.length} pt.${d.pts.length?' ('+d.pts.map(p=>stOf(p.st)[1].toLowerCase()).join(', ')+')':''}</label>`).join(''):'';}
+  $('#pdPrev').innerHTML=D.length?D.map((d,i)=>{const lead=/koordinerende|bagvagt/i.test(d.grp),kir=/kirurgi|\bMTK\b|ortopæd/i.test(d.lvl);return (d.grp!==g?`<div class="sec">${esc(g=d.grp)}</div>`:'')+`<label><input type="checkbox" data-pi="${i}"${isFv(d.grp)?' checked':''}> <b>${esc(shortName(d.name))}</b> · ${d.pts.length} pt.${d.pts.length?' ('+d.pts.map(p=>stOf(p.st)[1].toLowerCase()).join(', ')+')':''}${lead?' <span class="nos">· foreslås ikke</span>':''}${kir?' <span class="nos">· kirurgi (eget overblik)</span>':''}</label>`}).join(''):'';willEnd()}
+function willEnd(){const D=parseText($('#pdImpText').value);const chosen=new Set($$('#pdPrev [data-pi]').filter(c=>c.checked).map(c=>+c.dataset.pi));const L=[];
+  D.forEach((x,i)=>{if(!chosen.has(i))return;const d=S.docs.find(y=>nkey(y.name)===nkey(x.name));if(!d)return;ptsOf(d.id).slice(x.pts.length).forEach(p=>L.push(`${shortName(d.name)}: ${p.head||'patient'} (${stOf(p.st)[1].toLowerCase()})`))});
+  $('#pdWillEnd').textContent=L.length?($('#pdImpRepl').checked?'Afsluttes: ':'Ville blive afsluttet: ')+L.join(' · '):'Ingen patienter afsluttes.'}
+$('#pdPrev').addEventListener('change',willEnd);$('#pdImpRepl').addEventListener('change',willEnd);
 $('#pdImpGo').addEventListener('click',()=>{const D=parseText($('#pdImpText').value);if(!D.length){alert('Der er ingen forvagter i teksten.');return}
   const chosen=new Set($$('#pdPrev [data-pi]').filter(c=>c.checked).map(c=>+c.dataset.pi));const repl=$('#pdImpRepl').checked;const now=Date.now();let nd=0,np=0;
   D.forEach((x,i)=>{if(!chosen.has(i))return;let d=S.docs.find(y=>nkey(y.name)===nkey(x.name));if(!d){d={id:uid(),name:x.name};S.docs.push(d);nd++}
-    Object.assign(d,{lvl:x.lvl||d.lvl,grp:x.grp,on:true});if(x.until)d.until=x.until;addKnown(d);
+    Object.assign(d,{name:x.name,lvl:x.lvl||d.lvl,grp:x.grp,on:true});if(x.until)d.until=x.until;defaults(d);addKnown(d);
     const old=ptsOf(d.id);x.pts.forEach((p,j)=>{const o=old[j];if(o){if(o.st!==p.st){o.st=p.st;o.ts=now}if(p.tri)o.tri=p.tri;if(p.head&&!o.head)o.head=p.head}else{S.pts.push({id:uid(),doc:d.id,st:p.st,tri:p.tri,head:p.head,room:'',note:'',t0:now,ts:now});np++}});
     if(repl&&old.length>x.pts.length)old.slice(x.pts.length).forEach(o=>S.log.push(Object.assign({},o,{tEnd:now,docName:d.name})));
     if(repl)S.pts=S.pts.filter(p=>!(p.doc===d.id&&old.indexOf(p)>=x.pts.length))});
