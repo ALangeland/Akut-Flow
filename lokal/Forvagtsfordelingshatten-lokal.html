@@ -1099,6 +1099,16 @@ span.pd-amb{cursor:default}
 .pd-m.warn{border-color:#f57c00;color:#f57c00}.pd-m.over{border-color:#d32f2f;color:#d32f2f}
 .pd-m.ok{border-color:#43a047;color:#43a047}
 .pd-m.vej{border-color:#d32f2f}
+.pd-z{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;background:var(--fg);color:var(--bg);font:700 .66rem/1 var(--mono);padding:2px 4px;margin-right:4px;align-self:center}
+.pd-qc .t .pd-z{margin-right:0}
+.pd-qc .t b+b{margin-left:-2px}
+.pd-bar{display:flex;align-items:center;gap:10px;flex:1;min-width:0;padding:4px 2px}
+.pd-bars{display:flex;gap:2px;width:min(100%,calc(var(--u,46px)*8));min-height:28px;flex:none}
+.pd-bars{width:auto}
+.pd-seg2{flex:2 0 auto;width:calc(46px*var(--w,1));min-width:22px;height:28px;border:0;border-radius:4px;background:var(--bc);color:#fff;font:700 .66rem var(--mono);cursor:pointer;min-height:0;padding:0 4px}
+.pd-seg2[style*="flex:2"]{width:72px}.pd-seg2[style*="flex:1"]{width:36px}
+.pd-barl{font:700 .9rem var(--mono);color:var(--muted)}
+.pd-seg2{height:34px;font-size:.66rem;white-space:nowrap;overflow:hidden}.pd-leg{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.76rem;margin:-2px 0 8px}.pd-leg i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1107,7 +1117,7 @@ span.pd-amb{cursor:default}
 </div></header>
 
 <main class="pd2">
-  <div class="pd2-top"><div class="pd2-bar"><span class="pd-seg" id="pdView"><button type="button" data-view="simpel">Simpel</button><button type="button" data-view="avanceret">Avanceret</button></span><span class="pd2-lbl" style="min-width:0;margin-left:8px">Sortér</span><span class="pd-seg" id="pdSort"><button type="button" data-sort="load">Mest belastet</button><button type="button" data-sort="light">Mindst belastet</button><button type="button" data-sort="name">Navn</button><button type="button" data-sort="fixed">Fast</button></span><span class="sp"></span><span class="pd-seg" id="pdShift" title="Vagttype – soveplan og nattepåmindelser vises kun om aftenen/natten"><button type="button" data-shift="dag">☀️ Dag</button><button type="button" data-shift="nat">🌙 Aften/nat</button></span><span id="pdSync"></span><button type="button" class="pd-ib" id="pdSleepBtn">💤 Soveplan</button></div></div>
+  <div class="pd2-top"><div class="pd2-bar"><span class="pd-seg" id="pdView"><button type="button" data-view="simpel">Simpel</button><button type="button" data-view="avanceret">Avanceret</button><button type="button" data-view="bjaelke">Belastning</button></span><span class="pd2-lbl" style="min-width:0;margin-left:8px">Sortér</span><span class="pd-seg" id="pdSort"><button type="button" data-sort="load">Mest belastet</button><button type="button" data-sort="light">Mindst belastet</button><button type="button" data-sort="name">Navn</button><button type="button" data-sort="fixed">Fast</button></span><span class="sp"></span><span class="pd-seg" id="pdShift" title="Vagttype – soveplan og nattepåmindelser vises kun om aftenen/natten"><button type="button" data-shift="dag">☀️ Dag</button><button type="button" data-shift="nat">🌙 Aften/nat</button></span><span id="pdSync"></span><button type="button" class="pd-ib" id="pdSleepBtn">💤 Soveplan</button></div></div>
   <div id="pdBanner"></div>
   <div class="pd2-grid">
     <section class="pd2-main">
@@ -1214,7 +1224,7 @@ const KRS=['','A','B','C','C1t','D'];
 const TRI=[['','Ikke triageret'],['roed','Rød'],['orange','Orange'],['gul','Gul'],['groen','Grøn'],['blaa','Blå']];
 const triByName=n=>{const t=String(n||'').toLowerCase().trim().replace('ø','oe').replace('å','aa');return (TRI.find(x=>x[0]&&(x[0]===t||x[1].toLowerCase()===String(n||'').toLowerCase().trim()))||[''])[0]};
 const ZONES={1:['111','113','119.1','119.2','544','546','118.1','118.2','118.3','316.1','316.2','316.3'],2:['202.1','202.2','202.3','202.4','203.1','203.2','204','205','206'],3:['208','209.1','209.2','210','213','215','501','506'],4:['503','505','507','508','509','512','514','516'],5:['518','520','523','524','525'],6:['526','528','530','532','534','536','546'],7:['205','207','209','210','212','214'],8:['211','213','216','501','503','506','508','510'],9:['408','410','411','413','505','512','516','518','520'],10:['522','524','525','526','527','529','531','532','614','615','617'],11:['129','606','608','610','611','612','613'],12:['117','118','119','120','122','123','124','125','126','128']};
-const roomOpts=sel=>'<option value="">Stue</option>'+Object.entries(ZONES).map(([z,l])=>`<optgroup label="Zone ${z}">${l.map(r=>{const v=z+':'+r;return `<option value="${v}"${v===sel?' selected':''}>${r} · Z${z}</option>`}).join('')}</optgroup>`).join('');
+const roomOpts=sel=>'<option value="">Stue</option>'+Object.entries(ZONES).map(([z,l])=>`<optgroup label="Zone ${z}">${l.map(r=>{const v=z+':'+r;return `<option value="${v}"${v===sel?' selected':''}>Z${z} · ${r}</option>`}).join('')}</optgroup>`).join('');
 const roomTxt=v=>{if(!v)return '';const [z,r]=v.split(':');return 'St. '+r+' · Z'+z};
 const CPR=/\b\d{6}\s*-?\s*\d{4}\b/;
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(_){}
@@ -1291,7 +1301,7 @@ const tTip=p=>p.unk?'Var i gang ved import kl. '+hm(p.t0)+' – starttid ukendt'
 /* ---------- ændringslog ---------- */
 const EVI={imp:'🔄',asg:'→',mv:'⇄',st:'●',end:'✓',new:'＋',doc:'👤',sl:'💤',undo:'↶'};
 function ev(type,txt,did){S.ev=S.ev||[];S.ev.push({t:Date.now(),type,txt,did:did||null});if(S.ev.length>500)S.ev=S.ev.slice(-500)}
-const ptLabel=p=>(p.room?'St. '+roomShort(p.room)+' · ':'')+(p.head||'patient');
+const ptLabel=p=>(p.room?roomShort(p.room).replace(' · ',' · St. ')+' · ':'')+(p.head||'patient');
 const dnm=id=>{const d=docOf(id);return d?shortName(d.name):'ufordelt'};
 const ago=t=>{const m=Math.floor((Date.now()-t)/60000);return m<1?'lige nu':m<60?m+' min siden':Math.floor(m/60)+' t '+p2(m%60)+' min siden'};
 let evFilter='';
@@ -1301,7 +1311,8 @@ const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''}
 const triCol=t=>({roed:'#d32f2f',orange:'#f57c00',gul:'#fbc02d',groen:'#43a047',blaa:'#1e88e5'}[t]||'var(--line)');
 const dots=s=>`<span class="pd-dots">${[1,2,3].map(i=>`<i class="${s[2]>=i?'f':''}"></i>`).join('')}</span>`;
 function stPill(p){const s=stOf(p.st);return `<label class="pd-st" data-s="${s[0]}" title="Status – klik for at skifte">${dots(s)}${s[1]}<select data-st="${p.id}">${ST.map(x=>`<option value="${x[0]}"${x[0]===s[0]?' selected':''}>${x[1]}</option>`).join('')}</select></label>`}
-const roomShort=v=>{if(!v)return '';const [z,r]=v.split(':');return r+' · Z'+z};
+const roomShort=v=>{if(!v)return '';const [z,r]=v.split(':');return 'Z'+z+' · '+r};
+const zoneHtml=v=>{if(!v)return '<b>–</b>';const [z,r]=v.split(':');return `<span class="pd-z">Z${z}</span><b>${esc(r)}</b>`};
 function render(){
   const sl=SL();
   const med=onDocs().filter(d=>!isKir(d));const medIds=new Set(med.map(d=>d.id));
@@ -1336,14 +1347,15 @@ function render(){
   $('#pdQh').textContent=`Ikke fordelt (${q.length})`;
   $('#pdQueue').innerHTML=q.length?q.map(p=>{const ak=p.st==='vej';const first=ak?sa[0]:sg[0],second=ak?sg[0]:sa[0];
     const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="${esc(whyText(isAk))}">${isAk?'🚑 ':'→ '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
-    return `<div class="pd-qc"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span><b>${p.room?esc(roomShort(p.room))+' · ':''}${esc(p.head||'Ny patient')}</b><span class="pd-meta">${dur(Date.now()-(p.ts||p.t0))}</span></div>
+    return `<div class="pd-qc"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span>${p.room?zoneHtml(p.room):''}<b>${esc(p.head||'Ny patient')}</b><span class="pd-meta">${dur(Date.now()-(p.ts||p.t0))}</span></div>
      <div class="m">${p.st==='vej'&&(p.krs||p.eta)?`<span class="pd-m vej">🚑 ${p.krs?'Kørsel '+esc(p.krs):''}${p.krs&&p.eta?' · ':''}${p.eta?'ETA '+esc(p.eta)+etaLeft(p.eta):''}</span> `:''}${esc(stOf(p.st)[1])} kl. ${hm(p.ts||p.t0)}${p.note?' · '+esc(p.note):''}</div>
      <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
     :'<div class="pd-empty">Ingen ufordelte patienter.</div>';
   const srt=L=>SORT==='load'?L.slice().sort((a,b)=>busy(b.id)-busy(a.id)||ptsOf(b.id).length-ptsOf(a.id).length):SORT==='light'?L.slice().sort(byLoad):SORT==='name'?L.slice().sort((a,b)=>a.name.localeCompare(b.name,'da')):L;
   const lead=srt(onDocs().filter(d=>isLead(d)&&!isKir(d))),fv=srt(onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d))),asa=srt(onDocs().filter(d=>isAsa(d)&&!isLead(d)&&!isKir(d))),kir=srt(onDocs().filter(isKir));
   $$('#pdSort button').forEach(x=>x.classList.toggle('on',x.dataset.sort===SORT));
-  const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}</h2><div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
+  const legend=VIEW==='bjaelke'?`<div class="pd-leg">${[['vej','På vej'],['ank','Ankommet/triageret'],['mtg','Modtagelse'],['mtt','Modtaget'],['pl','Plan lagt (½)']].map(([k,t])=>`<span><i style="background:${BARC[k]}"></i>${t}</span>`).join('')}<span class="pd-meta">Hver blok er én patient – klik for at rette</span></div>`:'';
+  const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}</h2>${t==="Forvagter"?legend:""}<div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
   $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('ASA vagthavende',asa)+sec('Koordinerende læge og bagvagt',lead)+
     (kir.length?`<details class="pd-secb pd-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd-rows">${kir.map(docRow).join('')}</div></details>`:'')+
     (S.docs.some(d=>d.on===false)?`<div class="pd-secb"><h2 class="pd2-h">Ikke på vagt</h2><div class="pd-pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
@@ -1362,8 +1374,12 @@ function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;con
     (si?`<span class="pd-p pdp-zz">💤 ${si.now?'sover til '+si.t:'sover '+si.f+'–'+si.t}</span>`:'')+(d.nosug?'<span class="pd-p pdp-ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
   return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}${/intro/i.test(lvlPart(d))?'<span class="pd-amb" title="Introlæge – kan tage akutkald">🚑</span>':isStudVik(d)||d.akk?`<button type="button" class="pd-amb${d.akk?'':' no'}" data-akk="${d.id}" title="${d.akk?'Akut kursus bestået – kan tage akutkald. Klik for at fjerne':'Akut kursus ikke markeret – klik hvis bestået'}">🚑</button>`:''}</b><div class="pd-pills">${pills}</div><span class="pd-meta pd-mp">${u?`<span class="pd-m ${u.cls}" title="Til kl. ${d.until} · ${esc(u.txt)}">🕒 ${d.until==='08:30'?'15:00–08:30':'til '+d.until}</span>`:''}${d.tlf?`<span class="pd-m">☎ ${esc(d.tlf)}</span>`:''}${d.lastAt?`<span class="pd-m" title="Sidst tildelt kl. ${hm(d.lastAt)} (${ago(d.lastAt)})">→ ${hm(d.lastAt)}</span>`:''}${d.sync?`<span class="pd-m ok" title="Afstemt med Clinical Tasking kl. ${hm(d.sync)}">✓ ${hm(d.sync)}</span>`:''}</span></div>
     <span class="pd-cnt ${cc(d)}" data-dsync="${d.id}" title="Aktive patienter. Dobbeltklik når lægen er afstemt med Clinical Tasking">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd-x" data-dedit="${d.id}" title="Ret lægen">⋯</button></div>
-    <div class="pd-pts">${P.map(p=>VIEW==='avanceret'?acCell(p,d):scCell(p)).join('')}<button type="button" class="pd-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
-function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc" data-edit="${p.id}" title="${esc(tTip(p))} – klik for at rette"><span class="a"><span class="pd-tri" data-t="${p.tri||''}"></span><b>${esc(roomShort(p.room)||'–')}</b><span class="tt">${esc(tLbl(p))}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
+    <div class="pd-pts">${(VIEW==='bjaelke'?barRow(P):P.map(p=>VIEW==='avanceret'?acCell(p,d):scCell(p)).join(''))}<button type="button" class="pd-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
+const BARC={vej:'#d32f2f',ank:'#8a94a6',tri:'#8a94a6',mtg:'#64b5f6',mtt:'#1e88e5',pl:'#43a047'};
+function barRow(P){const order=['vej','ank','tri','mtg','mtt','pl'];const L=P.slice().sort((a,b)=>order.indexOf(a.st)-order.indexOf(b.st));
+  const tot=P.reduce((a,p)=>a+(p.st==='pl'?.5:1),0);
+  return `<div class="pd-bar"><div class="pd-bars">${L.map(p=>`<button type="button" class="pd-seg2" data-edit="${p.id}" style="--bc:${BARC[p.st]||'#8a94a6'};flex:${p.st==='pl'?1:2}" title="${esc(ptLabel(p))} · ${esc(stOf(p.st)[1])} · ${esc(tLbl(p))}">${p.room?'Z'+esc(p.room.split(':')[0])+' '+esc(p.room.split(':')[1]):''}</button>`).join('')}</div><span class="pd-barl">${String(tot).replace('.',',')}</span></div>`}
+function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc" data-edit="${p.id}" title="${esc(tTip(p))} – klik for at rette"><span class="a"><span class="pd-tri" data-t="${p.tri||''}"></span>${zoneHtml(p.room)}<span class="tt">${esc(tLbl(p))}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
 function acCell(p,d){return `<div class="pd-ac" data-pid="${p.id}"><div class="r"><button type="button" class="pd-tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><select class="fld" data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span class="sp"></span><span class="tt" title="${esc(tTip(p))}">${esc(tLbl(p))}</span></div>
   <input class="fld h" data-hd="${p.id}" value="${esc(p.head||'')}" maxlength="60" placeholder="Problematik">
   <input class="fld n" data-nt="${p.id}" value="${esc(p.note||'')}" maxlength="60" placeholder="Note">
