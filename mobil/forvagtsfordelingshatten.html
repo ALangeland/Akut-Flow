@@ -916,26 +916,28 @@ button.trp:not(.trp-empty):hover{filter:brightness(1.12)}
 .brand{gap:8px!important}
 .brand .afhome{margin-right:0!important}
 </style><style>/*PD2*/
-main.pd2{max-width:1600px;margin:0 auto;padding:12px 16px 40px}
+main.pd2{max-width:1700px;margin:0 auto;padding:12px 16px 40px}
 .pd2-top{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:10px}
 .pd2-stats{display:flex;gap:8px;flex-wrap:wrap}
 .pd2-stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 12px;display:flex;align-items:center;gap:8px}
 .pd2-stat b{font:700 1.4rem var(--mono);color:var(--go);line-height:1}
-.pd2-stat span{font-size:.76rem;color:var(--muted);line-height:1.2}
+.pd2-stat span{font-size:.78rem;color:var(--muted);line-height:1.2}
 .pd2-sug{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
-.pd2-sg{display:flex;align-items:center;gap:10px;border-radius:10px;padding:6px 12px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.pd2-sg{cursor:help;display:flex;align-items:center;gap:10px;border-radius:10px;padding:6px 12px;border:2px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .pd2-sg.ak{border-color:#d32f2f;background:color-mix(in srgb,#d32f2f 10%,transparent)}
-.pd2-sg small{display:block;font:700 .62rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.pd2-sg small{display:block;font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .pd2-sg b{font-size:1rem}
-.pd2-lead{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.pd2-lc{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 3px;font-size:.82rem}
-.pd2-lc .pd2-av{width:28px;height:28px;font-size:.72rem}
-.pd2-lc small{color:var(--muted)}
-.pd2-grid{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
+.pd-ban{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-weight:600;border:2px solid #f57c00;background:color-mix(in srgb,#f57c00 14%,transparent)}
+.pd-ban.sl{border-color:#7e57c2;background:color-mix(in srgb,#7e57c2 16%,transparent)}
+.pd-ban .sp{flex:1}
+.pd-ban input[type=time]{min-height:0;padding:3px 6px;width:auto}
+.pd-ban button{min-height:0;padding:4px 10px}
+.pd2-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
 @media(max-width:1000px){.pd2-grid{grid-template-columns:minmax(0,1fr)}}
 .pd2-h{display:flex;align-items:center;gap:8px;font:700 .74rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px}
-.pd2-q{position:sticky;top:8px}
+.pd2-q{position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto}
 .pd2-box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.pd2-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}.pd2-bar .sp{flex:1}
 .fld{border:1px solid var(--line)!important;background:var(--bg)!important;color:var(--fg)!important;border-radius:6px!important;min-height:0!important;padding:4px 7px!important;font:400 .84rem var(--sans)!important;width:100%;box-sizing:border-box}
 .fld:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line))!important}
 .fld:focus{outline:none;border-color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
@@ -945,66 +947,93 @@ select.fld{width:auto;cursor:pointer}
 .pd2-form .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .pd2-form .row input.fld{flex:1;width:auto;min-width:110px}
 .pd2-lbl{font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);min-width:52px}
-.pd2-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
-.pd2-seg button{border:0;border-radius:0;background:var(--bg);color:var(--muted);font:600 .74rem var(--sans);padding:4px 9px;min-height:0;cursor:pointer}
-.pd2-seg button+button{border-left:1px solid var(--line)}
-.pd2-seg button.on{background:var(--accent);color:var(--on-accent,#fff)}
-.tri{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;vertical-align:middle;background:var(--tc,#8a94a6);cursor:pointer;padding:0;min-height:0}
-.tri[data-t=""]{background:transparent;border:1.5px dashed var(--muted)}
-.tri[data-t=roed]{--tc:#d32f2f}.tri[data-t=orange]{--tc:#f57c00}.tri[data-t=gul]{--tc:#fbc02d}.tri[data-t=groen]{--tc:#43a047}.tri[data-t=blaa]{--tc:#1e88e5}
+.pd-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.pd-seg button{border:0;border-radius:0;background:var(--bg);color:var(--muted);font:600 .76rem var(--sans);padding:4px 10px;min-height:0;cursor:pointer}
+.pd-seg button+button{border-left:1px solid var(--line)}
+.pd-seg button.on{background:var(--accent);color:var(--on-accent,#fff)}
+.pd-tri{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;vertical-align:middle;background:var(--tc,#8a94a6);cursor:pointer;padding:0;min-height:0}
+.pd-tri[data-t=""]{background:transparent;border:1.5px dashed var(--muted)}
+.pd-tri[data-t=roed]{--tc:#d32f2f}.pd-tri[data-t=orange]{--tc:#f57c00}.pd-tri[data-t=gul]{--tc:#fbc02d}.pd-tri[data-t=groen]{--tc:#43a047}.pd-tri[data-t=blaa]{--tc:#1e88e5}
 .pd2-tris{display:inline-flex;gap:4px}
 .pd2-tris button{background:none;border:2px solid transparent;border-radius:6px;padding:2px;min-height:0;cursor:pointer;line-height:0}
 .pd2-tris button.on{border-color:var(--accent)}
-.pd2-ql{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.pd2-qc{border:1px solid var(--line);border-left:4px solid var(--tc,var(--line));border-radius:10px;padding:8px 10px;background:var(--bg);display:flex;flex-direction:column;gap:6px}
-.pd2-qc .l1{display:flex;align-items:center;gap:8px}
-.pd2-qc .l1 b{flex:1;min-width:0}
-.pd2-qc .meta{font-size:.72rem;color:var(--muted)}
-.pd2-qc .as{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.pd2-qc .as button{min-height:0;padding:3px 9px;font-size:.78rem}
-.pd2-qc .as button.ak{border-color:#d32f2f}
-.pd2-qc .as select{min-height:0;padding:3px 6px;font-size:.78rem;width:auto}
-.pd2-sec{margin-bottom:16px}
-.pd2-rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
-.pdr{display:grid;grid-template-columns:300px minmax(0,1fr);border-top:1px solid var(--line)}
-.pdr:first-child{border-top:0}
-.pdr.off{opacity:.55}
-.pdr-doc{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-right:1px solid var(--line);background:color-mix(in srgb,var(--bg) 35%,transparent)}
-.pd2-av{width:38px;height:38px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 .9rem var(--sans);color:#fff;background:var(--avc,#555)}
-.pd2-dn{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.pd2-dn b{font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pd2-dn .meta{font-size:.74rem;color:var(--muted)}
-.pd2-dn .til.warn{color:#f57c00}.pd2-dn .til.over{color:#d32f2f}
-.pills{display:flex;gap:4px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;border-radius:999px;padding:1px 8px;font:700 .66rem var(--sans);border:1px solid var(--line);background:var(--bg);color:var(--fg);white-space:nowrap}
-.pill.lv{background:var(--surface);color:var(--fg);border-color:color-mix(in srgb,var(--fg) 35%,transparent)}
-.pill.sp{border-color:color-mix(in srgb,var(--pc) 70%,transparent);background:color-mix(in srgb,var(--pc) 22%,transparent)}
-.pill.ak{border-color:#d32f2f;color:#fff;background:#d32f2f;cursor:pointer}
-.pill.ak.no{background:none;color:var(--muted);border-style:dashed}
-.pill.ns{border-style:dashed;color:var(--muted)}
-.pd2-cnt{min-width:38px;text-align:center;border-radius:8px;padding:4px 6px;font:700 1.15rem var(--mono);line-height:1;color:#fff;background:#43a047}
-.pd2-cnt small{display:block;font:700 .52rem var(--sans);letter-spacing:.06em;text-transform:uppercase}
-.pd2-cnt.c1{background:#1e88e5}.pd2-cnt.c2{background:#f57c00}.pd2-cnt.c3{background:#d32f2f}
-.pd2-dm{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0 4px;min-height:0;line-height:1}
-.pdr-pts{display:flex;gap:8px;padding:8px;overflow-x:auto;align-items:stretch}
-.pdc{flex:none;width:200px;display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-top:4px solid var(--tc,var(--line));border-radius:8px;padding:6px 7px;background:var(--bg)}
-.pdc .r1,.pdc .r3{display:flex;gap:5px;align-items:center}
-.pdc .tm{margin-left:auto;font:.7rem var(--mono);color:var(--muted);white-space:nowrap}
-.pdc .r3 .sp{flex:1}
-.pdc select.fld{flex:1;max-width:110px}
-.pdc input.hd{font-weight:600!important}
-.pdc input.nt{font-size:.74rem!important}
-.pdc-add{flex:none;width:44px;border:1px dashed var(--line);border-radius:8px;background:none;color:var(--muted);font-size:1.3rem;cursor:pointer;min-height:0}
-.pdc-add:hover{border-color:var(--accent);color:var(--accent)}
-.pd2-st{position:relative;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 8px 2px 5px;font:600 .72rem var(--sans);cursor:pointer;white-space:nowrap;background:var(--surface)}
-.pd2-st select{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
-.pd2-dots{display:inline-flex;gap:2px}.pd2-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.pd2-dots i.f{background:var(--accent)}
-.pd2-st[data-s=vej]{border-style:dashed;border-color:#d32f2f}.pd2-st[data-s=pl]{border-color:var(--accent)}
-.pd2-ib{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);cursor:pointer;min-height:0;padding:1px 6px;font-size:.76rem;line-height:1.4}
-.pd2-ib:hover{color:var(--fg);border-color:var(--accent)}
-.pd2-ib.ok:hover{color:#fff;background:#43a047;border-color:#43a047}
-.pd2-mv{appearance:none;-webkit-appearance:none;width:28px;text-align:center;padding:1px 3px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;min-height:0;font-size:.76rem}
-.pd2-empty{color:var(--muted);font-size:.82rem;padding:8px 4px;align-self:center}
+.pd2-ql{display:flex;flex-direction:column;gap:8px}
+.pd-qc{border:1px solid var(--line);border-left:5px solid var(--tc,var(--line));border-radius:10px;padding:8px 10px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.pd-qc .t{display:flex;align-items:center;gap:8px;cursor:pointer}
+.pd-qc .t b{flex:1;min-width:0}
+.pd-qc .m{font-size:.74rem;color:var(--muted)}
+.pd-qc .as{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.pd-qc .as button{min-height:0;padding:3px 9px;font-size:.78rem}
+.pd-qc .as button.ak{border-color:#d32f2f}
+.pd-qc .as select{min-height:0;padding:3px 6px;font-size:.78rem;width:auto}
+.pd-empty{color:var(--muted);font-size:.82rem;padding:8px 4px;align-self:center}
+.pd-secb{margin-bottom:16px}
+.pd-rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.pd-row{display:grid;grid-template-columns:270px minmax(0,1fr);border-top:1px solid var(--line)}
+.pd-row:first-child{border-top:0}
+.pd-row.slp .pd-doc{background:color-mix(in srgb,#7e57c2 14%,transparent)}
+.pd-doc{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;border-right:1px solid var(--line);background:color-mix(in srgb,var(--bg) 35%,transparent)}
+.pd-av{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font:700 .82rem var(--sans);color:#fff;background:var(--avc,#555)}
+.pd-dn{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.pd-dn b{font-size:.96rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-meta{font-size:.74rem;color:var(--muted)}
+.pd-meta .warn{color:#f57c00}.pd-meta .over{color:#d32f2f}
+.pd-pills{display:flex;gap:4px;flex-wrap:wrap}
+.pd-p{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:1px 8px;font:600 .74rem/1.45 var(--sans);letter-spacing:0;text-transform:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);white-space:nowrap}
+.pd-p.pdp-lv{border-color:color-mix(in srgb,var(--fg) 40%,transparent)}
+.pd-p.pdp-sp{border:0;background:var(--pc);color:var(--pt,#fff)}
+.pd-p.pdp-ak{border-color:#d32f2f;background:#d32f2f;color:#fff;cursor:pointer}
+.pd-p.pdp-ak.no{background:none;color:var(--fg);border-style:dashed}
+.pd-p.pdp-ns{border-style:dashed;color:var(--muted)}
+.pd-p.pdp-zz{border-color:#7e57c2;background:color-mix(in srgb,#7e57c2 25%,transparent)}
+.pd-cnt{min-width:34px;text-align:center;border-radius:8px;padding:3px 5px;font:700 1.1rem var(--mono);line-height:1;color:#fff;background:#43a047}
+.pd-cnt small{display:block;font:700 .5rem var(--sans);letter-spacing:.06em;text-transform:uppercase}
+.pd-cnt.c1{background:#1e88e5}.pd-cnt.c2{background:#f57c00}.pd-cnt.c3{background:#d32f2f}
+.pd-x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.05rem;padding:0 4px;min-height:0;line-height:1}
+.pd-pts{display:flex;gap:6px;padding:6px;overflow-x:auto;align-items:stretch;flex-wrap:wrap}
+.pd-add{flex:none;width:36px;border:1px dashed var(--line);border-radius:8px;background:none;color:var(--muted);font-size:1.2rem;cursor:pointer;min-height:44px}
+.pd-add:hover{border-color:var(--accent);color:var(--accent)}
+/* simpel: celler som på sedlen */
+.pd-sc{flex:none;width:158px;display:flex;flex-direction:column;gap:2px;border:1px solid var(--line);border-left:5px solid var(--tc,var(--line));border-radius:7px;padding:5px 8px;background:var(--bg);cursor:pointer;text-align:left;color:var(--fg);font:inherit;min-height:0}
+.pd-sc:hover{border-color:var(--accent);border-left-color:var(--tc,var(--accent))}
+.pd-sc .a{display:flex;gap:6px;align-items:baseline;font-size:.8rem}
+.pd-sc .a b{font:700 .9rem var(--mono)}
+.pd-sc .a .tt{margin-left:auto;font:.7rem var(--mono);color:var(--muted)}
+.pd-sc .h{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pd-sc .h.e{color:var(--muted);font-weight:400;font-style:italic}
+.pd-sc .s{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--muted)}
+/* avanceret: kasser */
+.pd-ac{flex:none;width:236px;display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-top:4px solid var(--tc,var(--line));border-radius:8px;padding:6px 7px;background:var(--bg)}
+.pd-ac .r{display:flex;gap:5px;align-items:center}
+.pd-ac .r .sp{flex:1}
+.pd-ac .tt{font:.7rem var(--mono);color:var(--muted);white-space:nowrap}
+.pd-ac input.h{font-weight:600!important}
+.pd-ac input.n{font-size:.76rem!important}
+.pd-st{position:relative;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 6px;font:600 .74rem var(--sans);cursor:pointer;white-space:nowrap;background:var(--surface);color:var(--fg)}
+.pd-st select{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:16px}
+.pd-st[data-s=vej]{border-style:dashed;border-color:#d32f2f}.pd-st[data-s=pl]{border-color:var(--accent)}
+.pd-dots{display:inline-flex;gap:2px}.pd-dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.pd-dots i.f{background:var(--accent)}
+.pd-ib{background:none;border:1px solid var(--line);border-radius:6px;color:var(--fg);cursor:pointer;min-height:0;padding:2px 8px;font-size:.78rem;line-height:1.4}
+.pd-ib:hover{border-color:var(--accent)}
+.pd-ib.ok:hover{color:#fff;background:#43a047;border-color:#43a047}
+.pd-mv{appearance:none;-webkit-appearance:none;width:28px;text-align:center;padding:1px 3px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer;min-height:0;font-size:.76rem}
+/* redigér-dialog */
+.pd-ed{width:min(460px,96vw)!important}
+.pd-ed .eb{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.pd-ed .eb label{display:flex;flex-direction:column;gap:4px;font:700 .66rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pd-ed .eb .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pd-ed .eb .fld{font-size:.92rem!important;padding:6px 8px!important;text-transform:none;letter-spacing:0;width:100%}
+.pd-ed .df{justify-content:space-between}
+/* soveplan */
+.pd-sl{margin-bottom:14px}
+.pd-sl .hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pd-sl .hd input[type=time]{min-height:0;padding:3px 6px;width:auto}
+.pd-sl .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pd-sl .col{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg)}
+.pd-sl .col h3{margin:0 0 6px;font-size:.84rem}
+.pd-sl .col button{display:block;width:100%;text-align:left;min-height:0;padding:4px 8px;margin:3px 0;font-size:.84rem}
+.pd-sl .ft{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pd-sl .hint{font-size:.74rem;color:var(--muted)}
 .pd2-docform{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;margin-bottom:12px}
 .pd2-docform>label{display:flex;flex-direction:column;gap:3px;font:700 .64rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .pd2-docform input,.pd2-docform select{min-height:0;padding:6px 8px;font:400 .88rem var(--sans);text-transform:none;letter-spacing:0}
@@ -1012,7 +1041,7 @@ select.fld{width:auto;cursor:pointer}
 .pd2-docform .chk label{display:flex;gap:5px;align-items:center}
 .pd2-docform .act{grid-column:5/7;display:flex;gap:6px;justify-content:flex-end}
 @media(max-width:1000px){.pd2-docform{grid-template-columns:1fr 1fr}.pd2-docform .chk,.pd2-docform .act{grid-column:1/-1}}
-details.pd2-kir>summary{cursor:pointer;list-style:none}
+details.pd-kir>summary{cursor:pointer;list-style:none}
 .pd2-log summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.84rem}
 .pd2-log ul{list-style:none;padding:0;margin:8px 0 0;font-size:.8rem;display:flex;flex-direction:column;gap:4px}
 .pd2-log li{display:flex;gap:8px;align-items:center}
@@ -1038,6 +1067,7 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
 .willend{font-size:.76rem;color:#f57c00;margin-top:3px}
 .pd2-old{margin-top:24px;font-size:.76rem;color:var(--muted)}
 .pd2-old a{color:inherit}
+.pd-ac .pd-ib.ok{white-space:nowrap;padding:2px 7px}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1048,22 +1078,9 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
 
 <main class="pd2">
   <div class="pd2-top"><div class="pd2-stats" id="pdStats"></div><div class="pd2-sug" id="pdSug"></div></div>
-  <div class="pd2-lead" id="pdLead"></div>
+  <div id="pdBanner"></div>
   <div class="pd2-grid">
-    <section class="pd2-q">
-      <h2 class="pd2-h">Nye patienter – ikke fordelt</h2>
-      <div class="pd2-box">
-        <form class="pd2-form" id="pdNewPt" autocomplete="off">
-          <div class="row"><input class="fld" name="head" maxlength="60" placeholder="Problematik, fx Brystsmerter"><select class="fld" name="room" id="pdRoom" title="Stue"></select></div>
-          <div class="row"><span class="pd2-lbl">Triage</span><span class="pd2-tris" id="pdTriNew"></span></div>
-          <div class="row"><span class="pd2-lbl">Status</span><span class="pd2-seg" id="pdStNew"><button type="button" data-v="vej">🚑 På vej</button><button type="button" data-v="ank" class="on">Ankommet</button><button type="button" data-v="tri">Triageret</button></span></div>
-          <div class="row"><input class="fld" name="note" maxlength="60" placeholder="Note (valgfri)" style="flex:1"><button class="primary" type="submit">Tilføj</button></div>
-        </form>
-        <div class="pd2-ql" id="pdQueue"></div>
-      </div>
-      <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
-    </section>
-    <section>
+    <section class="pd2-main">
       <form class="pd2-docform pd2-box" id="pdDocForm" autocomplete="off" hidden>
         <label>Navn<input name="name" list="pdKnown" required placeholder="Fornavn Efternavn (XX)"><datalist id="pdKnown"></datalist></label>
         <label>Niveau – speciale<input name="lvl" list="pdLvls" placeholder="Læge - Akut medicin"><datalist id="pdLvls"></datalist></label>
@@ -1074,13 +1091,30 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
         <div class="chk"><label><input type="checkbox" name="sug"> Foreslås til patienter</label><label><input type="checkbox" name="akk"> Akut kursus bestået – kan tage akutkald</label><label><input type="checkbox" name="kir"> Kirurgisk – eget overblik</label></div>
         <span class="act"><button class="primary" type="submit">Gem</button><button type="button" data-pdcancel="1">Annullér</button></span>
       </form>
+      <div class="pd2-bar"><span class="pd-seg" id="pdView"><button type="button" data-view="simpel">Simpel</button><button type="button" data-view="avanceret">Avanceret</button></span><span class="sp"></span><button type="button" class="pd-ib" id="pdSleepBtn">💤 Soveplan</button></div>
+      <div id="pdSleep"></div>
       <div id="pdBoard"></div>
-      <p class="pd2-old">Patienter registreres kun med problematik, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a> (kompleksitet og soveplan).</p>
+      <p class="pd2-old">Patienter registreres kun med problematik, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a>.</p>
     </section>
+    <aside class="pd2-q">
+      <h2 class="pd2-h">Ny patient</h2>
+      <div class="pd2-box">
+        <form class="pd2-form" id="pdNewPt" autocomplete="off">
+          <div class="row"><input class="fld" name="head" maxlength="60" placeholder="Problematik, fx Brystsmerter"><select class="fld" name="room" id="pdRoom" title="Stue"></select></div>
+          <div class="row"><span class="pd2-lbl">Triage</span><span class="pd2-tris" id="pdTriNew"></span></div>
+          <div class="row"><span class="pd2-lbl">Status</span><span class="pd-seg" id="pdStNew"><button type="button" data-v="vej">🚑 På vej</button><button type="button" data-v="ank" class="on">Ankommet</button><button type="button" data-v="tri">Triageret</button></span></div>
+          <div class="row"><input class="fld" name="note" maxlength="60" placeholder="Note (valgfri)" style="flex:1"><button class="primary" type="submit">Tilføj</button></div>
+        </form>
+      </div>
+      <h2 class="pd2-h" style="margin-top:14px" id="pdQh">Ikke fordelt</h2>
+      <div class="pd2-ql" id="pdQueue"></div>
+      <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
+    </aside>
   </div>
 </main>
+<dialog class="pd2-dlg pd-ed" id="pdEdit"></dialog>
 <dialog class="pd2-dlg" id="pdImp">
-  <div class="dh"><b>Importér fra Clinical Tasking</b><button type="button" class="pd2-dm" data-pdclose="1" aria-label="Luk">✕</button></div>
+  <div class="dh"><b>Importér fra Clinical Tasking</b><button type="button" class="pd-x" data-pdclose="1" aria-label="Luk">✕</button></div>
   <div class="db">
     <div>
       <div class="pd2-drop" id="pdDrop" tabindex="0"><span>Indsæt screenshot (Ctrl+V), træk det herind eller <u>vælg billede</u></span><input type="file" id="pdFile" accept="image/*" hidden></div>
@@ -1161,8 +1195,9 @@ function untilInfo(d){if(!d.until)return null;const [h,m]=d.until.split(':').map
   if(t-now<-12*3600e3)t.setDate(t.getDate()+1);if(t-now>12*3600e3)t.setDate(t.getDate()-1);const left=t-now;return {left,txt:left>0?`til kl. ${d.until} · ${dur(left)} tilbage`:`til kl. ${d.until} · gået`,cls:left<=0?'over':left<30*60e3?'warn':''}}
 const busy=id=>ptsOf(id).reduce((a,p)=>a+(p.st==='pl'?.5:1),0);
 /* ---------- afledte egenskaber ---------- */
-const SPECS=[[/kirurgi|\bMTK\b/i,'Kir','#8d99a6'],[/ortopæd/i,'Orto','#8d99a6'],[/lunge/i,'Lunge','#3b8fd9'],[/gastro|\bgas\b/i,'Gas','#c9a227'],[/nefro|nyre/i,'Nyre','#8e6cc9'],[/endokrin|\bendo\b/i,'Endo','#d16ba5'],[/hæmato|\bhæm\b/i,'Hæm','#d9534f'],[/infekt|\binf\b/i,'Inf','#3fae5a'],[/akut med/i,'Akut','#e07b39'],[/geriatri|\bgeri\b/i,'Geri','#7f8c8d'],[/kardio|\bkard\b/i,'Kard','#c0392b'],[/neuro/i,'Neuro','#16a085'],[/reuma/i,'Reuma','#a0522d']];
-const specColor=n=>(SPECS.find(x=>x[1].toLowerCase()===String(n).toLowerCase())||[0,0,'#7f8c8d'])[2];
+const SPECS=[[/kirurgi|\bMTK\b/i,'Kir','#6b7785'],[/ortopæd/i,'Orto','#6b7785'],[/lunge/i,'Lunge','#1f6fb8'],[/gastro|\bgas\b/i,'Gas','#e0b72a'],[/nefro|nyre/i,'Nyre','#7a4fc0'],[/endokrin|\bendo\b/i,'Endo','#c2458e'],[/hæmato|\bhæm\b/i,'Hæm','#c0392b'],[/infekt|\binf\b/i,'Inf','#2e8b47'],[/akut med/i,'Akut','#e07b39'],[/geriatri|\bgeri\b/i,'Geri','#5d6d7e'],[/kardio|\bkard\b/i,'Kard','#a93226'],[/neuro/i,'Neuro','#148f77'],[/reuma/i,'Reuma','#935116']];
+const specColor=n=>(SPECS.find(x=>x[1].toLowerCase()===String(n).toLowerCase())||[0,0,'#5d6d7e'])[2];
+const txtOn=hex=>{const h=hex.replace('#','');const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return (r*299+g*587+b*114)/1000>150?'#1a1a1a':'#fff'};
 const lvlPart=d=>String(d.lvl||'').split(/\s+-\s+/)[0];
 function specsOf(d){if(Array.isArray(d.spec)&&d.spec.length)return d.spec;const sp=String(d.lvl||'').split(/\s+-\s+/).slice(1).join(' - ');const out=[];
   sp.split(/,|\bog\b(?! tarm)/i).forEach(t=>{const m=SPECS.find(x=>x[0].test(t));if(m&&!out.includes(m[1]))out.push(m[1])});
@@ -1172,55 +1207,123 @@ const isStudVik=d=>/stud|vikar/i.test(lvlPart(d));
 const canAk=d=>/intro/i.test(lvlPart(d))||!!d.akk;
 const isLead=d=>/koordinerende|bagvagt/i.test(d.grp||'');
 const isKir=d=>!!d.kir;
+const isAsa=d=>/asa/i.test(d.grp||'');
 function shortName(n){n=String(n||'');const m=n.match(/\(([A-ZÆØÅ]{2,4})\)/);const tag=m?m[1]:'';
   const w=n.replace(/\(.*$/,'').replace(/[….]+$/,'').trim().split(/\s+/).filter(Boolean);if(!w.length)return n;
   const rest=w.slice(1).map(x=>x.split('-').map(y=>(y[0]||'').toUpperCase()).join('-')+'.').join('');return w[0]+(rest?' '+rest:'')+(tag?' ('+tag+')':'')}
-const sugPool=()=>onDocs().filter(d=>!d.nosug&&!isKir(d)).filter(d=>{const u=untilInfo(d);return !u||u.left>20*60e3});
+/* ---------- soveplan ---------- */
+const VIEWK='forvagtsfordeling.view';let VIEW='simpel';try{VIEW=localStorage.getItem(VIEWK)||'simpel'}catch(_){}
+function nightKey(){const d=new Date();if(d.getHours()<12)d.setDate(d.getDate()-1);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function nightT(hhmm){const [h,m]=String(hhmm||'23:00').split(':').map(Number);const [Y,M,D]=nightKey().split('-').map(Number);const t=new Date(Y,M-1,D,h,m,0,0);if(h<12)t.setDate(t.getDate()+1);return t.getTime()}
+const addMin=(hhmm,min)=>{const t=new Date(nightT(hhmm)+min*60e3);return p2(t.getHours())+':'+p2(t.getMinutes())};
+function SL(){if(!S.sleep||S.sleep.day!==nightKey())S.sleep={day:nightKey(),at:'23:00',to:'07:00',made:false,statusDone:false,A:[],B:[],open:false};return S.sleep}
+const midOf=sl=>{const a=nightT(sl.at),b=nightT(sl.to);const t=new Date(a+(b-a)/2);t.setMinutes(Math.round(t.getMinutes()/15)*15,0,0);return p2(t.getHours())+':'+p2(t.getMinutes())};
+function sleepPool(){return onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d)).filter(d=>{if(!d.until)return true;return nightT(d.until)>nightT(SL().at)+60*60e3})}
+function sleepInfo(d){const sl=SL();if(!sl.made)return null;const mid=midOf(sl);const inA=sl.A.includes(d.id),inB=sl.B.includes(d.id);if(!inA&&!inB)return null;
+  const [f,t]=inA?[sl.at,mid]:[mid,sl.to];const now=Date.now();return {f,t,now:now>=nightT(f)&&now<nightT(t)}}
+const asleep=d=>{const i=sleepInfo(d);return !!(i&&i.now)};
+function makeSleep(){const sl=SL();const P=sleepPool().sort(byLoad);const half=Math.ceil(P.length/2);
+  sl.A=P.slice(0,half).map(d=>d.id);sl.B=P.slice(half).map(d=>d.id);sl.open=true}
+/* ---------- forslag ---------- */
+const sugPool=()=>onDocs().filter(d=>!d.nosug&&!isKir(d)&&!asleep(d)).filter(d=>{const u=untilInfo(d);return !u||u.left>20*60e3});
 const byLoad=(a,b)=>busy(a.id)-busy(b.id)||ptsOf(a.id).length-ptsOf(b.id).length||((a.lastAt||0)-(b.lastAt||0));
 function suggest(){return sugPool().sort(byLoad)}
 function suggestAk(){return sugPool().filter(canAk).sort(byLoad)}
+
+function whyText(ak){const L=ak?suggestAk():suggest();const fmtB=d=>{const P=ptsOf(d.id),pl=P.filter(p=>p.st==='pl').length;return `${P.length} pt.${pl?` (${pl} plan lagt)`:''} → belastning ${String(busy(d.id)).replace('.',',')}`};
+  const lines=[];if(!L.length){lines.push(ak?'Ingen læge kan foreslås til akutkald lige nu.':'Ingen læge kan foreslås lige nu.')}
+  else{const d=L[0];lines.push(`${shortName(d.name)} foreslås: ${fmtB(d)} – lavest blandt ${L.length} mulige.`);
+    const tie=L.filter(x=>busy(x.id)===busy(d.id)&&x!==d);if(tie.length)lines.push(`Lige så lav belastning: ${tie.map(x=>shortName(x.name)).join(', ')} – afgjort af færrest patienter i alt og derefter længst tid siden sidste tildeling${d.lastAt?' (sidst tildelt kl. '+hm(d.lastAt)+')':''}.`);
+    const rest=L.slice(1).filter(x=>!tie.includes(x));if(rest[0])lines.push('Derefter: '+rest.slice(0,3).map(x=>`${shortName(x.name)} (${String(busy(x.id)).replace('.',',')})`).join(', ')+'.')}
+  lines.push('');lines.push('Regel: belastning = aktive patienter, hvor «Plan lagt» tæller halvt.'+(ak?' Akutkald: kun introlæger og studerende/vikarer med akut kursus bestået.':''));
+  const ex=[];onDocs().forEach(d=>{let r='';if(isKir(d))r='kirurgi';else if(d.nosug)r='foreslås ikke';else if(asleep(d))r='sover';else{const u=untilInfo(d);if(u&&u.left<=20*60e3)r=u.left>0?'går hjem om under 20 min':'har fri';else if(ak&&!canAk(d))r=isStudVik(d)?'mangler akut kursus':'ikke intro/akut kursus'}if(r)ex.push(`${shortName(d.name)} (${r})`)});
+  if(ex.length)lines.push('Ikke med: '+ex.join(', ')+'.');return lines.join('\n')}
 /* ---------- render ---------- */
 let newTri='',newSt='ank';
+const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''};
+const triCol=t=>({roed:'#d32f2f',orange:'#f57c00',gul:'#fbc02d',groen:'#43a047',blaa:'#1e88e5'}[t]||'var(--line)');
+const dots=s=>`<span class="pd-dots">${[1,2,3].map(i=>`<i class="${s[2]>=i?'f':''}"></i>`).join('')}</span>`;
+function stPill(p){const s=stOf(p.st);return `<label class="pd-st" data-s="${s[0]}" title="Status – klik for at skifte">${dots(s)}${s[1]}<select data-st="${p.id}">${ST.map(x=>`<option value="${x[0]}"${x[0]===s[0]?' selected':''}>${x[1]}</option>`).join('')}</select></label>`}
+const roomShort=v=>v?v.split(':')[1]:'';
 function render(){
+  const sl=SL();
   const med=onDocs().filter(d=>!isKir(d));const medIds=new Set(med.map(d=>d.id));
   const q=S.pts.filter(p=>!p.doc);const act=S.pts.filter(p=>p.doc&&medIds.has(p.doc));
-  $('#pdStats').innerHTML=[[med.filter(d=>!isLead(d)).length,'forvagter'],[q.length,'ikke fordelt'],[act.length,'hos forvagterne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('');
+  $('#pdStats').innerHTML=[[med.filter(d=>!isLead(d)).length,'forvagter'],[q.length,'ikke fordelt'],[act.length,'hos lægerne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('');
   const s1=suggest()[0],s2=suggestAk()[0];
-  $('#pdSug').innerHTML=`<div class="pd2-sg"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd2-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd2-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
-  $('#pdLead').innerHTML=onDocs().filter(isLead).map(d=>{const u=untilInfo(d);return `<span class="pd2-lc" title="${esc(d.name)} – ${esc(d.lvl||'')}"><span class="pd2-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><span><small>${esc(d.grp)}</small> <b>${esc(shortName(d.name))}</b>${d.tlf?` · ☎ ${esc(d.tlf)}`:''}${u?` · <small>${esc(u.txt)}</small>`:''}</span><button class="pd2-dm" data-dedit="${d.id}" title="Ret">⋯</button></span>`}).join('');
-  $('#pdTriNew').innerHTML=TRI.map(t=>`<button type="button" data-tn="${t[0]}" class="${t[0]===newTri?'on':''}" title="${t[1]}"><span class="tri" data-t="${t[0]}"></span></button>`).join('');
+  $('#pdSug').innerHTML=`<div class="pd2-sg" title="${esc(whyText(false))}"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak" title="${esc(whyText(true))}"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
+  /* påmindelser */
+  const now=Date.now(),tAt=nightT(sl.at),showSt=!sl.made&&!sl.statusDone&&now>=tAt-15*60e3&&now<tAt+6*3600e3,showSl=!sl.made&&now>=tAt&&now<tAt+6*3600e3;
+  $('#pdBanner').innerHTML=(showSt?`<div class="pd-ban">🕑 Kl. ${addMin(sl.at,-15)}: bed forvagterne opdatere status i Clinical Tasking.<span class="sp"></span><button type="button" data-imp="1">📷 Importér nyt screenshot</button><button type="button" data-stdone="1">✓ Gjort</button></div>`:'')+
+    (showSl?`<div class="pd-ban sl">💤 Kl. ${sl.at}: tid til soveplan.<span class="sp"></span><button type="button" class="primary" data-slmake="1">Lav soveplan</button><span>Udsæt til</span><input type="time" id="pdSlPost" value="${addMin(sl.at,60)}"><button type="button" data-slpost="1">Udsæt</button></div>`:'');
+  /* soveplan-panel */
+  $('#pdSleepBtn').textContent=sl.made?`💤 Soveplan ${sl.at}–${sl.to}`:'💤 Soveplan';
+  if(sl.open){const mid=midOf(sl);const nm=id=>{const d=docOf(id);return d?esc(shortName(d.name))+` <small>(${ptsOf(id).length})</small>`:''};
+    const pool=new Set(sleepPool().map(d=>d.id));const out=sleepPool().filter(d=>!sl.A.includes(d.id)&&!sl.B.includes(d.id));
+    $('#pdSleep').innerHTML=`<div class="pd-sl pd2-box"><div class="hd"><b>💤 Soveplan</b><span>Fra</span><input type="time" id="pdSlAt" value="${sl.at}"><span>til</span><input type="time" id="pdSlTo" value="${sl.to}"><span class="hint">skift ved halvtid kl. ${mid} · klik et navn for at flytte det</span><span style="flex:1"></span><button type="button" class="pd-x" data-slclose="1" title="Luk">✕</button></div>
+      <div class="cols"><div class="col"><h3>Sover først ${sl.at}–${mid}</h3>${sl.A.filter(id=>pool.has(id)).map(id=>`<button type="button" data-slmv="${id}">${nm(id)}</button>`).join('')||'<span class="hint">Ingen</span>'}</div><div class="col"><h3>Sover sidst ${mid}–${sl.to}</h3>${sl.B.filter(id=>pool.has(id)).map(id=>`<button type="button" data-slmv="${id}">${nm(id)}</button>`).join('')||'<span class="hint">Ingen</span>'}</div></div>
+      ${out.length?`<p class="hint">Ikke med: ${out.map(d=>`<button type="button" class="pd-ib" data-slmv="${d.id}">+ ${esc(shortName(d.name))}</button>`).join(' ')}</p>`:''}
+      <div class="ft"><button type="button" class="primary" data-slsave="1">${sl.made?'Gem ændringer':'Brug soveplanen'}</button><button type="button" data-slnew="1">Fordel igen</button><button type="button" data-slcopy="1">Kopiér som tekst</button>${sl.made?'<button type="button" data-sldel="1">Slet soveplan</button>':''}<span class="hint">Forslag: de med færrest patienter sover først. Koordinerende, bagvagt, ASA og kirurgi er ikke med.</span></div></div>`}
+  else $('#pdSleep').innerHTML='';
+  $$('#pdView button').forEach(b=>b.classList.toggle('on',b.dataset.view===VIEW));
+  $('#pdTriNew').innerHTML=TRI.map(t=>`<button type="button" data-tn="${t[0]}" class="${t[0]===newTri?'on':''}" title="${t[1]}"><span class="pd-tri" data-t="${t[0]}"></span></button>`).join('');
   $$('#pdStNew button').forEach(b=>b.classList.toggle('on',b.dataset.v===newSt));
   const sg=suggest(),sa=suggestAk();
+  $('#pdQh').textContent=`Ikke fordelt (${q.length})`;
   $('#pdQueue').innerHTML=q.length?q.map(p=>{const ak=p.st==='vej';const first=ak?sa[0]:sg[0],second=ak?sg[0]:sa[0];
-    const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="Tildel ${esc(d.name)}">${isAk?'🚑 ':'→ '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
-    return `<div class="pd2-qc" style="--tc:${triCol(p.tri)}"><div class="l1"><button type="button" class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><b>${esc(p.head||'Ny patient')}</b>${stPill(p)}<button class="pd2-ib" data-del="${p.id}" title="Slet">✕</button></div>
-     <div class="meta">${p.room?esc(roomTxt(p.room))+' · ':''}${esc(stOf(p.st)[1].toLowerCase())} ${hm(p.ts||p.t0)} (${dur(Date.now()-(p.ts||p.t0))})${p.note?' · '+esc(p.note):''}</div>
-     <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${med.concat(onDocs().filter(isKir)).map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
-    :'<div class="pd2-empty">Ingen ufordelte patienter.</div>';
-  const board=med.filter(d=>!isLead(d)||ptsOf(d.id).length||!d.nosug);const kir=onDocs().filter(isKir);
-  $('#pdBoard').innerHTML=`<div class="pd2-sec"><h2 class="pd2-h">Forvagter <span style="font-weight:400;text-transform:none;letter-spacing:0">· klik på felterne for at skrive</span></h2><div class="pd2-rows">${board.length?board.map(docRow).join(''):'<div class="pd2-empty" style="padding:14px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>'}</div></div>`+
-    (kir.length?`<details class="pd2-sec pd2-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd2-rows">${kir.map(docRow).join('')}</div></details>`:'')+
-    (S.docs.some(d=>d.on===false)?`<div class="pd2-sec"><h2 class="pd2-h">Ikke på vagt</h2><div class="pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd2-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
+    const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="${esc(whyText(isAk))}">${isAk?'🚑 ':'→ '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
+    return `<div class="pd-qc" style="--tc:${triCol(p.tri)}"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span><b>${p.room?esc(roomShort(p.room))+' · ':''}${esc(p.head||'Ny patient')}</b><span class="pd-meta">${dur(Date.now()-(p.ts||p.t0))}</span></div>
+     <div class="m">${esc(stOf(p.st)[1])} kl. ${hm(p.ts||p.t0)}${p.note?' · '+esc(p.note):''}</div>
+     <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
+    :'<div class="pd-empty">Ingen ufordelte patienter.</div>';
+  const lead=onDocs().filter(d=>isLead(d)&&!isKir(d)),fv=onDocs().filter(d=>!isLead(d)&&!isKir(d)),kir=onDocs().filter(isKir);
+  const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}</h2><div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
+  $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('Koordinerende læge og bagvagt',lead)+
+    (kir.length?`<details class="pd-secb pd-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd-rows">${kir.map(docRow).join('')}</div></details>`:'')+
+    (S.docs.some(d=>d.on===false)?`<div class="pd-secb"><h2 class="pd2-h">Ikke på vagt</h2><div class="pd-pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
   const L=S.log.slice().sort((a,b)=>b.tEnd-a.tEnd).slice(0,40);
   $('#pdLogSum').textContent=`Afsluttede (${S.log.length})`;
-  $('#pdLog').innerHTML=L.map(l=>`<li><span class="tri" data-t="${l.tri||''}"></span><span>${hm(l.tEnd)} · ${esc(l.head||'Patient')} · ${esc(shortName(l.docName||''))}</span><button class="pd2-ib" data-undo="${l.id}">Fortryd</button></li>`).join('')||'<li class="pd2-empty">Ingen endnu.</li>';
+  $('#pdLog').innerHTML=L.map(l=>`<li><span class="pd-tri" data-t="${l.tri||''}"></span><span>${hm(l.tEnd)} · ${esc(l.head||'Patient')} · ${esc(shortName(l.docName||''))}</span><button class="pd-ib" data-undo="${l.id}">Fortryd</button></li>`).join('')||'<li class="pd-empty">Ingen endnu.</li>';
   $('#pdKnown').innerHTML=S.known.map(k=>`<option value="${esc(k.name)}">`).join('');
   $('#pdLvls').innerHTML=[...new Set(S.known.map(k=>k.lvl).filter(Boolean).concat(['Læge - Akut medicin','Introlæge - Akut medicin','Lægestuderende - Akut medicin','Vikar for læge, medicinstuderende - Akut medicin']))].map(v=>`<option value="${esc(v)}">`).join('');
 }
-const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''};
-const triCol=t=>({roed:'#d32f2f',orange:'#f57c00',gul:'#fbc02d',groen:'#43a047',blaa:'#1e88e5'}[t]||'var(--line)');
-function stPill(p){const s=stOf(p.st);return `<label class="pd2-st" data-s="${s[0]}" title="Status – klik for at skifte"><span class="pd2-dots">${[1,2,3].map(i=>`<i class="${s[2]>=i?'f':''}"></i>`).join('')}</span>${s[1]}<select data-st="${p.id}">${ST.map(x=>`<option value="${x[0]}"${x[0]===s[0]?' selected':''}>${x[1]}</option>`).join('')}<option value="__end">✓ Afslut</option></select></label>`}
-function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;const lv=lvlShort(d);
-  const pills=(lv?`<span class="pill lv">${esc(lv)}</span>`:'')+specsOf(d).map(x=>`<span class="pill sp" style="--pc:${specColor(x)}">${esc(x)}</span>`).join('')+
-    (/intro/i.test(lvlPart(d))?'<span class="pill ak" title="Introlæge – kan tage akutkald">🚑 Akutkald</span>':isStudVik(d)?`<button type="button" class="pill ak${d.akk?'':' no'}" data-akk="${d.id}" title="Akut kursus bestået? Klik for at skifte">🚑 ${d.akk?'Akut kursus ✓':'Akut kursus?'}</button>`:d.akk?'<span class="pill ak">🚑 Akutkald</span>':'')+
-    (d.nosug?'<span class="pill ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
-  return `<div class="pdr" data-did="${d.id}"><div class="pdr-doc"><span class="pd2-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd2-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}</b><div class="pills">${pills}</div><span class="meta">${u?`<span class="til ${u.cls}">${esc(u.txt)}</span>`:''}${d.tlf?`${u?' · ':''}☎ ${esc(d.tlf)}`:''}</span></div>
-    <span class="pd2-cnt ${cc(d)}" title="Aktive patienter">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd2-dm" data-dedit="${d.id}" title="Ret forvagt">⋯</button></div>
-    <div class="pdr-pts">${P.map(p=>ptCell(p,d)).join('')}<button type="button" class="pdc-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
-function ptCell(p,d){return `<div class="pdc" style="--tc:${triCol(p.tri)}" data-pid="${p.id}"><div class="r1"><button type="button" class="tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><select class="fld" data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span class="tm" title="Startet kl. ${hm(p.t0)}">${dur(Date.now()-p.t0)}</span></div>
-  <input class="fld hd" data-hd="${p.id}" value="${esc(p.head||'')}" maxlength="60" placeholder="Problematik">
-  <div class="r3">${stPill(p)}<span class="sp"></span><select class="pd2-mv" data-mv="${p.id}" title="Flyt til anden forvagt eller tilbage til ufordelte"><option value="">⇄</option><option value="__q">Tilbage til ufordelte</option>${onDocs().filter(x=>x.id!==d.id).map(x=>`<option value="${x.id}">${esc(shortName(x.name))}</option>`).join('')}</select><button class="pd2-ib ok" data-end="${p.id}" title="Afslut – patienten forsvinder fra listen">✓</button></div>
-  <input class="fld nt" data-nt="${p.id}" value="${esc(p.note||'')}" maxlength="60" placeholder="Note"></div>`}
+function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;const lv=lvlShort(d);const si=sleepInfo(d);
+  const pills=(lv?`<span class="pd-p pdp-lv">${esc(lv)}</span>`:'')+specsOf(d).map(x=>{const c=specColor(x);return `<span class="pd-p pdp-sp" style="--pc:${c};--pt:${txtOn(c)}">${esc(x)}</span>`}).join('')+
+    (/intro/i.test(lvlPart(d))?'<span class="pd-p pdp-ak" title="Introlæge – kan tage akutkald">🚑 Akutkald</span>':isStudVik(d)?`<button type="button" class="pd-p pdp-ak${d.akk?'':' no'}" data-akk="${d.id}" title="Akut kursus bestået? Klik for at skifte">🚑 ${d.akk?'Akut kursus ✓':'Akut kursus?'}</button>`:d.akk?'<span class="pd-p pdp-ak">🚑 Akutkald</span>':'')+
+    (si?`<span class="pd-p pdp-zz">💤 ${si.now?'sover til '+si.t:'sover '+si.f+'–'+si.t}</span>`:'')+(d.nosug?'<span class="pd-p pdp-ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
+  return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}</b><div class="pd-pills">${pills}</div><span class="pd-meta">${u?`<span class="${u.cls}">${esc(u.txt)}</span>`:''}${d.tlf?`${u?' · ':''}☎ ${esc(d.tlf)}`:''}</span></div>
+    <span class="pd-cnt ${cc(d)}" title="Aktive patienter">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd-x" data-dedit="${d.id}" title="Ret lægen">⋯</button></div>
+    <div class="pd-pts">${P.map(p=>VIEW==='avanceret'?acCell(p,d):scCell(p)).join('')}<button type="button" class="pd-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
+function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc" style="--tc:${triCol(p.tri)}" data-edit="${p.id}" title="Klik for at rette"><span class="a"><b>${esc(roomShort(p.room)||'–')}</b><span class="tt">${dur(Date.now()-p.t0)}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
+function acCell(p,d){return `<div class="pd-ac" style="--tc:${triCol(p.tri)}" data-pid="${p.id}"><div class="r"><button type="button" class="pd-tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><select class="fld" data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span class="sp"></span><span class="tt" title="Startet kl. ${hm(p.t0)}">${dur(Date.now()-p.t0)}</span></div>
+  <input class="fld h" data-hd="${p.id}" value="${esc(p.head||'')}" maxlength="60" placeholder="Problematik">
+  <input class="fld n" data-nt="${p.id}" value="${esc(p.note||'')}" maxlength="60" placeholder="Note">
+  <div class="r">${stPill(p)}<span class="sp"></span><select class="pd-mv" data-mv="${p.id}" title="Flyt til anden læge eller tilbage til ufordelte"><option value="">⇄</option><option value="__q">Tilbage til ufordelte</option>${onDocs().filter(x=>x.id!==d.id).map(x=>`<option value="${x.id}">${esc(shortName(x.name))}</option>`).join('')}</select><button class="pd-ib ok" data-end="${p.id}" title="Afslut – patienten forsvinder fra listen">✓ Afslut</button></div></div>`}
+/* ---------- redigér-dialog ---------- */
+let edId=null;
+function openEdit(id){edId=id;fillEdit();const d=$('#pdEdit');if(!d.open)d.showModal()}
+function fillEdit(){const p=S.pts.find(x=>x.id===edId);const dl=$('#pdEdit');if(!p){if(dl.open)dl.close();return}
+  const a=document.activeElement;if(a&&dl.contains(a)&&/INPUT/.test(a.tagName))return;
+  dl.innerHTML=`<div class="dh"><b>${p.room?'St. '+esc(roomShort(p.room))+' · ':''}${esc(p.head||'Patient')}</b><button type="button" class="pd-x" data-edclose="1">✕</button></div>
+  <div class="eb"><label>Problematik<input class="fld" id="edHead" maxlength="60" value="${esc(p.head||'')}" placeholder="fx Brystsmerter"></label>
+   <div class="two"><label>Stue<select class="fld" id="edRoom">${roomOpts(p.room)}</select></label><label>Læge<select class="fld" id="edDoc"><option value="">Ikke fordelt</option>${onDocs().map(d=>`<option value="${d.id}"${d.id===p.doc?' selected':''}>${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></label></div>
+   <label>Triage<span class="pd2-tris">${TRI.map(t=>`<button type="button" data-edtri="${t[0]}" class="${(p.tri||'')===t[0]?'on':''}" title="${t[1]}"><span class="pd-tri" data-t="${t[0]}"></span></button>`).join('')}</span></label>
+   <label>Status<span class="pd-seg">${ST.map(x=>`<button type="button" data-edst="${x[0]}" class="${p.st===x[0]?'on':''}">${x[1]}</button>`).join('')}</span></label>
+   <label>Note<input class="fld" id="edNote" maxlength="60" value="${esc(p.note||'')}" placeholder="Kort note"></label>
+   <span class="pd-meta">Startet kl. ${hm(p.t0)} · ${dur(Date.now()-p.t0)}</span></div>
+  <div class="df"><button type="button" data-eddel="1" style="color:#c62828">Slet</button><span style="flex:1"></span><button type="button" class="pd-ib ok" data-edend="1" style="padding:6px 14px">✓ Afslut patient</button><button type="button" class="primary" data-edclose="1">Luk</button></div>`}
+$('#pdEdit').addEventListener('click',e=>{const p=S.pts.find(x=>x.id===edId);if(!p)return;const t=e.target;let b;
+  if(t.closest('[data-edclose]')){$('#pdEdit').close();return}
+  if(b=t.closest('[data-edtri]')){p.tri=b.dataset.edtri;save();render();fillEdit();return}
+  if(b=t.closest('[data-edst]')){p.st=b.dataset.edst;p.ts=Date.now();save();render();fillEdit();return}
+  if(t.closest('[data-edend]')){$('#pdEdit').close();endPt(p.id);return}
+  if(t.closest('[data-eddel]')){if(confirm('Slet patienten fra listen (uden at afslutte)?')){S.pts=S.pts.filter(x=>x!==p);save();$('#pdEdit').close();render()}return}});
+$('#pdEdit').addEventListener('change',e=>{const p=S.pts.find(x=>x.id===edId);if(!p)return;const t=e.target;
+  if(t.id==='edRoom'){p.room=t.value}else if(t.id==='edDoc'){p.doc=t.value||null;if(p.doc){const d=docOf(p.doc);if(d)d.lastAt=Date.now()}}
+  else if(t.id==='edHead'||t.id==='edNote'){const v=t.value.replace(/\s+/g,' ').trim().slice(0,60);if(CPR.test(v)){alert('Det ligner et CPR-nummer – det gemmes ikke.');t.value=t.id==='edHead'?p.head||'':p.note||'';return}p[t.id==='edHead'?'head':'note']=v}
+  save();render()});
+$('#pdEdit').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();e.target.blur();$('#pdEdit').close()}});
+$('#pdEdit').addEventListener('close',()=>{const a=$('#pdEdit');a.querySelectorAll('input').forEach(i=>i.dispatchEvent(new Event('change',{bubbles:true})));edId=null});
 /* ---------- handlinger ---------- */
 function endPt(id){const p=S.pts.find(x=>x.id===id);if(!p)return;const d=docOf(p.doc);S.log.push(Object.assign({},p,{tEnd:Date.now(),docName:d?d.name:''}));S.pts=S.pts.filter(x=>x!==p);save();render()}
 function addKnown(d){const k=S.known.find(x=>nkey(x.name)===nkey(d.name));const v={name:d.name,lvl:d.lvl,grp:d.grp,akk:!!d.akk,kir:!!d.kir,nosug:!!d.nosug,tlf:d.tlf||'',spec:d.spec||null};if(k)Object.assign(k,v);else S.known.push(v)}
@@ -1229,7 +1332,7 @@ let editDoc=null;
 function openDocForm(d){editDoc=d?d.id:null;const f=$('#pdDocForm');f.hidden=false;f.name.value=d?d.name:'';f.lvl.value=d?d.lvl||'':'';f.until.value=d?d.until||'':'';f.grp.value=d?d.grp||'Forvagt':'Forvagt';
   f.spec.value=d&&Array.isArray(d.spec)?d.spec.join(', '):'';f.tlf.value=d?d.tlf||'':'';f.sug.checked=d?!d.nosug:true;f.akk.checked=d?!!d.akk:false;f.kir.checked=d?!!d.kir:false;
   f.querySelector('[type=submit]').textContent=d?'Gem':'Tilføj';let x=f.querySelector('[data-ddel]');if(x)x.remove();
-  if(d)f.querySelector('.act').insertAdjacentHTML('beforeend',`<button type="button" data-ddel="${d.id}" style="color:#c62828">Slet</button>`);f.name.focus();window.scrollTo({top:0,behavior:'smooth'})}
+  if(d)f.querySelector('.act').insertAdjacentHTML('beforeend',`<button type="button" data-ddel="${d.id}" style="color:#c62828">Fjern fra vagten</button>`);f.name.focus();window.scrollTo({top:0,behavior:'smooth'})}
 $('#pdDocForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const sp=f.spec.value.split(',').map(x=>x.trim()).filter(Boolean).map(x=>{const m=SPECS.find(s=>s[0].test(x)||s[1].toLowerCase()===x.toLowerCase());return m?m[1]:x});
   const v={name:f.name.value.trim(),lvl:f.lvl.value.trim(),until:f.until.value,grp:f.grp.value,tlf:f.tlf.value.trim(),spec:sp.length?sp:null,nosug:!f.sug.checked,akk:f.akk.checked,kir:f.kir.checked};if(!v.name)return;
   let d=editDoc&&docOf(editDoc);if(!d){d=S.docs.find(x=>nkey(x.name)===nkey(v.name));if(!d){d={id:uid()};S.docs.push(d)}}Object.assign(d,v,{on:true});addKnown(d);save();f.hidden=true;editDoc=null;render()});
@@ -1239,22 +1342,41 @@ $('#pdNewPt').addEventListener('submit',e=>{e.preventDefault();const f=e.target;
   const now=Date.now();S.pts.push({id:uid(),doc:null,st:newSt,tri:newTri,head,room:f.room.value,note,t0:now,ts:now});f.head.value='';f.note.value='';f.room.value='';newTri='';newSt='ank';save();render();f.head.focus()});
 function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;p.doc=did;p.t0=Date.now();if(['ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
 document.addEventListener('click',e=>{const t=e.target;let b;
+  if(t.closest('dialog'))return;
+  if(b=t.closest('[data-view]')){VIEW=b.dataset.view;try{localStorage.setItem(VIEWK,VIEW)}catch(_){}render();return}
+  if(b=t.closest('[data-edit]')){openEdit(b.dataset.edit);return}
   if(b=t.closest('[data-tn]')){newTri=b.dataset.tn;render();return}
   if(b=t.closest('#pdStNew [data-v]')){newSt=b.dataset.v;render();return}
   if(b=t.closest('[data-asg]')){const [p,d]=b.dataset.asg.split('|');assign(p,d);return}
   if(b=t.closest('[data-tric]')){const p=S.pts.find(x=>x.id===b.dataset.tric);if(p){const i=TRI.findIndex(x=>x[0]===(p.tri||''));p.tri=TRI[(i+1)%TRI.length][0];save();render()}return}
   if(b=t.closest('[data-akk]')){const d=docOf(b.dataset.akk);if(d){d.akk=!d.akk;addKnown(d);save();render()}return}
   if(b=t.closest('[data-end]')){endPt(b.dataset.end);return}
-  if(b=t.closest('[data-del]')){if(confirm('Slet patienten fra listen?')){S.pts=S.pts.filter(x=>x.id!==b.dataset.del);save();render()}return}
   if(b=t.closest('[data-undo]')){const l=S.log.find(x=>x.id===b.dataset.undo);if(l){S.log=S.log.filter(x=>x!==l);const p=Object.assign({},l);delete p.tEnd;delete p.docName;if(p.doc&&!docOf(p.doc))p.doc=null;S.pts.push(p);save();render()}return}
-  if(b=t.closest('[data-addp]')){const now=Date.now();const p={id:uid(),doc:b.dataset.addp,st:'mtg',tri:'',head:'',room:'',note:'',t0:now,ts:now};S.pts.push(p);save();render();const h=document.querySelector(`[data-hd="${p.id}"]`);if(h)h.focus();return}
+  if(b=t.closest('[data-addp]')){const now=Date.now();const p={id:uid(),doc:b.dataset.addp,st:'mtg',tri:'',head:'',room:'',note:'',t0:now,ts:now};S.pts.push(p);save();render();
+    if(VIEW==='avanceret'){const h=document.querySelector(`[data-hd="${p.id}"]`);if(h)h.focus()}else openEdit(p.id);return}
   if(b=t.closest('[data-dedit]')){openDocForm(docOf(b.dataset.dedit));return}
   if(b=t.closest('[data-don]')){const d=docOf(b.dataset.don);if(d){d.on=true;save();render()}return}
   if(b=t.closest('[data-ddel]')){const d=docOf(b.dataset.ddel);if(d&&confirm('Fjern '+d.name+' fra vagten? Patienterne går tilbage til ufordelte.')){ptsOf(d.id).forEach(p=>p.doc=null);d.on=false;$('#pdDocForm').hidden=true;save();render()}return}
   if(t.closest('[data-pdcancel]')){$('#pdDocForm').hidden=true;editDoc=null;return}
+  /* soveplan */
+  const sl=SL();
+  if(t.closest('#pdSleepBtn')){sl.open=!sl.open;if(sl.open&&!sl.made&&!sl.A.length&&!sl.B.length)makeSleep();save();render();return}
+  if(t.closest('[data-stdone]')){sl.statusDone=true;save();render();return}
+  if(t.closest('[data-imp]')){const x=document.getElementById('pdImport');if(x)x.click();return}
+  if(t.closest('[data-slmake]')){makeSleep();save();render();document.getElementById('pdSleep').scrollIntoView({block:'nearest'});return}
+  if(t.closest('[data-slpost]')){const v=$('#pdSlPost').value;if(v){sl.at=v;save();render()}return}
+  if(t.closest('[data-slclose]')){sl.open=false;save();render();return}
+  if(t.closest('[data-slnew]')){makeSleep();save();render();return}
+  if(t.closest('[data-slsave]')){sl.made=true;sl.statusDone=true;sl.open=false;save();render();return}
+  if(t.closest('[data-sldel]')){sl.made=false;sl.A=[];sl.B=[];save();render();return}
+  if(b=t.closest('[data-slmv]')){const id=b.dataset.slmv;if(sl.A.includes(id)){sl.A=sl.A.filter(x=>x!==id);sl.B.push(id)}else if(sl.B.includes(id)){sl.B=sl.B.filter(x=>x!==id)}else sl.A.push(id);save();render();return}
+  if(t.closest('[data-slcopy]')){const mid=midOf(sl);const nm=L=>L.map(id=>docOf(id)).filter(Boolean).map(d=>shortName(d.name)).join(', ')||'–';
+    const txt=`Soveplan i nat\nSover ${sl.at}–${mid}: ${nm(sl.A)}\nSover ${mid}–${sl.to}: ${nm(sl.B)}\nHusk at opdatere status i Clinical Tasking, inden I går i seng.`;
+    (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{b=t.closest('[data-slcopy]');b.textContent='✓ Kopieret';setTimeout(()=>render(),1500)}).catch(()=>prompt('Kopiér teksten:',txt));return}
 });
-document.addEventListener('change',e=>{const t=e.target;
-  if(t.dataset.st){const p=S.pts.find(x=>x.id===t.dataset.st);if(!p)return;if(t.value==='__end'){endPt(p.id);return}p.st=t.value;p.ts=Date.now();save();render();return}
+document.addEventListener('change',e=>{const t=e.target;if(t.closest('dialog'))return;
+  if(t.id==='pdSlAt'||t.id==='pdSlTo'){const sl=SL();if(t.value){sl[t.id==='pdSlAt'?'at':'to']=t.value;save();render()}return}
+  if(t.dataset.st){const p=S.pts.find(x=>x.id===t.dataset.st);if(!p)return;p.st=t.value;p.ts=Date.now();save();render();return}
   if(t.dataset.asgs){if(t.value)assign(t.dataset.asgs,t.value);return}
   if(t.dataset.room){const p=S.pts.find(x=>x.id===t.dataset.room);if(p){p.room=t.value;save()}return}
   if(t.dataset.mv){const p=S.pts.find(x=>x.id===t.dataset.mv);if(!p||!t.value)return;if(t.value==='__q')p.doc=null;else{p.doc=t.value;const d=docOf(t.value);if(d)d.lastAt=Date.now()}save();render();return}
@@ -1265,7 +1387,7 @@ document.addEventListener('keydown',e=>{const t=e.target;if(t.dataset&&(t.datase
 $('#pdRoom').innerHTML=roomOpts('');
 const tb=id=>document.getElementById(id);
 if(tb('pdAddDoc'))tb('pdAddDoc').addEventListener('click',()=>openDocForm(null));
-if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter og loggen ryddes. Lægerne sættes som ikke på vagt (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
+if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter, loggen og soveplanen ryddes. Lægerne sættes som ikke på vagt (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.sleep=null;S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
 /* ---------- import ---------- */
 const dlg=$('#pdImp');
 if(tb('pdImport'))tb('pdImport').addEventListener('click',()=>{$('#pdImpText').value='';$('#pdPrev').innerHTML='';$('#pdProg').textContent='';$('#pdDrop').querySelector('img')?.remove();dlg.showModal();willEnd();$('#pdDrop').focus()});
@@ -1322,7 +1444,7 @@ $('#pdImpGo').addEventListener('click',()=>{const D=parseText($('#pdImpText').va
     if(repl&&old.length>x.pts.length)old.slice(x.pts.length).forEach(o=>S.log.push(Object.assign({},o,{tEnd:now,docName:d.name})));
     if(repl)S.pts=S.pts.filter(p=>!(p.doc===d.id&&old.indexOf(p)>=x.pts.length))});
   save();dlg.close();render();prog('');});
-render();setInterval(()=>{const a=document.activeElement;if(a&&a.closest&&a.closest('main.pd2')&&(a.isContentEditable||/INPUT|SELECT|TEXTAREA/.test(a.tagName)))return;if(dlg.open)return;render()},60000);
+render();setInterval(()=>{const a=document.activeElement;if(a&&a.closest&&(a.closest('main.pd2')||a.closest('dialog'))&&(a.isContentEditable||/INPUT|SELECT|TEXTAREA/.test(a.tagName)))return;if(dlg.open)return;render()},30000);
 window.addEventListener('storage',e=>{if(e.key===KEY){try{S=JSON.parse(e.newValue)||S}catch(_){}render()}});
 const tt=document.getElementById('themeToggle');if(tt)tt.addEventListener('click',()=>{const r=document.documentElement;const n=r.dataset.theme==='light'?'dark':'light';r.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(_){}});
 })();
