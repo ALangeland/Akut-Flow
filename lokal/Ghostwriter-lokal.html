@@ -2574,6 +2574,7 @@ function renderPreview(){
     <div class="card-b">
       <div class="actions" style="margin-bottom:12px">
         <button class="btn primary" id="copyBtn" data-act="copy" title="Kopiér planen (Enter)">Kopiér</button>
+        <button class="btn" data-act="pdf" title="Udskriv planen eller gem den som PDF">🖨 PDF</button>
         <span class="warnline" id="missing"></span>
         <span class="spacer"></span>
         <button class="btn sm${p.pin?' ison':''}" data-act="pin" title="Vis øverst under Alle">📌 Fastgør</button>
@@ -3066,6 +3067,7 @@ function renderKLDraft(){
       <button class="btn primary" data-kl="first" title="Kopiér første udfyldte felt – derefter Enter for næste">Kopiér felt for felt</button>
       <button class="btn primary" data-kl="klar" title="Åbn et lille vindue med de udfyldte felter oven på EPJ – klik Kopiér ved hvert felt">Journal klar</button>
       <button class="btn" data-kl="copyall" title="Kopiér hele kladden som én tekst">Kopiér hele kladden</button>
+      <button class="btn" data-kl="pdf" title="Udskriv kladden eller gem den som PDF">🖨 PDF</button>
       <button class="btn sm jfin" data-jfin="1" title="Indsæt en mail sendt fra Ghostwriter mobil – kladden fordeles i felterne"><span class="ico"><img class="px v5" src="data:image/webp;base64,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" width="24" height="24" alt=""><span class="emo">📥</span></span>Indlæs fra mail</button>
       <button class="btn danger klnew" data-kl="clear" title="Ryd hele kladden (kan fortrydes)">Ryd kladde</button>
     </div>
@@ -3723,6 +3725,24 @@ renderEditor=function(p){_renderEditor0(p);const ta=$('#edText');if(!ta)return;
       else d.pre=(d.pre||[]).concat(moved);
       d.secs.splice(i,1);sync();if(!d.secs.length){box.remove();lab.style.display='';return}secBuild(box,d,ta)}});
 };
+
+/* ---------- Udskriv / gem som PDF ---------- */
+function gwPrint(title,text){
+  const head=/^([A-ZÆØÅ][A-ZÆØÅ0-9 ,.\/&()–-]{2,}):?\s*$/;const d=new Date();const p=n=>String(n).padStart(2,'0');
+  const isH=l=>head.test(l.trim())&&/[A-ZÆØÅ]{3}/.test(l);const LL=String(text).split('\n');const body=LL.filter((l,i)=>l.trim()||!(LL[i+1]!==undefined&&isH(LL[i+1]))).map(l=>head.test(l.trim())&&/[A-ZÆØÅ]{3}/.test(l)?`<h2>${esc(l.trim().replace(/:$/,''))}<\/h2>`:`<p>${esc(l)||'&nbsp;'}<\/p>`).join('');
+  const html=`<!doctype html><html lang="da"><head><meta charset="utf-8"><title>${esc(title)}<\/title><style>
+@page{size:A4;margin:18mm 16mm}
+body{font:11pt/1.45 Calibri,"Segoe UI",Arial,sans-serif;color:#000;margin:0}
+h1{font-size:15pt;margin:0 0 2pt}.dt{font-size:9pt;color:#555;margin:0 0 12pt;border-bottom:1px solid #999;padding-bottom:6pt}
+h2{font-size:10.5pt;letter-spacing:.04em;margin:12pt 0 3pt;break-after:avoid}
+p{margin:0;white-space:pre-wrap;orphans:3;widows:3}
+<\/style><\/head><body><h1>${esc(title)}<\/h1><div class="dt">Udskrevet ${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} kl. ${p(d.getHours())}:${p(d.getMinutes())} · Ghostwriter<\/div>${body}<\/body><\/html>`;
+  if(document.documentElement.classList.contains('afmob')){const w=window.open('','_blank');if(!w){toast('Pop-up blev blokeret');return}w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),300);return}
+  let f=document.getElementById('gwPrintFrame');if(f)f.remove();f=document.createElement('iframe');f.id='gwPrintFrame';f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';document.body.appendChild(f);
+  f.contentDocument.open();f.contentDocument.write(html);f.contentDocument.close();setTimeout(()=>{f.contentWindow.focus();f.contentWindow.print()},200);
+}
+function gwPrintKladde(){const t=klText();if(!t){toast('Kladden er tom');return}if(PHR.test(t))toast('⚠ Kladden indeholder {felter}, der ikke er udfyldt');gwPrint('Journalkladde',t)}
+function gwPrintPlan(){const p=byId(ui.sel);if(!p)return;gwPrint(p.title,filled(p.text))}
 
 function klOrder(){const o=[];JOURNAL.forEach(s=>s.f.forEach(f=>o.push(kk(s.s,f))));return o}
 function klText(){
@@ -4382,6 +4402,7 @@ $('#kl').addEventListener('click',async e=>{
   const c=e.target.closest('[data-klc]');if(c){klCopy(c.dataset.klc);return}
   const b=e.target.closest('[data-kl]');if(!b) return;
   const a=b.dataset.kl;
+  if(a==='pdf'){gwPrintKladde();return}
   if(a==='copyall'){const t=klText();if(!t){toast('Kladden er tom');return}if(await clip(t))toast((PHR.test(t)?'⚠ Indeholder {felter} – ':'')+'Hele kladden kopieret')}
   else if(a==='nextph'){if(klCaret)klNextPhGlobal(klCaret.k,klCaret.pos);else klNextPhGlobal(klOrder()[0],0)}
   else if(a==='first'){const k=klOrder().find(k=>(KL[k]||'').trim());if(k)klCopy(k);else toast('Kladden er tom')}
@@ -4494,6 +4515,7 @@ $('#pv').addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b) return;
   const a=b.dataset.act;
   if(a==='copy') copyPlan();
+  else if(a==='pdf') gwPrintPlan();
   else if(a==='edit'){ui.editing=true;ui.isNew=false;renderPreview()}
   else if(a==='cancel'){if(confirmLeave()){if(!byId(ui.sel))ui.sel=null;renderAll()}}
   else if(a==='del') delPlan();
