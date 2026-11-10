@@ -353,6 +353,7 @@ document.addEventListener('click',e=>{const t=e.target;
   const up=t.closest('[data-up]'),dn=t.closest('[data-dn]');if(up||dn){const i=+(up||dn).dataset[up?'up':'dn'],j=up?i-1:i+1;if(j<0||j>=L.length)return;[L[i],L[j]]=[L[j],L[i]];save();render()}});
 window.addEventListener('storage',e=>{if(e.key===KEY){try{L=JSON.parse(e.newValue)||L}catch(_){}render()}});
 render();
+const tt=document.getElementById("themeToggle");if(tt)tt.addEventListener("click",()=>{const r=document.documentElement;const n=r.dataset.theme==="light"?"dark":"light";r.dataset.theme=n;try{localStorage.setItem("alb-theme",n)}catch(_){}});
 })();
 </script>
 <script>(function(){

@@ -346,6 +346,7 @@ q.addEventListener('input',upd);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-nr]');if(b){q.value=b.dataset.nr;upd();q.focus();q.select()}});
 document.getElementById('op-cols').innerHTML=Object.keys(HOSP).map(h=>`<div class="op-col"><h3><span class="op-dot ${h}"></span>${esc(HOSP[h])}</h3><ul>${L.filter(x=>x.h===h).sort((a,b)=>a.nr.localeCompare(b.nr)).map(x=>`<li data-nr="${x.nr}">${x.nr} ${esc(x.by)}</li>`).join('')}</ul></div>`).join('');
 upd();
+const tt=document.getElementById("themeToggle");if(tt)tt.addEventListener("click",()=>{const r=document.documentElement;const n=r.dataset.theme==="light"?"dark":"light";r.dataset.theme=n;try{localStorage.setItem("alb-theme",n)}catch(_){}});
 })();
 </script>
 <script>(function(){
