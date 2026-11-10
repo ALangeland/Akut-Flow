@@ -1075,6 +1075,24 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
 .pd2-old{margin-top:24px;font-size:.76rem;color:var(--muted)}
 .pd2-old a{color:inherit}
 .pd-ac .pd-ib.ok{white-space:nowrap;padding:2px 7px}
+.pd-newbox{border-top:3px solid var(--accent)}
+.pd-bh{display:flex;align-items:center;gap:10px;margin:-2px 0 12px}
+.pd-bh .ic{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent,#fff);display:flex;align-items:center;justify-content:center;font:700 1.2rem/1 var(--sans);flex:none}
+.pd-bh b{display:block;font-size:1.02rem}
+.pd-bh small{display:block;font-size:.74rem;color:var(--muted)}
+.pd2-stat.sync b{font-size:1rem;color:var(--fg)}
+.pd2-stat.sync.old{border-color:#f57c00}
+.pd2-stat.sync.old b{color:#f57c00}
+.pd-evf{margin:8px 0 6px}
+.pd-evf button{font-size:.68rem;padding:3px 7px}
+.pd-ev{list-style:none;padding:0;margin:0;font-size:.78rem;display:flex;flex-direction:column;gap:3px;max-height:360px;overflow:auto}
+.pd-ev li{display:grid;grid-template-columns:16px 38px minmax(0,1fr);gap:4px;align-items:baseline;padding:2px 0;border-bottom:1px dashed var(--line)}
+.pd-ev .i{text-align:center;color:var(--muted)}.pd-ev .tm2{font:.72rem var(--mono);color:var(--muted)}
+.pd-ev li.ev-imp{color:var(--accent);font-weight:600}.pd-ev li.ev-asg .i{color:#43a047}.pd-ev li.ev-end .i{color:#43a047}
+.pd-amb{background:none;border:0;padding:0 0 0 4px;margin:0;min-height:0;font-size:.95rem;line-height:1;cursor:pointer;vertical-align:baseline}
+span.pd-amb{cursor:default}
+.pd-amb.no{filter:grayscale(1);opacity:.3}
+.pd-amb.no:hover{opacity:.7}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1104,8 +1122,8 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
       <p class="pd2-old">Patienter registreres kun med problematik, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a>.</p>
     </section>
     <aside class="pd2-q">
-      <h2 class="pd2-h">Ny patient</h2>
-      <div class="pd2-box">
+      <div class="pd2-box pd-newbox">
+        <div class="pd-bh"><span class="ic">+</span><div><b>Ny patient</b><small>Lægges i køen – tildel bagefter</small></div></div>
         <form class="pd2-form" id="pdNewPt" autocomplete="off">
           <div class="row"><input class="fld" name="head" maxlength="60" placeholder="Problematik, fx Brystsmerter"><select class="fld" name="room" id="pdRoom" title="Stue"></select></div>
           <div class="row"><span class="pd2-lbl">Triage</span><span class="pd2-tris" id="pdTriNew"></span></div>
@@ -1115,6 +1133,7 @@ dialog.pd2-dlg::backdrop{background:rgba(0,0,0,.55)}
       </div>
       <h2 class="pd2-h" style="margin-top:14px" id="pdQh">Ikke fordelt</h2>
       <div class="pd2-ql" id="pdQueue"></div>
+      <details class="pd2-log pd2-box" style="margin-top:12px" open><summary id="pdEvSum">Ændringslog</summary><div class="pd-seg pd-evf" id="pdEvF"></div><ul id="pdEv" class="pd-ev"></ul></details>
       <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
     </aside>
   </div>
@@ -1245,6 +1264,13 @@ function whyText(ak){const L=ak?suggestAk():suggest();const fmtB=d=>{const P=pts
   lines.push('');lines.push('Regel: belastning = aktive patienter, hvor «Plan lagt» tæller halvt.'+(ak?' Akutkald: kun introlæger og studerende/vikarer med akut kursus bestået.':''));
   const ex=[];onDocs().forEach(d=>{let r='';if(isKir(d))r='kirurgi';else if(d.nosug)r='foreslås ikke';else if(asleep(d))r='sover';else{const u=untilInfo(d);if(u&&u.left<=20*60e3)r=u.left>0?'går hjem om under 20 min':'har fri';else if(ak&&!canAk(d))r=isStudVik(d)?'mangler akut kursus':'ikke intro/akut kursus'}if(r)ex.push(`${shortName(d.name)} (${r})`)});
   if(ex.length)lines.push('Ikke med: '+ex.join(', ')+'.');return lines.join('\n')}
+/* ---------- ændringslog ---------- */
+const EVI={imp:'🔄',asg:'→',mv:'⇄',st:'●',end:'✓',new:'＋',doc:'👤',sl:'💤',undo:'↶'};
+function ev(type,txt,did){S.ev=S.ev||[];S.ev.push({t:Date.now(),type,txt,did:did||null});if(S.ev.length>500)S.ev=S.ev.slice(-500)}
+const ptLabel=p=>(p.room?'St. '+roomShort(p.room)+' · ':'')+(p.head||'patient');
+const dnm=id=>{const d=docOf(id);return d?shortName(d.name):'ufordelt'};
+const ago=t=>{const m=Math.floor((Date.now()-t)/60000);return m<1?'lige nu':m<60?m+' min siden':Math.floor(m/60)+' t '+p2(m%60)+' min siden'};
+let evFilter='';
 /* ---------- render ---------- */
 let newTri='',newSt='ank';
 const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''};
@@ -1256,7 +1282,7 @@ function render(){
   const sl=SL();
   const med=onDocs().filter(d=>!isKir(d));const medIds=new Set(med.map(d=>d.id));
   const q=S.pts.filter(p=>!p.doc);const act=S.pts.filter(p=>p.doc&&medIds.has(p.doc));
-  $('#pdStats').innerHTML=[[med.filter(d=>!isLead(d)).length,'forvagter'],[q.length,'ikke fordelt'],[act.length,'hos lægerne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('');
+  $('#pdStats').innerHTML=[[med.filter(d=>!isLead(d)).length,'forvagter'],[q.length,'ikke fordelt'],[act.length,'hos lægerne'],[S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length,'afsluttet']].map(([n,t])=>`<div class="pd2-stat"><b>${n}</b><span>${t}</span></div>`).join('')+(S.lastSync?`<div class="pd2-stat sync${Date.now()-S.lastSync>60*60e3?' old':''}" title="Seneste import fra Clinical Tasking"><b>🔄 ${hm(S.lastSync)}</b><span>afstemt med CT<br>${ago(S.lastSync)}</span></div>`:'<div class="pd2-stat sync old"><b>🔄 –</b><span>ikke afstemt<br>med CT endnu</span></div>');
   const s1=suggest()[0],s2=suggestAk()[0];
   $('#pdSug').innerHTML=`<div class="pd2-sg" title="${esc(whyText(false))}"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak" title="${esc(whyText(true))}"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
   /* påmindelser */
@@ -1288,6 +1314,10 @@ function render(){
   $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('Koordinerende læge og bagvagt',lead)+
     (kir.length?`<details class="pd-secb pd-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd-rows">${kir.map(docRow).join('')}</div></details>`:'')+
     (S.docs.some(d=>d.on===false)?`<div class="pd-secb"><h2 class="pd2-h">Ikke på vagt</h2><div class="pd-pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
+  const E=(S.ev||[]).filter(e=>!evFilter||e.type===evFilter||(evFilter==='asg'&&e.type==='mv')).slice(-150).reverse();
+  $('#pdEvSum').textContent=`Ændringslog (${(S.ev||[]).length})`;
+  $('#pdEvF').innerHTML=[['','Alle'],['imp','Afstemning'],['asg','Tildeling'],['st','Status'],['end','Afsluttet']].map(([k,t])=>`<button type="button" data-evf="${k}" class="${evFilter===k?'on':''}">${t}</button>`).join('');
+  $('#pdEv').innerHTML=E.map(e=>`<li class="ev-${e.type}"><span class="i">${EVI[e.type]||'•'}</span><span class="tm2">${hm(e.t)}</span><span>${esc(e.txt)}</span></li>`).join('')||'<li class="pd-empty">Ingen ændringer endnu.</li>';
   const L=S.log.slice().sort((a,b)=>b.tEnd-a.tEnd).slice(0,40);
   $('#pdLogSum').textContent=`Afsluttede (${S.log.length})`;
   $('#pdLog').innerHTML=L.map(l=>`<li><span class="pd-tri" data-t="${l.tri||''}"></span><span>${hm(l.tEnd)} · ${esc(l.head||'Patient')} · ${esc(shortName(l.docName||''))}</span><button class="pd-ib" data-undo="${l.id}">Fortryd</button></li>`).join('')||'<li class="pd-empty">Ingen endnu.</li>';
@@ -1296,9 +1326,8 @@ function render(){
 }
 function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;const lv=lvlShort(d);const si=sleepInfo(d);
   const pills=(lv?`<span class="pd-p pdp-lv">${esc(lv)}</span>`:'')+specsOf(d).map(x=>{const c=specColor(x);return `<span class="pd-p pdp-sp" style="--pc:${c};--pt:${txtOn(c)}">${esc(x)}</span>`}).join('')+
-    (/intro/i.test(lvlPart(d))?'<span class="pd-p pdp-ak" title="Introlæge – kan tage akutkald">🚑 Akutkald</span>':isStudVik(d)?`<button type="button" class="pd-p pdp-ak${d.akk?'':' no'}" data-akk="${d.id}" title="Akut kursus bestået? Klik for at skifte">🚑 ${d.akk?'Akut kursus ✓':'Akut kursus?'}</button>`:d.akk?'<span class="pd-p pdp-ak">🚑 Akutkald</span>':'')+
     (si?`<span class="pd-p pdp-zz">💤 ${si.now?'sover til '+si.t:'sover '+si.f+'–'+si.t}</span>`:'')+(d.nosug?'<span class="pd-p pdp-ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
-  return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}</b><div class="pd-pills">${pills}</div><span class="pd-meta">${u?`<span class="${u.cls}">${esc(u.txt)}</span>`:''}${d.tlf?`${u?' · ':''}☎ ${esc(d.tlf)}`:''}</span></div>
+  return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}${/intro/i.test(lvlPart(d))?'<span class="pd-amb" title="Introlæge – kan tage akutkald">🚑</span>':isStudVik(d)||d.akk?`<button type="button" class="pd-amb${d.akk?'':' no'}" data-akk="${d.id}" title="${d.akk?'Akut kursus bestået – kan tage akutkald. Klik for at fjerne':'Akut kursus ikke markeret – klik hvis bestået'}">🚑</button>`:''}</b><div class="pd-pills">${pills}</div><span class="pd-meta">${u?`<span class="${u.cls}">${esc(u.txt)}</span>`:''}${d.tlf?`${u?' · ':''}☎ ${esc(d.tlf)}`:''}${d.lastAt?`<br>sidst tildelt kl. ${hm(d.lastAt)} (${ago(d.lastAt)})`:''}</span></div>
     <span class="pd-cnt ${cc(d)}" title="Aktive patienter">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd-x" data-dedit="${d.id}" title="Ret lægen">⋯</button></div>
     <div class="pd-pts">${P.map(p=>VIEW==='avanceret'?acCell(p,d):scCell(p)).join('')}<button type="button" class="pd-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
 function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc" style="--tc:${triCol(p.tri)}" data-edit="${p.id}" title="Klik for at rette"><span class="a"><b>${esc(roomShort(p.room)||'–')}</b><span class="tt">${dur(Date.now()-p.t0)}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
@@ -1322,17 +1351,17 @@ function fillEdit(){const p=S.pts.find(x=>x.id===edId);const dl=$('#pdEdit');if(
 $('#pdEdit').addEventListener('click',e=>{const p=S.pts.find(x=>x.id===edId);if(!p)return;const t=e.target;let b;
   if(t.closest('[data-edclose]')){$('#pdEdit').close();return}
   if(b=t.closest('[data-edtri]')){p.tri=b.dataset.edtri;save();render();fillEdit();return}
-  if(b=t.closest('[data-edst]')){p.st=b.dataset.edst;p.ts=Date.now();save();render();fillEdit();return}
+  if(b=t.closest('[data-edst]')){if(p.st!==b.dataset.edst)ev('st',`${ptLabel(p)}: ${stOf(b.dataset.edst)[1]} (${dnm(p.doc)})`,p.doc);p.st=b.dataset.edst;p.ts=Date.now();save();render();fillEdit();return}
   if(t.closest('[data-edend]')){$('#pdEdit').close();endPt(p.id);return}
   if(t.closest('[data-eddel]')){if(confirm('Slet patienten fra listen (uden at afslutte)?')){S.pts=S.pts.filter(x=>x!==p);save();$('#pdEdit').close();render()}return}});
 $('#pdEdit').addEventListener('change',e=>{const p=S.pts.find(x=>x.id===edId);if(!p)return;const t=e.target;
-  if(t.id==='edRoom'){p.room=t.value}else if(t.id==='edDoc'){p.doc=t.value||null;if(p.doc){const d=docOf(p.doc);if(d)d.lastAt=Date.now()}}
+  if(t.id==='edRoom'){p.room=t.value}else if(t.id==='edDoc'){const fr=p.doc;p.doc=t.value||null;ev(fr?'mv':'asg',fr?`Flyttet: ${ptLabel(p)} ${dnm(fr)} → ${dnm(p.doc)}`:`Tildelt: ${ptLabel(p)} → ${dnm(p.doc)}`,p.doc);if(p.doc){const d=docOf(p.doc);if(d)d.lastAt=Date.now()}}
   else if(t.id==='edHead'||t.id==='edNote'){const v=t.value.replace(/\s+/g,' ').trim().slice(0,60);if(CPR.test(v)){alert('Det ligner et CPR-nummer – det gemmes ikke.');t.value=t.id==='edHead'?p.head||'':p.note||'';return}p[t.id==='edHead'?'head':'note']=v}
   save();render()});
 $('#pdEdit').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();e.target.blur();$('#pdEdit').close()}});
 $('#pdEdit').addEventListener('close',()=>{const a=$('#pdEdit');a.querySelectorAll('input').forEach(i=>i.dispatchEvent(new Event('change',{bubbles:true})));edId=null});
 /* ---------- handlinger ---------- */
-function endPt(id){const p=S.pts.find(x=>x.id===id);if(!p)return;const d=docOf(p.doc);S.log.push(Object.assign({},p,{tEnd:Date.now(),docName:d?d.name:''}));S.pts=S.pts.filter(x=>x!==p);save();render()}
+function endPt(id){const p=S.pts.find(x=>x.id===id);if(!p)return;const d=docOf(p.doc);ev('end',`Afsluttet: ${ptLabel(p)} (${dnm(p.doc)})`,p.doc);S.log.push(Object.assign({},p,{tEnd:Date.now(),docName:d?d.name:''}));S.pts=S.pts.filter(x=>x!==p);save();render()}
 function addKnown(d){const k=S.known.find(x=>nkey(x.name)===nkey(d.name));const v={name:d.name,lvl:d.lvl,grp:d.grp,akk:!!d.akk,kir:!!d.kir,nosug:!!d.nosug,tlf:d.tlf||'',spec:d.spec||null};if(k)Object.assign(k,v);else S.known.push(v)}
 function defaults(d){if(d.kir===undefined)d.kir=/kirurgi|\bMTK\b|ortopæd/i.test(d.lvl||'');if(d.nosug===undefined)d.nosug=isLead(d);const k=S.known.find(x=>nkey(x.name)===nkey(d.name));if(k&&d.akk===undefined)d.akk=!!k.akk;if(k&&!d.tlf&&k.tlf)d.tlf=k.tlf}
 let editDoc=null;
@@ -1342,14 +1371,15 @@ function openDocForm(d){editDoc=d?d.id:null;const f=$('#pdDocForm');f.hidden=fal
   if(d)f.querySelector('.act').insertAdjacentHTML('beforeend',`<button type="button" data-ddel="${d.id}" style="color:#c62828">Fjern fra vagten</button>`);f.name.focus();window.scrollTo({top:0,behavior:'smooth'})}
 $('#pdDocForm').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const sp=f.spec.value.split(',').map(x=>x.trim()).filter(Boolean).map(x=>{const m=SPECS.find(s=>s[0].test(x)||s[1].toLowerCase()===x.toLowerCase());return m?m[1]:x});
   const v={name:f.name.value.trim(),lvl:f.lvl.value.trim(),until:f.until.value,grp:f.grp.value,tlf:f.tlf.value.trim(),spec:sp.length?sp:null,nosug:!f.sug.checked,akk:f.akk.checked,kir:f.kir.checked};if(!v.name)return;
-  let d=editDoc&&docOf(editDoc);if(!d){d=S.docs.find(x=>nkey(x.name)===nkey(v.name));if(!d){d={id:uid()};S.docs.push(d)}}Object.assign(d,v,{on:true});addKnown(d);save();f.hidden=true;editDoc=null;render()});
+  let d=editDoc&&docOf(editDoc);if(!d){d=S.docs.find(x=>nkey(x.name)===nkey(v.name));if(!d){d={id:uid()};S.docs.push(d)}}if(!editDoc)ev('doc',`Læge tilføjet: ${shortName(v.name)}`,d.id);Object.assign(d,v,{on:true});addKnown(d);save();f.hidden=true;editDoc=null;render()});
 $('#pdDocForm').name.addEventListener('change',e=>{const k=S.known.find(x=>x.name===e.target.value);if(k){const f=$('#pdDocForm');if(!f.lvl.value)f.lvl.value=k.lvl||'';f.grp.value=k.grp||'Forvagt';f.akk.checked=!!k.akk;f.kir.checked=!!k.kir;f.sug.checked=!k.nosug;if(!f.tlf.value)f.tlf.value=k.tlf||''}});
 $('#pdNewPt').addEventListener('submit',e=>{e.preventDefault();const f=e.target;const head=f.head.value.trim(),note=f.note.value.trim();
   if(CPR.test(head+' '+note)){alert('Det ligner et CPR-nummer. Skriv kun problematik, stue og en kort note.');return}
-  const now=Date.now();S.pts.push({id:uid(),doc:null,st:newSt,tri:newTri,head,room:f.room.value,note,t0:now,ts:now});f.head.value='';f.note.value='';f.room.value='';newTri='';newSt='ank';save();render();f.head.focus()});
-function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;p.doc=did;p.t0=Date.now();if(['ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
+  const now=Date.now();S.pts.push({id:uid(),doc:null,st:newSt,tri:newTri,head,room:f.room.value,note,t0:now,ts:now});ev('new',`Ny patient: ${(f.room.value?'St. '+roomShort(f.room.value)+' · ':'')+(head||'patient')} (${stOf(newSt)[1]})`);f.head.value='';f.note.value='';f.room.value='';newTri='';newSt='ank';save();render();f.head.focus()});
+function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;ev('asg',`Tildelt: ${ptLabel(p)} → ${shortName(d.name)}`,did);p.doc=did;p.t0=Date.now();if(['ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
 document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('dialog'))return;
+  if(b=t.closest('[data-evf]')){evFilter=b.dataset.evf;render();return}
   if(b=t.closest('[data-view]')){VIEW=b.dataset.view;try{localStorage.setItem(VIEWK,VIEW)}catch(_){}render();return}
   if(b=t.closest('[data-edit]')){openEdit(b.dataset.edit);return}
   if(b=t.closest('[data-tn]')){newTri=b.dataset.tn;render();return}
@@ -1358,12 +1388,12 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(b=t.closest('[data-tric]')){const p=S.pts.find(x=>x.id===b.dataset.tric);if(p){const i=TRI.findIndex(x=>x[0]===(p.tri||''));p.tri=TRI[(i+1)%TRI.length][0];save();render()}return}
   if(b=t.closest('[data-akk]')){const d=docOf(b.dataset.akk);if(d){d.akk=!d.akk;addKnown(d);save();render()}return}
   if(b=t.closest('[data-end]')){endPt(b.dataset.end);return}
-  if(b=t.closest('[data-undo]')){const l=S.log.find(x=>x.id===b.dataset.undo);if(l){S.log=S.log.filter(x=>x!==l);const p=Object.assign({},l);delete p.tEnd;delete p.docName;if(p.doc&&!docOf(p.doc))p.doc=null;S.pts.push(p);save();render()}return}
+  if(b=t.closest('[data-undo]')){const l=S.log.find(x=>x.id===b.dataset.undo);if(l){ev('undo',`Fortrudt afslutning: ${ptLabel(l)}`,l.doc);S.log=S.log.filter(x=>x!==l);const p=Object.assign({},l);delete p.tEnd;delete p.docName;if(p.doc&&!docOf(p.doc))p.doc=null;S.pts.push(p);save();render()}return}
   if(b=t.closest('[data-addp]')){const now=Date.now();const p={id:uid(),doc:b.dataset.addp,st:'mtg',tri:'',head:'',room:'',note:'',t0:now,ts:now};S.pts.push(p);save();render();
     if(VIEW==='avanceret'){const h=document.querySelector(`[data-hd="${p.id}"]`);if(h)h.focus()}else openEdit(p.id);return}
   if(b=t.closest('[data-dedit]')){openDocForm(docOf(b.dataset.dedit));return}
   if(b=t.closest('[data-don]')){const d=docOf(b.dataset.don);if(d){d.on=true;save();render()}return}
-  if(b=t.closest('[data-ddel]')){const d=docOf(b.dataset.ddel);if(d&&confirm('Fjern '+d.name+' fra vagten? Patienterne går tilbage til ufordelte.')){ptsOf(d.id).forEach(p=>p.doc=null);d.on=false;$('#pdDocForm').hidden=true;save();render()}return}
+  if(b=t.closest('[data-ddel]')){const d=docOf(b.dataset.ddel);if(d&&confirm('Fjern '+d.name+' fra vagten? Patienterne går tilbage til ufordelte.')){ev('doc',`Læge fjernet fra vagten: ${shortName(d.name)}`,d.id);ptsOf(d.id).forEach(p=>p.doc=null);d.on=false;$('#pdDocForm').hidden=true;save();render()}return}
   if(t.closest('[data-pdcancel]')){$('#pdDocForm').hidden=true;editDoc=null;return}
   /* soveplan */
   const sl=SL();
@@ -1374,7 +1404,7 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('[data-slpost]')){const v=$('#pdSlPost').value;if(v){sl.at=v;save();render()}return}
   if(t.closest('[data-slclose]')){sl.open=false;save();render();return}
   if(t.closest('[data-slnew]')){makeSleep();save();render();return}
-  if(t.closest('[data-slsave]')){sl.made=true;sl.statusDone=true;sl.open=false;save();render();return}
+  if(t.closest('[data-slsave]')){ev('sl',`Soveplan ${sl.at}–${sl.to} lagt`);sl.made=true;sl.statusDone=true;sl.open=false;save();render();return}
   if(t.closest('[data-sldel]')){sl.made=false;sl.A=[];sl.B=[];save();render();return}
   if(b=t.closest('[data-slmv]')){const id=b.dataset.slmv;if(sl.A.includes(id)){sl.A=sl.A.filter(x=>x!==id);sl.B.push(id)}else if(sl.B.includes(id)){sl.B=sl.B.filter(x=>x!==id)}else sl.A.push(id);save();render();return}
   if(t.closest('[data-slcopy]')){const mid=midOf(sl);const nm=L=>L.map(id=>docOf(id)).filter(Boolean).map(d=>shortName(d.name)).join(', ')||'–';
@@ -1383,10 +1413,10 @@ document.addEventListener('click',e=>{const t=e.target;let b;
 });
 document.addEventListener('change',e=>{const t=e.target;if(t.closest('dialog'))return;
   if(t.id==='pdSlAt'||t.id==='pdSlTo'){const sl=SL();if(t.value){sl[t.id==='pdSlAt'?'at':'to']=t.value;save();render()}return}
-  if(t.dataset.st){const p=S.pts.find(x=>x.id===t.dataset.st);if(!p)return;p.st=t.value;p.ts=Date.now();save();render();return}
+  if(t.dataset.st){const p=S.pts.find(x=>x.id===t.dataset.st);if(!p)return;ev('st',`${ptLabel(p)}: ${stOf(t.value)[1]} (${dnm(p.doc)})`,p.doc);p.st=t.value;p.ts=Date.now();save();render();return}
   if(t.dataset.asgs){if(t.value)assign(t.dataset.asgs,t.value);return}
   if(t.dataset.room){const p=S.pts.find(x=>x.id===t.dataset.room);if(p){p.room=t.value;save()}return}
-  if(t.dataset.mv){const p=S.pts.find(x=>x.id===t.dataset.mv);if(!p||!t.value)return;if(t.value==='__q')p.doc=null;else{p.doc=t.value;const d=docOf(t.value);if(d)d.lastAt=Date.now()}save();render();return}
+  if(t.dataset.mv){const p=S.pts.find(x=>x.id===t.dataset.mv);if(!p||!t.value)return;ev('mv',`Flyttet: ${ptLabel(p)} ${dnm(p.doc)} → ${t.value==='__q'?'ufordelt':dnm(t.value)}`,t.value==='__q'?null:t.value);if(t.value==='__q')p.doc=null;else{p.doc=t.value;const d=docOf(t.value);if(d)d.lastAt=Date.now()}save();render();return}
   const k=t.dataset.hd?'head':t.dataset.nt?'note':null;if(k){const p=S.pts.find(x=>x.id===(t.dataset.hd||t.dataset.nt));if(!p)return;const v=t.value.replace(/\s+/g,' ').trim().slice(0,60);
     if(CPR.test(v)){alert('Det ligner et CPR-nummer – det gemmes ikke.');t.value=p[k]||'';return}p[k]=v;save()}
 });
@@ -1394,7 +1424,7 @@ document.addEventListener('keydown',e=>{const t=e.target;if(t.dataset&&(t.datase
 $('#pdRoom').innerHTML=roomOpts('');
 const tb=id=>document.getElementById(id);
 if(tb('pdAddDoc'))tb('pdAddDoc').addEventListener('click',()=>openDocForm(null));
-if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter, loggen og soveplanen ryddes. Lægerne sættes som ikke på vagt (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.sleep=null;S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
+if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: alle patienter, loggen og soveplanen ryddes. Lægerne sættes som ikke på vagt (de kan tilføjes igen med ét klik).'))return;S.pts=[];S.log=[];S.sleep=null;S.ev=[];S.lastSync=null;S.docs.forEach(d=>{d.on=false;delete d.until});save();render()});
 /* ---------- import ---------- */
 const dlg=$('#pdImp');
 if(tb('pdImport'))tb('pdImport').addEventListener('click',()=>{$('#pdImpText').value='';$('#pdPrev').innerHTML='';$('#pdProg').textContent='';$('#pdDrop').querySelector('img')?.remove();dlg.showModal();willEnd();$('#pdDrop').focus()});
@@ -1444,13 +1474,13 @@ function willEnd(){const D=parseText($('#pdImpText').value);const chosen=new Set
   $('#pdWillEnd').textContent=L.length?($('#pdImpRepl').checked?'Afsluttes: ':'Ville blive afsluttet: ')+L.join(' · '):'Ingen patienter afsluttes.'}
 $('#pdPrev').addEventListener('change',willEnd);$('#pdImpRepl').addEventListener('change',willEnd);
 $('#pdImpGo').addEventListener('click',()=>{const D=parseText($('#pdImpText').value);if(!D.length){alert('Der er ingen forvagter i teksten.');return}
-  const chosen=new Set($$('#pdPrev [data-pi]').filter(c=>c.checked).map(c=>+c.dataset.pi));const repl=$('#pdImpRepl').checked;const now=Date.now();let nd=0,np=0;
+  const chosen=new Set($$('#pdPrev [data-pi]').filter(c=>c.checked).map(c=>+c.dataset.pi));const repl=$('#pdImpRepl').checked;const now=Date.now();let nd=0,np=0,sc=0,ne=0,nn=0;
   D.forEach((x,i)=>{if(!chosen.has(i))return;let d=S.docs.find(y=>nkey(y.name)===nkey(x.name));if(!d){d={id:uid(),name:x.name};S.docs.push(d);nd++}
     Object.assign(d,{name:x.name,lvl:x.lvl||d.lvl,grp:x.grp,on:true});if(x.until)d.until=x.until;defaults(d);addKnown(d);
-    const old=ptsOf(d.id);x.pts.forEach((p,j)=>{const o=old[j];if(o){if(o.st!==p.st){o.st=p.st;o.ts=now}if(p.tri)o.tri=p.tri;if(p.head&&!o.head)o.head=p.head}else{S.pts.push({id:uid(),doc:d.id,st:p.st,tri:p.tri,head:p.head,room:'',note:'',t0:now,ts:now});np++}});
-    if(repl&&old.length>x.pts.length)old.slice(x.pts.length).forEach(o=>S.log.push(Object.assign({},o,{tEnd:now,docName:d.name})));
+    const old=ptsOf(d.id);x.pts.forEach((p,j)=>{const o=old[j];if(o){if(o.st!==p.st){o.st=p.st;o.ts=now;sc++}if(p.tri)o.tri=p.tri;if(p.head&&!o.head)o.head=p.head}else{S.pts.push({id:uid(),doc:d.id,st:p.st,tri:p.tri,head:p.head,room:'',note:'',t0:now,ts:now});np++}});
+    nn++;if(repl&&old.length>x.pts.length)old.slice(x.pts.length).forEach(o=>(ne++,S.log.push(Object.assign({},o,{tEnd:now,docName:d.name}))));
     if(repl)S.pts=S.pts.filter(p=>!(p.doc===d.id&&old.indexOf(p)>=x.pts.length))});
-  save();dlg.close();render();prog('');});
+  S.lastSync=now;ev('imp',`Afstemt med Clinical Tasking: ${nn} læger · ${np} nye patienter · ${sc} statusændringer · ${ne} afsluttet`);save();dlg.close();render();prog('');});
 render();setInterval(()=>{const a=document.activeElement;if(a&&a.closest&&(a.closest('main.pd2')||a.closest('dialog'))&&(a.isContentEditable||/INPUT|SELECT|TEXTAREA/.test(a.tagName)))return;if(dlg.open)return;render()},30000);
 window.addEventListener('storage',e=>{if(e.key===KEY){try{S=JSON.parse(e.newValue)||S}catch(_){}render()}});
 const tt=document.getElementById('themeToggle');if(tt)tt.addEventListener('click',()=>{const r=document.documentElement;const n=r.dataset.theme==='light'?'dark':'light';r.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(_){}});
