@@ -1086,6 +1086,9 @@ span.pd-amb{cursor:default}
 .pd-cnt{cursor:pointer;user-select:none}
 .okc{color:#43a047}
 .pd-sc{width:172px}.pd-sc .a{white-space:nowrap}.pd-sc .a b{font-size:.82rem}.pd-sc .a .tt{font-size:.66rem}
+.pd-slh{margin:10px 0 6px;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pd-st[data-s=ind]{border-color:#43a047}
+.pd-ishift{display:flex;align-items:center;gap:6px;margin-right:14px}
 </style></head>
 <body>
 <header class="topbar"><div class="topbar-in">
@@ -1108,7 +1111,7 @@ span.pd-amb{cursor:default}
         <div class="chk"><label><input type="checkbox" name="sug"> Foreslås til patienter</label><label><input type="checkbox" name="akk"> Akut kursus bestået – kan tage akutkald</label><label><input type="checkbox" name="kir"> Kirurgisk – eget overblik</label></div>
         <span class="act"><button class="primary" type="submit">Gem</button><button type="button" data-pdcancel="1">Annullér</button></span>
       </form>
-      <div class="pd2-bar"><span class="pd-seg" id="pdView"><button type="button" data-view="simpel">Simpel</button><button type="button" data-view="avanceret">Avanceret</button></span><span class="pd2-lbl" style="min-width:0;margin-left:8px">Sortér</span><span class="pd-seg" id="pdSort"><button type="button" data-sort="load">Mest belastet</button><button type="button" data-sort="light">Mindst belastet</button><button type="button" data-sort="name">Navn</button><button type="button" data-sort="fixed">Fast</button></span><span class="sp"></span><span id="pdSync"></span><button type="button" class="pd-ib" id="pdSleepBtn">💤 Soveplan</button></div>
+      <div class="pd2-bar"><span class="pd-seg" id="pdView"><button type="button" data-view="simpel">Simpel</button><button type="button" data-view="avanceret">Avanceret</button></span><span class="pd2-lbl" style="min-width:0;margin-left:8px">Sortér</span><span class="pd-seg" id="pdSort"><button type="button" data-sort="load">Mest belastet</button><button type="button" data-sort="light">Mindst belastet</button><button type="button" data-sort="name">Navn</button><button type="button" data-sort="fixed">Fast</button></span><span class="sp"></span><span class="pd-seg" id="pdShift" title="Vagttype – soveplan og nattepåmindelser vises kun om aftenen/natten"><button type="button" data-shift="dag">☀️ Dag</button><button type="button" data-shift="nat">🌙 Aften/nat</button></span><span id="pdSync"></span><button type="button" class="pd-ib" id="pdSleepBtn">💤 Soveplan</button></div>
       <div id="pdSleep"></div>
       <div id="pdBoard"></div>
       <p class="pd2-old">Patienter registreres kun med problematik, stue og note – aldrig navn eller CPR. Afsluttede patienter forsvinder fra listen. <a href="https://alangeland.github.io/Akut-Flow/patientdirigenten-gammel.html">Åbn den gamle Patientdirigent</a>.</p>
@@ -1146,18 +1149,19 @@ span.pd-amb{cursor:default}
       <p class="pd2-help">Ret teksten, hvis noget er læst forkert. Format: «## Gruppe», «Navn | Niveau - speciale | til kl.» og en linje pr. patient: «- Status | triagefarve | problematik».</p>
     </div>
   </div>
-  <div class="df"><div class="repl"><label><input type="checkbox" id="pdImpRepl" checked> Patienter, der ikke længere står i Clinical Tasking, afsluttes</label><div id="pdWillEnd" class="willend"></div></div><span style="flex:1"></span><button type="button" data-pdclose="1">Annullér</button><button type="button" class="primary" id="pdImpGo">Indlæs</button></div>
+  <div class="df"><div class="pd-ishift"><span class="pd2-lbl">Vagt</span><span class="pd-seg" id="pdImpShift"><button type="button" data-ishift="dag">☀️ Dagvagt</button><button type="button" data-ishift="nat">🌙 Aften/nat</button></span></div><div class="repl"><label><input type="checkbox" id="pdImpRepl" checked> Patienter, der ikke længere står i Clinical Tasking, afsluttes</label><div id="pdWillEnd" class="willend"></div></div><span style="flex:1"></span><button type="button" data-pdclose="1">Annullér</button><button type="button" class="primary" id="pdImpGo">Indlæs</button></div>
 </dialog>
 
 <script>/* Clinical Tasking-screenshot → tekstformat. full: linjer fra hele billedet, col: linjer fra statuskolonnen (samme y-skala).
    triAt(y): triagefarve ved y (eller ''). Returnerer tekst i importformat. */
 const PD_SECTIONS=['Koordinerende læge','Akut bagvagt','Forvagt (speciale)','Forvagt','ASA vagthavende','Bagvagt','Mellemvagt','Overlæge'];
-function pdStatusOf(t){t=String(t).toLowerCase().replace(/[^a-zæøå ]/g,'').trim().split(/\s+/).slice(-2).join(' ');if(!/^(modtag|ankom|triag|plan|p[aå])/.test(t))t=t.split(' ').pop();
-  if(/^modtagel/.test(t))return 'Modtagelse';if(/^modtag/.test(t))return 'Modtaget';if(/^ankom/.test(t))return 'Ankommet';
+function pdStatusOf(t){t=String(t).toLowerCase().replace(/[^a-zæøå ]/g,'').trim().split(/\s+/).slice(-2).join(' ');if(!/^(modtag|ankom|triag|plan|p[aå]|indlag)/.test(t))t=t.split(' ').pop();
+  if(/^modtagel/.test(t))return 'Modtagelse';if(/^modtag/.test(t))return 'Modtaget';if(/^ankom/.test(t))return 'Ankommet';if(/^indlag/.test(t))return 'Indlagt';
   if(/^triag/.test(t))return 'Triageret';if(/^plan ?lag/.test(t))return 'Plan lagt';if(/^p[aå] ?vej/.test(t))return 'På vej';return ''}
 function pdSectionOf(t){const c=String(t).replace(/[|]/g,'').trim().toLowerCase();return PD_SECTIONS.find(s=>c===s.toLowerCase())||''}
 const PD_LVL=/(l[æa]ge|stud|vikar|speciall|introl|overl|kbu|hu-|reservel|afdelingsl)/i;
 function pdCleanName(t){const w=String(t).trim().split(/\s+/);while(w.length>2&&(!/^[A-ZÆØÅ][a-zæøåéü]/.test(w[0])||w[0].length<=2))w.shift();while(w.length&&!/^[A-ZÆØÅ][a-zæøåéü]/.test(w[0]))w.shift();return w.join(' ').replace(/[|\]\[]+/g,'').replace(/\s*\.{2,}$|…$/,'…').trim()}
+function pdTrimLvl(t){let w=t.trim().split(/\s+/),n=0;const junk=x=>/^\d+$/.test(x)||(x.replace(/[^A-Za-zÆØÅæøå]/g,'').length<=2&&!/^og$/i.test(x))||/^[A-Z0-9]{2,}$/.test(x);while(w.length>1&&junk(w[w.length-1])){w.pop();n++}if(n&&/^og$/i.test(w[w.length-1]))w.pop();return w.join(' ')}
 function pdParse(full,col,triAt){
   const L=full.map(l=>({t:l.t.trim(),y0:l.b.y0,y1:l.b.y1})).filter(l=>l.t);
   const marks=[];let sec='';
@@ -1167,7 +1171,7 @@ function pdParse(full,col,triAt){
       let lv=[];let until='';for(let j=i+1;j<L.length&&j<=i+4;j++){const t=L[j].t;if(pdSectionOf(t))break;
         if(j>i+1){const nx=L[j+1];if(nx&&PD_LVL.test(nx.t)&&!PD_LVL.test(t))break;if(pdStatusOf(t.split(/\s+/).slice(-2).join(' ')))break;if(/^\W*\w{0,3}\W*$/.test(t))break}
         const m=t.match(/(\d{1,2})[.:](\d{2})\b/);if(m){until=m[1].padStart(2,'0')+':'+m[2]}
-        lv.push(t.replace(/\s*[—–]\s.*$/,'').replace(/[-]?\s*\d{1,2}[.:]\d{2}.*$/,'').trim());if(m)break}
+        lv.push(pdTrimLvl(t.replace(/\s*[—–]\s.*$/,'').replace(/\s+\S*\s*(Indlagt|Modtagelse|Modtaget|Ankommet|Triageret|Plan lagt)\b.*$/i,'').replace(/[-]?\s*\d{1,2}[.:]\d{2}.*$/,'')));if(m)break}
       const lvl=lv.join(' ').replace(/\s+/g,' ').replace(/,\s*$/,'').trim();
       marks.push({k:'doc',y:l.y0,sec,name,lvl,until,pts:[]})}}
   const docs=marks.filter(m=>m.k==='doc');
@@ -1191,7 +1195,7 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const p2=n=>String(n).padStart(2,'0');
 const hm=t=>{const d=new Date(t);return p2(d.getHours())+':'+p2(d.getMinutes())};
 const dur=ms=>{const m=Math.max(0,Math.floor(ms/60000));return m<60?m+' min':Math.floor(m/60)+' t '+p2(m%60)};
-const ST=[['vej','På vej',0],['ank','Ankommet',0],['tri','Triageret',0],['mtg','Modtagelse',1],['mtt','Modtaget',2],['pl','Plan lagt',3]];
+const ST=[['vej','På vej',0],['ank','Ankommet',0],['tri','Triageret',0],['mtg','Modtagelse',1],['mtt','Modtaget',2],['pl','Plan lagt',3],['ind','Indlagt',3]];
 const stOf=k=>ST.find(s=>s[0]===k)||ST[1];
 const stByName=n=>{const t=String(n||'').toLowerCase().trim();return (ST.find(s=>s[1].toLowerCase()===t)||[])[0]||''};
 const TRI=[['','Ikke triageret'],['roed','Rød'],['orange','Orange'],['gul','Gul'],['groen','Grøn'],['blaa','Blå']];
@@ -1212,7 +1216,7 @@ function initials(n){const w=String(n).replace(/\(.*?\)/g,'').trim().split(/\s+/
 function avc(n){let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;return `hsl(${h} 55% 42%)`}
 function untilInfo(d){if(!d.until)return null;const [h,m]=d.until.split(':').map(Number);const now=new Date();const t=new Date(now);t.setHours(h,m,0,0);
   if(t-now<-12*3600e3)t.setDate(t.getDate()+1);if(t-now>12*3600e3)t.setDate(t.getDate()-1);const left=t-now;return {left,txt:left>0?`til kl. ${d.until} · ${dur(left)} tilbage`:`til kl. ${d.until} · gået`,cls:left<=0?'over':left<30*60e3?'warn':''}}
-const busy=id=>ptsOf(id).reduce((a,p)=>a+(p.st==='pl'?.5:1),0);
+const busy=id=>ptsOf(id).reduce((a,p)=>a+(p.st==='ind'?.25:p.st==='pl'?.5:1),0);
 /* ---------- afledte egenskaber ---------- */
 const SPECS=[[/kirurgi|\bMTK\b/i,'Kir','#6b7785'],[/ortopæd/i,'Orto','#6b7785'],[/lunge/i,'Lunge','#1f6fb8'],[/gastro|\bgas\b/i,'Gas','#e0b72a'],[/nefro|nyre/i,'Nyre','#7a4fc0'],[/endokrin|\bendo\b/i,'Endo','#c2458e'],[/hæmato|\bhæm\b/i,'Hæm','#c0392b'],[/infekt|\binf\b/i,'Inf','#2e8b47'],[/akut med/i,'Akut','#e07b39'],[/geriatri|\bgeri\b/i,'Geri','#5d6d7e'],[/kardio|\bkard\b/i,'Kard','#a93226'],[/neuro/i,'Neuro','#148f77'],[/reuma/i,'Reuma','#935116']];
 const specColor=n=>(SPECS.find(x=>x[1].toLowerCase()===String(n).toLowerCase())||[0,0,'#5d6d7e'])[2];
@@ -1238,17 +1242,23 @@ function nightT(hhmm){const [h,m]=String(hhmm||'23:00').split(':').map(Number);c
 const addMin=(hhmm,min)=>{const t=new Date(nightT(hhmm)+min*60e3);return p2(t.getHours())+':'+p2(t.getMinutes())};
 function SL(){if(!S.sleep||S.sleep.day!==nightKey())S.sleep={day:nightKey(),at:'23:00',to:'07:00',made:false,statusDone:false,A:[],B:[],open:false};return S.sleep}
 const midOf=sl=>{const a=nightT(sl.at),b=nightT(sl.to);const t=new Date(a+(b-a)/2);t.setMinutes(Math.round(t.getMinutes()/15)*15,0,0);return p2(t.getHours())+':'+p2(t.getMinutes())};
+const untilOk=d=>!d.until||nightT(d.until)>nightT(SL().at)+60*60e3;
+function leadPool(){return onDocs().filter(d=>isLead(d)&&!isKir(d)).filter(untilOk)}
 function sleepPool(){return onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d)).filter(d=>{if(!d.until)return true;return nightT(d.until)>nightT(SL().at)+60*60e3})}
 function sleepInfo(d){const sl=SL();if(!sl.made)return null;const mid=midOf(sl);const inA=sl.A.includes(d.id),inB=sl.B.includes(d.id);if(!inA&&!inB)return null;
   const [f,t]=inA?[sl.at,mid]:[mid,sl.to];const now=Date.now();return {f,t,now:now>=nightT(f)&&now<nightT(t)}}
 const asleep=d=>{const i=sleepInfo(d);return !!(i&&i.now)};
 function makeSleep(){const sl=SL();const P=sleepPool().sort(byLoad);const half=Math.ceil(P.length/2);
-  sl.A=P.slice(0,half).map(d=>d.id);sl.B=P.slice(half).map(d=>d.id);sl.open=true}
+  sl.A=P.slice(0,half).map(d=>d.id);sl.B=P.slice(half).map(d=>d.id);
+  const Lp=leadPool().sort((a,b)=>(/koord/i.test(a.grp)?0:1)-(/koord/i.test(b.grp)?0:1));let ka=0,kb=0,la=0,lb=0;
+  Lp.forEach(d=>{const k=/koord/i.test(d.grp);const toA=k?ka<=kb:(la<lb);if(toA){sl.A.push(d.id);la++;if(k)ka++}else{sl.B.push(d.id);lb++;if(k)kb++}});sl.open=true}
 function REM(){if(!S.rem||S.rem.day!==nightKey())S.rem={day:nightKey(),done:{}};return S.rem}
 function minNow(){const d=new Date();return d.getHours()*60+d.getMinutes()}
 function inWin(a,b){const m=minNow();return a<=b?m>=a&&m<b:m>=a||m<b}
 const remDue=(k,a,b)=>!REM().done[k]&&inWin(a,b);
-const asaFree=()=>inWin(2*60,8*60);
+const asaFree=()=>isNight()&&inWin(2*60,8*60);
+const defShift=()=>{const h=new Date().getHours();return h>=8&&h<15?'dag':'nat'};
+const isNight=()=>(S.shift||defShift())==='nat';
 /* ---------- forslag ---------- */
 const sugPool=()=>onDocs().filter(d=>!d.nosug&&!isKir(d)&&!asleep(d)&&!(isAsa(d)&&asaFree())).filter(d=>{const u=untilInfo(d);return !u||u.left>20*60e3});
 const byLoad=(a,b)=>busy(a.id)-busy(b.id)||ptsOf(a.id).length-ptsOf(b.id).length||((a.lastAt||0)-(b.lastAt||0));
@@ -1260,7 +1270,7 @@ function whyText(ak){const L=ak?suggestAk():suggest();const fmtB=d=>{const P=pts
   else{const d=L[0];lines.push(`${shortName(d.name)} foreslås: ${fmtB(d)} – lavest blandt ${L.length} mulige.`);
     const tie=L.filter(x=>busy(x.id)===busy(d.id)&&x!==d);if(tie.length)lines.push(`Lige så lav belastning: ${tie.map(x=>shortName(x.name)).join(', ')} – afgjort af færrest patienter i alt og derefter længst tid siden sidste tildeling${d.lastAt?' (sidst tildelt kl. '+hm(d.lastAt)+')':''}.`);
     const rest=L.slice(1).filter(x=>!tie.includes(x));if(rest[0])lines.push('Derefter: '+rest.slice(0,3).map(x=>`${shortName(x.name)} (${String(busy(x.id)).replace('.',',')})`).join(', ')+'.')}
-  lines.push('');lines.push('Regel: belastning = aktive patienter, hvor «Plan lagt» tæller halvt.'+(ak?' Akutkald: kun introlæger og studerende/vikarer med akut kursus bestået.':''));
+  lines.push('');lines.push('Regel: belastning = aktive patienter, hvor «Plan lagt» tæller ½ og «Indlagt» ¼.'+(ak?' Akutkald: kun introlæger og studerende/vikarer med akut kursus bestået.':''));
   const ex=[];onDocs().forEach(d=>{let r='';if(isKir(d))r='kirurgi';else if(d.nosug)r='foreslås ikke';else if(asleep(d))r='sover';else if(isAsa(d)&&asaFree())r='ASA – hænderne fri efter 02:00';else{const u=untilInfo(d);if(u&&u.left<=20*60e3)r=u.left>0?'går hjem om under 20 min':'har fri';else if(ak&&!canAk(d))r=isStudVik(d)?'mangler akut kursus':'ikke intro/akut kursus'}if(r)ex.push(`${shortName(d.name)} (${r})`)});
   if(ex.length)lines.push('Ikke med: '+ex.join(', ')+'.');return lines.join('\n')}
 const tLbl=p=>p.unk?'før '+hm(p.t0):dur(Date.now()-p.t0);
@@ -1289,21 +1299,22 @@ function render(){
   const s1=suggest()[0],s2=suggestAk()[0];
   $('#pdSug').innerHTML=`<div class="pd2-sg" title="${esc(whyText(false))}"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak" title="${esc(whyText(true))}"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
   /* påmindelser */
-  const now=Date.now(),tAt=nightT(sl.at),showSt=!sl.made&&!sl.statusDone&&now>=tAt-15*60e3&&now<tAt+6*3600e3,showSl=!sl.made&&now>=tAt&&now<tAt+6*3600e3;
+  const now=Date.now(),tAt=nightT(sl.at),showSt=isNight()&&!sl.made&&!sl.statusDone&&now>=tAt-15*60e3&&now<tAt+6*3600e3,showSl=isNight()&&!sl.made&&now>=tAt&&now<tAt+6*3600e3;
   const R0=REM();const ban=[];
   if(showSt)ban.push(`<div class="pd-ban">🕑 Bed forvagterne opdatere status i Clinical Tasking inden soveplanen kl. ${sl.at}.<span class="sp"></span><button type="button" data-stdone="1">✓ Gjort</button></div>`);
-  if(remDue('tavle',22*60+40,23*60+15))ban.push(`<div class="pd-ban">📣 Send besked om tavlemøde kl. 23:00.<span class="sp"></span><button type="button" data-remcopy="tavle">Kopiér besked</button><button type="button" data-remdone="tavle">✓ Sendt</button></div>`);
-  if(remDue('asa',1*60+45,2*60+30))ban.push(`<div class="pd-ban">🖐 Hold ASA-vagtens hænder fri fra kl. 02:00 – ASA foreslås ikke længere til nye patienter.<span class="sp"></span><button type="button" data-remdone="asa">✓ OK</button></div>`);
+  if(isNight()&&remDue('tavle',22*60+40,23*60+15))ban.push(`<div class="pd-ban">📣 Send besked om tavlemøde kl. 23:00.<span class="sp"></span><button type="button" data-remcopy="tavle">Kopiér besked</button><button type="button" data-remdone="tavle">✓ Sendt</button></div>`);
+  if(isNight()&&remDue('asa',1*60+45,2*60+30))ban.push(`<div class="pd-ban">🖐 Hold ASA-vagtens hænder fri fra kl. 02:00 – ASA foreslås ikke længere til nye patienter.<span class="sp"></span><button type="button" data-remdone="asa">✓ OK</button></div>`);
   if(showSl)ban.push(`<div class="pd-ban sl">💤 Kl. ${sl.at}: tid til soveplan.<span class="sp"></span><button type="button" class="primary" data-slmake="1">Lav soveplan</button><span>Udsæt til</span><input type="time" id="pdSlPost" value="${addMin(sl.at,60)}"><button type="button" data-slpost="1">Udsæt</button></div>`);
   $('#pdBanner').innerHTML=ban.join('');
   /* soveplan-panel */
+  $('#pdSleepBtn').hidden=!isNight();$$('#pdShift button').forEach(b=>b.classList.toggle('on',b.dataset.shift===(S.shift||defShift())));$$('#pdImpShift button').forEach(b=>b.classList.toggle('on',b.dataset.ishift===(S.shift||defShift())));
   $('#pdSleepBtn').textContent=sl.made?`💤 Soveplan ${sl.at}–${sl.to}`:'💤 Soveplan';
-  if(sl.open){const mid=midOf(sl);const nm=id=>{const d=docOf(id);return d?esc(shortName(d.name))+` <small>(${ptsOf(id).length})</small>`:''};
-    const pool=new Set(sleepPool().map(d=>d.id));const out=sleepPool().filter(d=>!sl.A.includes(d.id)&&!sl.B.includes(d.id));
+  if(sl.open&&isNight()){const mid=midOf(sl);const nm=id=>{const d=docOf(id);return d?esc(shortName(d.name))+` <small>(${ptsOf(id).length})</small>`:''};
+    const blk=(title,P)=>{const pool=new Set(P.map(d=>d.id));const out=P.filter(d=>!sl.A.includes(d.id)&&!sl.B.includes(d.id));const col=(h,L)=>`<div class="col"><h3>${h}</h3>${L.filter(id=>pool.has(id)).map(id=>`<button type="button" data-slmv="${id}">${nm(id)}</button>`).join('')||'<span class="hint">Ingen</span>'}</div>`;
+      return P.length?`<h4 class="pd-slh">${title}</h4><div class="cols">${col(`Sover først ${sl.at}–${mid}`,sl.A)}${col(`Sover sidst ${mid}–${sl.to}`,sl.B)}</div>${out.length?`<p class="hint">Ikke med: ${out.map(d=>`<button type="button" class="pd-ib" data-slmv="${d.id}">+ ${esc(shortName(d.name))}</button>`).join(' ')}</p>`:''}`:''};
     $('#pdSleep').innerHTML=`<div class="pd-sl pd2-box"><div class="hd"><b>💤 Soveplan</b><span>Fra</span><input type="time" id="pdSlAt" value="${sl.at}"><span>til</span><input type="time" id="pdSlTo" value="${sl.to}"><span class="hint">skift ved halvtid kl. ${mid} · klik et navn for at flytte det</span><span style="flex:1"></span><button type="button" class="pd-x" data-slclose="1" title="Luk">✕</button></div>
-      <div class="cols"><div class="col"><h3>Sover først ${sl.at}–${mid}</h3>${sl.A.filter(id=>pool.has(id)).map(id=>`<button type="button" data-slmv="${id}">${nm(id)}</button>`).join('')||'<span class="hint">Ingen</span>'}</div><div class="col"><h3>Sover sidst ${mid}–${sl.to}</h3>${sl.B.filter(id=>pool.has(id)).map(id=>`<button type="button" data-slmv="${id}">${nm(id)}</button>`).join('')||'<span class="hint">Ingen</span>'}</div></div>
-      ${out.length?`<p class="hint">Ikke med: ${out.map(d=>`<button type="button" class="pd-ib" data-slmv="${d.id}">+ ${esc(shortName(d.name))}</button>`).join(' ')}</p>`:''}
-      <div class="ft"><button type="button" class="primary" data-slsave="1">${sl.made?'Gem ændringer':'Brug soveplanen'}</button><button type="button" data-slnew="1">Fordel igen</button><button type="button" data-slcopy="1">Kopiér som tekst</button>${sl.made?'<button type="button" data-sldel="1">Slet soveplan</button>':''}<span class="hint">Forslag: de med færrest patienter sover først. Koordinerende, bagvagt, ASA og kirurgi er ikke med.</span></div></div>`}
+      ${blk('Forvagter',sleepPool())}${blk('Koordinerende læge og bagvagt',leadPool())}
+      <div class="ft"><button type="button" class="primary" data-slsave="1">${sl.made?'Gem ændringer':'Brug soveplanen'}</button><button type="button" data-slnew="1">Fordel igen</button><button type="button" data-slcopy="1">Kopiér som tekst</button>${sl.made?'<button type="button" data-sldel="1">Slet soveplan</button>':''}<span class="hint">Forslag: forvagterne med færrest patienter sover først. Koordinerende læger og bagvagt fordeles, så der altid er en vågen. ASA og kirurgi er ikke med.</span></div></div>`}
   else $('#pdSleep').innerHTML='';
   $$('#pdView button').forEach(b=>b.classList.toggle('on',b.dataset.view===VIEW));
   $('#pdTriNew').innerHTML=TRI.map(t=>`<button type="button" data-tn="${t[0]}" class="${t[0]===newTri?'on':''}" title="${t[1]}"><span class="pd-tri" data-t="${t[0]}"></span></button>`).join('');
@@ -1317,10 +1328,10 @@ function render(){
      <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
     :'<div class="pd-empty">Ingen ufordelte patienter.</div>';
   const srt=L=>SORT==='load'?L.slice().sort((a,b)=>busy(b.id)-busy(a.id)||ptsOf(b.id).length-ptsOf(a.id).length):SORT==='light'?L.slice().sort(byLoad):SORT==='name'?L.slice().sort((a,b)=>a.name.localeCompare(b.name,'da')):L;
-  const lead=srt(onDocs().filter(d=>isLead(d)&&!isKir(d))),fv=srt(onDocs().filter(d=>!isLead(d)&&!isKir(d))),kir=srt(onDocs().filter(isKir));
+  const lead=srt(onDocs().filter(d=>isLead(d)&&!isKir(d))),fv=srt(onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d))),asa=srt(onDocs().filter(d=>isAsa(d)&&!isLead(d)&&!isKir(d))),kir=srt(onDocs().filter(isKir));
   $$('#pdSort button').forEach(x=>x.classList.toggle('on',x.dataset.sort===SORT));
   const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}</h2><div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
-  $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('Koordinerende læge og bagvagt',lead)+
+  $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('ASA vagthavende',asa)+sec('Koordinerende læge og bagvagt',lead)+
     (kir.length?`<details class="pd-secb pd-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd-rows">${kir.map(docRow).join('')}</div></details>`:'')+
     (S.docs.some(d=>d.on===false)?`<div class="pd-secb"><h2 class="pd2-h">Ikke på vagt</h2><div class="pd-pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
   const E=(S.ev||[]).filter(e=>!evFilter||e.type===evFilter||(evFilter==='asg'&&e.type==='mv')).slice(-150).reverse();
@@ -1388,6 +1399,7 @@ $('#pdNewPt').addEventListener('submit',e=>{e.preventDefault();const f=e.target;
 function assign(pid,did){const p=S.pts.find(x=>x.id===pid),d=docOf(did);if(!p||!d)return;ev('asg',`Tildelt: ${ptLabel(p)} → ${shortName(d.name)}`,did);p.doc=did;p.t0=Date.now();if(['ank','tri'].includes(p.st))p.st='mtg';p.ts=Date.now();d.lastAt=Date.now();save();render()}
 document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('dialog'))return;
+  if(b=t.closest('[data-shift]')){S.shift=b.dataset.shift;ev('imp',`Vagttype: ${S.shift==='dag'?'dagvagt':'aften/nat'}`);save();render();return}
   if(b=t.closest('[data-remdone]')){REM().done[b.dataset.remdone]=true;save();render();return}
   if(b=t.closest('[data-remcopy]')){const txt='Tavlemøde kl. 23:00 ved tavlen. Opdatér venligst status i Clinical Tasking inden.';(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{b.textContent='✓ Kopieret'}).catch(()=>prompt('Kopiér teksten:',txt));return}
   if(t.closest('[data-sync]')){if(e.detail>=2){S.lastSync=Date.now();ev('imp','Afstemt med Clinical Tasking (markeret manuelt)');save();render()}return}
@@ -1422,7 +1434,7 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('[data-sldel]')){sl.made=false;sl.A=[];sl.B=[];save();render();return}
   if(b=t.closest('[data-slmv]')){const id=b.dataset.slmv;if(sl.A.includes(id)){sl.A=sl.A.filter(x=>x!==id);sl.B.push(id)}else if(sl.B.includes(id)){sl.B=sl.B.filter(x=>x!==id)}else sl.A.push(id);save();render();return}
   if(t.closest('[data-slcopy]')){const mid=midOf(sl);const nm=L=>L.map(id=>docOf(id)).filter(Boolean).map(d=>shortName(d.name)).join(', ')||'–';
-    const txt=`Soveplan i nat\nSover ${sl.at}–${mid}: ${nm(sl.A)}\nSover ${mid}–${sl.to}: ${nm(sl.B)}\nHusk at opdatere status i Clinical Tasking, inden I går i seng.`;
+    const txt=`Soveplan i nat\nSover ${sl.at}–${mid}: ${nm(sl.A)}\nSover ${mid}–${sl.to}: ${nm(sl.B)}\nKonferér med den vågne koordinerende læge/bagvagt.\nHusk at opdatere status i Clinical Tasking, inden I går i seng.`;
     (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{b=t.closest('[data-slcopy]');b.textContent='✓ Kopieret';setTimeout(()=>render(),1500)}).catch(()=>prompt('Kopiér teksten:',txt));return}
 });
 document.addEventListener('change',e=>{const t=e.target;if(t.closest('dialog'))return;
@@ -1442,7 +1454,7 @@ if(tb('pdNew'))tb('pdNew').addEventListener('click',()=>{if(!confirm('Ny vagt: a
 /* ---------- import ---------- */
 const dlg=$('#pdImp');
 if(tb('pdImport'))tb('pdImport').addEventListener('click',()=>{$('#pdImpText').value='';$('#pdPrev').innerHTML='';$('#pdProg').textContent='';$('#pdDrop').querySelector('img')?.remove();dlg.showModal();willEnd();$('#pdDrop').focus()});
-dlg.addEventListener('click',e=>{if(e.target.closest('[data-pdclose]'))dlg.close()});
+dlg.addEventListener('click',e=>{if(e.target.closest('[data-pdclose]'))dlg.close();const b=e.target.closest('[data-ishift]');if(b){S.shift=b.dataset.ishift;save();render()}});
 $('#pdDrop').addEventListener('click',()=>$('#pdFile').click());
 $('#pdFile').addEventListener('change',e=>{const f=e.target.files[0];if(f)ocrFile(f);e.target.value=''});
 $('#pdDrop').addEventListener('dragover',e=>{e.preventDefault();e.currentTarget.classList.add('hot')});
@@ -1494,7 +1506,7 @@ $('#pdImpGo').addEventListener('click',()=>{const D=parseText($('#pdImpText').va
     const old=ptsOf(d.id);x.pts.forEach((p,j)=>{const o=old[j];if(o){if(o.st!==p.st){o.st=p.st;o.ts=now;sc++}if(p.tri)o.tri=p.tri;if(p.head&&!o.head)o.head=p.head}else{S.pts.push({id:uid(),doc:d.id,st:p.st,tri:p.tri,head:p.head,room:'',note:'',t0:now,ts:now,unk:true});np++}});
     nn++;if(repl&&old.length>x.pts.length)old.slice(x.pts.length).forEach(o=>(ne++,S.log.push(Object.assign({},o,{tEnd:now,docName:d.name}))));
     if(repl)S.pts=S.pts.filter(p=>!(p.doc===d.id&&old.indexOf(p)>=x.pts.length))});
-  S.lastSync=now;ev('imp',`Afstemt med Clinical Tasking: ${nn} læger · ${np} nye patienter · ${sc} statusændringer · ${ne} afsluttet`);save();dlg.close();render();prog('');});
+  S.shift=S.shift||defShift();S.lastSync=now;ev('imp',`Afstemt med Clinical Tasking (${S.shift==='dag'?'dagvagt':'aften/nat'}): ${nn} læger · ${np} nye patienter · ${sc} statusændringer · ${ne} afsluttet`);save();dlg.close();render();prog('');});
 render();setInterval(()=>{const a=document.activeElement;if(a&&a.closest&&(a.closest('main.pd2')||a.closest('dialog'))&&(a.isContentEditable||/INPUT|SELECT|TEXTAREA/.test(a.tagName)))return;if(dlg.open)return;render()},30000);
 window.addEventListener('storage',e=>{if(e.key===KEY){try{S=JSON.parse(e.newValue)||S}catch(_){}render()}});
 const tt=document.getElementById('themeToggle');if(tt)tt.addEventListener('click',()=>{const r=document.documentElement;const n=r.dataset.theme==='light'?'dark':'light';r.dataset.theme=n;try{localStorage.setItem('alb-theme',n)}catch(_){}});
