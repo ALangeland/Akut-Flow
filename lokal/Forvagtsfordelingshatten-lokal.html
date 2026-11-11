@@ -1109,7 +1109,189 @@ span.pd-amb{cursor:default}
 .pd-seg2[style*="flex:2"]{width:72px}.pd-seg2[style*="flex:1"]{width:36px}
 .pd-barl{font:700 .9rem var(--mono);color:var(--muted)}
 .pd-seg2{height:34px;font-size:.66rem;white-space:nowrap;overflow:hidden}.pd-leg{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:.76rem;margin:-2px 0 8px}.pd-leg i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:4px;vertical-align:middle}
-</style></head>
+</style><style id="pd-farver-v2">
+/* Patientdirigenten: ny skifergrå palet og ens knapper (mørk tilstand) */
+:root[data-theme="dark"]{
+  --bar:#1b232b; --bar-2:#28323c; --bar-muted:#93a6b8;
+  --bg:#202932; --surface:#2b3641; --fg:#e7ecf0; --muted:#9dadbb; --line:#3e4c59;
+  --accent:#9fb3c6; --on-accent:#ffffff; --accent-soft:#35424f; --go:#ffc933; --hit:#ff7a5c;
+  --warn:#f0a85a; --warn-soft:#3b2d1a; --done:#5cc79f; --done-soft:#1f3a31;
+  --l-kbu:#6eb0ec; --l-intro:#5cc79f; --l-hu:#a894e6; --l-uk:#e8b54a; --l-stud:#9dadbb}
+/* knapper: én form (6 px hjørner, samme højde) til segmenter, afstemning og soveplan */
+.pd-seg{border-color:var(--line);border-radius:6px}
+.pd-seg button{background:var(--surface);color:var(--fg);font-weight:600;font-size:.82rem;padding:8px 14px}
+.pd-seg button+button{border-left-color:var(--line)}
+.pd-seg button.on{background:#41505f;color:#fff}
+.pd-sync,#pdSleepBtn{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);font:600 .82rem var(--sans);padding:8px 14px;min-height:0;line-height:1.4;cursor:pointer}
+.pd-sync,.pd-sync.old{border:1px solid var(--line);background:var(--surface);box-shadow:none}
+.pd-sync::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--done);margin-right:7px;vertical-align:middle}
+.pd-sync.old::before{background:var(--warn)}
+.pd-sync:hover,#pdSleepBtn:hover{border-color:var(--accent)}
+/* kompakte segmenter i højrekolonnen (Ny patient, Ændringslog) */
+.pd2-q .pd-seg button{padding:6px 8px;font-size:.76rem}
+.pd-evf{display:flex;flex-wrap:nowrap;width:100%;box-sizing:border-box}
+.pd-evf button{flex:1 1 auto;padding:6px 4px!important;font-size:.72rem!important;white-space:nowrap}
+/* påmindelser: gult bånd med diskret diagonal-mønster, mærke og blød skygge */
+.pd-ban{position:relative;border:0;border-radius:10px;color:#1d1500;padding:14px 16px;font-weight:700;font-size:1.05rem;gap:12px;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.0) 0 14px,rgba(255,255,255,.18) 14px 28px),linear-gradient(180deg,#ffd54f,#ffc933);
+  box-shadow:0 0 0 1px rgba(0,0,0,.25),0 6px 18px rgba(255,201,51,.18),0 2px 6px rgba(0,0,0,.35)}
+.pd-ban::before{content:"Påmindelse";flex:none;font:800 .66rem var(--sans);text-transform:uppercase;letter-spacing:.1em;background:#1b232b;color:#ffc933;padding:5px 9px;border-radius:999px}
+.pd-ban.sl::before{content:"Soveplan"}
+.pd-ban.sl{background:repeating-linear-gradient(135deg,rgba(255,255,255,.0) 0 14px,rgba(255,255,255,.18) 14px 28px),linear-gradient(180deg,#ffd54f,#ffc933);color:#1d1500}
+.pd-ban button,.pd-ban input[type=time]{border:0;border-radius:6px;background:#1b232b;color:#fff;padding:9px 16px;font:700 .88rem var(--sans);min-height:0;box-shadow:0 1px 0 rgba(255,255,255,.35) inset}
+.pd-ban input[type=time]{background:#fff;color:#1b232b;padding:8px 10px;font-family:var(--mono)}
+:root .pd-ban button.primary,:root[data-theme] .pd-ban button.primary{background:#1b232b;border-color:#1b232b;color:#ffc933}
+.pd-ban button:hover{outline:2px solid #1b232b;outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.pd-ban::before{animation:pdPulse 2.4s ease-in-out infinite}}
+@keyframes pdPulse{0%,100%{box-shadow:0 0 0 0 rgba(27,35,43,.5)}50%{box-shadow:0 0 0 5px rgba(27,35,43,0)}}
+/* køkort: overskriften står til venstre, tiden til højre */
+.pd-qc .t b{flex:none}
+.pd-qc .t b:last-of-type{flex:1;min-width:0;text-align:left}
+/* antal patienter: neutralt mærke, farven sidder i måleren (1–2 grøn, 3–4 orange, 5+ rød) */
+.pd-cnt{--lc:var(--muted);background:var(--accent-soft);color:var(--fg);border-radius:6px;min-width:46px;padding:5px 6px 6px;display:inline-flex;flex-direction:column;align-items:center;gap:1px;box-shadow:inset 0 0 0 1px var(--line)}
+.pd-cnt small{color:var(--muted)}
+.pd-cnt.c1{--lc:#5cc79f;background:var(--accent-soft);color:var(--fg)}
+.pd-cnt.c2{--lc:#f0a85a;background:var(--accent-soft);color:var(--fg)}
+.pd-cnt.c3{--lc:#ff7a5c;background:color-mix(in srgb,#ff7a5c 22%,var(--accent-soft));color:var(--fg);box-shadow:inset 0 0 0 1px #ff7a5c}
+.pd-lg{display:block;width:100%;height:6px;margin-top:4px;border-radius:2px;background:repeating-linear-gradient(90deg,var(--line) 0 calc(16.66% - 1px),transparent calc(16.66% - 1px) 16.66%);overflow:hidden}
+.pd-lg i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--lc) 0 calc(16.66% - 1px),transparent calc(16.66% - 1px) 16.66%);background-size:var(--lgw,100%) 100%}
+.pd2-sg .pd-lg{display:none}
+/* mærker: én fælles form – 4 px hjørner, samme højde og skrift */
+.pd-p,.pd-m,.pd-z{border-radius:4px!important;font:700 .7rem/1.5 var(--sans)!important;padding:1px 6px!important;letter-spacing:.02em}
+.pd-z{font-family:var(--mono)!important;padding:1px 5px!important}
+.pd-p.pdp-lv{border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.pd-p.pdp-ak{border:1px solid #f07d00;background:#f07d00;color:#1b232b}
+.pd-p.pdp-ak.no{background:transparent;color:var(--fg);border-style:dashed}
+.pd-m{background:none!important;border:0!important;padding:0!important;font:600 .76rem/1.4 var(--sans)!important;color:var(--muted)!important;letter-spacing:0}
+.pd-m.warn{color:#f0a85a!important;font-weight:700!important}
+.pd-m.over{color:#ff7a5c!important;font-weight:700!important}
+.pd-m.ok{color:#5cc79f!important}
+.pd-mp{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:4px}
+.pd-m b{font:700 .82rem var(--mono);color:var(--fg);margin:0 2px}
+.pd-m i{font-style:normal;color:var(--muted)}
+.pd-m.warn,.pd-m.over{padding:2px 8px!important;border-radius:4px!important}
+.pd-m.warn{background:#3b2d1a!important}.pd-m.warn b,.pd-m.warn i{color:#ffc27a}
+.pd-m.over{background:#3a1d18!important;color:#ff9a85!important}.pd-m.over b{color:#ffb4a5}
+.pd-pills{gap:4px}
+/* fælles fri-tid i overskriften */
+.pd-common{margin-left:auto;font:600 .78rem var(--sans);text-transform:none;letter-spacing:0;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:3px 10px}
+.pd-common b{font:700 .84rem var(--mono);color:var(--fg)}
+.pd-common.warn{background:#3b2d1a;border-color:#3b2d1a;color:#ffc27a}.pd-common.warn b{color:#ffc27a}
+.pd-common.over{background:#3a1d18;border-color:#3a1d18;color:#ff9a85}
+/* zonemærke: diskret, samme højde som stuenummeret */
+.pd-z{background:transparent!important;color:var(--muted)!important;border:1px solid var(--line)!important;font:600 .66rem/1.25 var(--mono)!important;padding:0 4px!important;align-self:center}
+/* faggruppe, speciale og akut på én linje */
+.pd-row{grid-template-columns:370px minmax(0,1fr)}
+.pd-pills{flex-wrap:nowrap;overflow:hidden}
+.pd-p{flex:none}
+@media(max-width:700px){.pd-row{grid-template-columns:minmax(0,1fr)}.pd-pills{flex-wrap:wrap}}
+/* initialer: afrundet firkant farvet efter faggruppe (samme farver som niveau) */
+.pd-av{width:40px;height:40px;border-radius:8px;font:800 .9rem var(--sans);letter-spacing:.03em;color:var(--avc);background:color-mix(in srgb,var(--avc) 16%,var(--bg));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--avc) 70%,transparent)}
+.pd-row.slp .pd-av{opacity:.55;filter:saturate(.5)}
+/* 1 akutkald: tydeligt mærke ved navnet; specialer neutrale (farvet ramme og tekst) */
+.pd-amb{display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:1px 7px;border-radius:4px;background:#fff;color:#1b232b;border:1px solid #fff;font:800 .66rem/1.5 var(--sans);text-transform:uppercase;letter-spacing:.06em;vertical-align:2px;cursor:pointer}
+.pd-amb::before{content:"";width:9px;height:9px;flex:none;background:linear-gradient(#d6201f,#d6201f) center/9px 3px no-repeat,linear-gradient(#d6201f,#d6201f) center/3px 9px no-repeat}
+span.pd-amb{cursor:default}
+.pd-amb.no{background:transparent;color:var(--muted);border:1px dashed var(--line);filter:none;opacity:1}
+.pd-amb.no::before{display:none}
+.pd-amb.no:hover{color:var(--fg);border-color:var(--accent);opacity:1}
+.pd-p.pdp-sp{background:transparent!important;border:1px solid color-mix(in srgb,var(--pc) 75%,transparent)!important;color:color-mix(in srgb,var(--pc) 55%,var(--fg))!important}
+/* 3 fliser fylder rækken og viser noten */
+.pd-pts{flex-wrap:wrap}
+.pd-sc{flex:1 1 180px;width:auto;min-width:170px;max-width:300px}
+.pd-sc .s{white-space:normal}
+.pd-add{align-self:stretch}
+/* 4 tildel fra køen: første forslag er hovedknappen */
+.pd-qc .as button{border-radius:6px;padding:7px 12px!important;font:700 .8rem var(--sans)!important;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.pd-qc .as button:first-child{background:var(--go);border-color:var(--go);color:#1d1500}
+.pd-qc .as button.ak{border-color:#ff7a5c}
+.pd-qc .as button:first-child.ak{background:#ff7a5c;border-color:#ff7a5c;color:#2a0602}
+.pd-qc .as small{opacity:.75;font-weight:600}
+.pd-qc .as select{border-radius:6px;padding:6px 8px!important}
+/* 5 næste patient fremhævet */
+.pd2-sg{border-radius:8px}
+.pd2-sg:not(.ak){border:2px solid var(--go);background:color-mix(in srgb,var(--go) 14%,var(--surface));box-shadow:0 0 18px color-mix(in srgb,var(--go) 22%,transparent)}
+.pd2-sg:not(.ak) small{color:var(--go)}
+.pd2-sg:not(.ak) b{font-size:1.1rem}
+.pd2-sg.ak{border:1px solid #ff7a5c;background:var(--surface)}
+.pd2-sg.ak small{color:#ff7a5c}
+.pd2-sug{grid-template-columns:1fr!important}
+.pd2-sg{justify-content:space-between}
+.pd2-sg small{white-space:nowrap}
+/* 6 lys tilstand: creme-paletten beholdes; kun de nye elementer tilpasses */
+:root[data-theme="light"] .pd-qc .as button:first-child{color:#fff}
+:root[data-theme="light"] .pd-amb:not(.no){background:#1b232b;border-color:#1b232b;color:#fff}
+:root[data-theme="light"] .pd-av{color:color-mix(in srgb,var(--avc) 45%,#1c2233);background:color-mix(in srgb,var(--avc) 18%,#fcf8ee)}
+:root[data-theme="light"] .pd-m.warn{background:#fbefdd!important}:root[data-theme="light"] .pd-m.warn b,:root[data-theme="light"] .pd-m.warn i{color:#8a4b00}
+:root[data-theme="light"] .pd-m.over{background:#fbe3de!important;color:#a3311c!important}:root[data-theme="light"] .pd-m.over b{color:#a3311c}
+:root[data-theme="light"] .pd-common.warn{background:#fbefdd;color:#8a4b00}:root[data-theme="light"] .pd-common.over{background:#fbe3de;color:#a3311c}
+:root[data-theme="light"] .pd-cnt.c1{--lc:#2e8a6b}:root[data-theme="light"] .pd-cnt.c2{--lc:#c46f00}:root[data-theme="light"] .pd-cnt.c3{--lc:#c8462e;box-shadow:inset 0 0 0 1px #c8462e;background:#fbe3de}
+:root[data-theme="light"] .pd-p.pdp-sp{color:color-mix(in srgb,var(--pc) 70%,#1e2a35)!important}
+:root[data-theme="light"] .pd2-sg:not(.ak){border-color:#d9a400;background:#fff6d6;box-shadow:none}
+:root[data-theme="light"] .pd2-sg:not(.ak) small{color:#7a5c00}
+:root[data-theme="light"] .pd2-sg.ak small{color:#a3311c}
+:root[data-theme="light"] .pd-seg button.on{background:#2a3560;color:#fff}
+.pd2-sg b .pd-p{vertical-align:3px;margin-left:6px}
+/* kø: ventetid farves */
+.pd-wait{margin-left:auto;font:600 .74rem var(--mono);color:var(--muted);white-space:nowrap}
+.pd-wait.w15{color:#1d1200;background:#f0a85a;border-radius:4px;padding:1px 6px}
+.pd-wait.w30{color:#fff;background:#d6201f;border-radius:4px;padding:1px 6px}
+#pdQueue.pd-flash .pd-qc{animation:pdFlash 1.5s ease}
+@keyframes pdFlash{0%,60%{box-shadow:0 0 0 3px var(--go)}100%{box-shadow:none}}
+/* påmindelse: patienter venter (rød) og opdatér status (gul uden mønster) */
+.pd-ban.kq{background:repeating-linear-gradient(135deg,rgba(255,255,255,0) 0 14px,rgba(255,255,255,.12) 14px 28px),linear-gradient(180deg,#ff8a6e,#ff7a5c);color:#2a0602}
+.pd-ban.kq::before{content:"Kø"}
+.pd-ban.st::before{content:"Opdatér status"}
+/* stillestående flise */
+.pd-sc.stale{border-style:dashed;border-color:#f0a85a}
+.pd-sc.stale .s::after{content:"Status uændret > 2 t";margin-left:auto;font:700 .62rem var(--sans);text-transform:uppercase;letter-spacing:.04em;color:#1d1200;background:#f0a85a;border-radius:3px;padding:0 4px}
+:root[data-theme="light"] .pd-sc.stale{border-color:#c46f00}
+/* begrundelse for forslag */
+.pd2-sg .why{display:block;font:500 .72rem var(--sans);color:var(--muted);margin-top:2px}
+/* udsæt-felt */
+#pdSlPost{width:72px!important;text-align:center}
+/* 8 hukommelse: lille statusprik i topbjælken */
+.topbtns #afmem-btn{font-size:0!important;width:34px;height:34px;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border-radius:6px}
+.topbtns #afmem-btn::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bar-muted);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+.topbtns #afmem-btn.ok::after{background:#5cc79f}
+.topbtns #afmem-btn.warn::after{background:#f0a85a}
+/* kompakte påmindelser */
+.pd-ban{padding:5px 8px 5px 10px!important;font-size:.86rem!important;font-weight:600!important;gap:8px!important;border-radius:6px!important;margin-bottom:6px!important;min-height:0;box-shadow:0 0 0 1px rgba(0,0,0,.25)!important}
+.pd-ban::before{font-size:.58rem!important;padding:2px 7px!important;animation:none!important}
+.pd-ban button,.pd-ban input[type=text]{padding:3px 10px!important;font-size:.78rem!important;border-radius:5px!important;min-height:0!important}
+#pdSlPost{width:58px!important;padding:3px 6px!important}
+.pd-ban>span:not(.sp){font-size:.8rem}
+.pd-ban .pd-ok{min-width:30px;padding:3px 8px!important;font-size:.9rem!important;line-height:1}
+.pd-bdiv{width:1px;align-self:stretch;margin:2px 4px;background:rgba(0,0,0,.25)}
+/* påmindelser som chips, én pr. linje */
+#pdBanner{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:10px}
+#pdBanner:empty{display:none}
+#pdBanner .pd-ban{margin:0!important;max-width:100%;border-radius:999px!important;padding:3px 4px 3px 4px!important;font-size:.82rem!important}
+#pdBanner .pd-ban .sp{display:none}
+#pdBanner .pd-ban button,#pdBanner .pd-ban input[type=text]{border-radius:999px!important}
+#pdBanner .pd-ban>span:not(.sp):not(.pd-bdiv){padding-left:2px}
+/* påmindelser i højre kolonne under forslagene */
+#pdBanner:not(:empty){background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px;margin:0 0 12px}
+#pdBanner:not(:empty)::before{content:"Påmindelser · " attr(data-n);font:700 .7rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 2px 2px}
+#pdBanner .pd-ban{width:100%;box-sizing:border-box;flex-wrap:wrap;border-radius:14px!important;padding:5px 6px 6px 6px!important;font-size:.8rem!important;line-height:1.35;row-gap:5px!important}
+#pdBanner .pd-ban::before{align-self:flex-start;margin-top:1px}
+#pdBanner .pd-ban .sp{display:block!important;flex:1 0 100%;height:0}
+#pdBanner .pd-ban button,#pdBanner .pd-ban input[type=text]{border-radius:999px!important}
+/* Ny patient: sammenklappet indtil man klikker */
+.pd-newbox .pd-bh{cursor:pointer;user-select:none}
+.pd-newbox .pd-bh::after{content:"▸";margin-left:auto;color:var(--muted);font-size:.9rem;transition:transform .15s}
+.pd-newbox.open .pd-bh::after{transform:rotate(90deg)}
+.pd-newbox:not(.open) .pd2-form{display:none}
+.pd-newbox:not(.open){padding-bottom:12px}
+.pd-newbox .pd-bh:hover b{text-decoration:underline}
+/* ufordelte i hovedoverblikket */
+.pd-qwrap{margin:0 0 14px}
+.pd-qwrap .pd2-h{margin:0 0 8px!important}
+.pd-qwrap #pdQueue{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.pd-qwrap .pd-qc{margin:0}
+.pd-qwrap .pd-empty{display:none}
+</style>
+</head>
 <body>
 <header class="topbar"><div class="topbar-in">
   <h1>Patientdirigenten</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span>
@@ -1150,7 +1332,7 @@ span.pd-amb{cursor:default}
       </div>
       <h2 class="pd2-h" style="margin-top:14px" id="pdQh">Ikke fordelt</h2>
       <div class="pd2-ql" id="pdQueue"></div>
-      <details class="pd2-log pd2-box" style="margin-top:12px" open><summary id="pdEvSum">Ændringslog</summary><div class="pd-seg pd-evf" id="pdEvF"></div><ul id="pdEv" class="pd-ev"></ul></details>
+      <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdEvSum">Ændringslog</summary><div class="pd-seg pd-evf" id="pdEvF"></div><ul id="pdEv" class="pd-ev"></ul></details>
       <p class="pd-counts" id="pdCounts"></p>
       <details class="pd2-log pd2-box" style="margin-top:12px"><summary id="pdLogSum">Afsluttede</summary><ul id="pdLog"></ul></details>
     </aside>
@@ -1224,7 +1406,7 @@ const KRS=['','A','B','C','C1t','D'];
 const TRI=[['','Ikke triageret'],['roed','Rød'],['orange','Orange'],['gul','Gul'],['groen','Grøn'],['blaa','Blå']];
 const triByName=n=>{const t=String(n||'').toLowerCase().trim().replace('ø','oe').replace('å','aa');return (TRI.find(x=>x[0]&&(x[0]===t||x[1].toLowerCase()===String(n||'').toLowerCase().trim()))||[''])[0]};
 const ZONES={1:['111','113','119.1','119.2','544','546','118.1','118.2','118.3','316.1','316.2','316.3'],2:['202.1','202.2','202.3','202.4','203.1','203.2','204','205','206'],3:['208','209.1','209.2','210','213','215','501','506'],4:['503','505','507','508','509','512','514','516'],5:['518','520','523','524','525'],6:['526','528','530','532','534','536','546'],7:['205','207','209','210','212','214'],8:['211','213','216','501','503','506','508','510'],9:['408','410','411','413','505','512','516','518','520'],10:['522','524','525','526','527','529','531','532','614','615','617'],11:['129','606','608','610','611','612','613'],12:['117','118','119','120','122','123','124','125','126','128']};
-const roomOpts=sel=>'<option value="">Stue</option>'+Object.entries(ZONES).map(([z,l])=>`<optgroup label="Zone ${z}">${l.map(r=>{const v=z+':'+r;return `<option value="${v}"${v===sel?' selected':''}>Z${z} · ${r}</option>`}).join('')}</optgroup>`).join('');
+const roomOpts=sel=>'<option value="">Stue</option>'+Object.entries(ZONES).map(([z,l])=>`<optgroup label="Zone ${z}">${l.filter(r=>{const v=z+':'+r;return v===sel||!S.pts.some(p=>p.room===v)}).map(r=>{const v=z+':'+r;return `<option value="${v}"${v===sel?' selected':''}>Z${z} · ${r}</option>`}).join('')}</optgroup>`).join('');
 const roomTxt=v=>{if(!v)return '';const [z,r]=v.split(':');return 'St. '+r+' · Z'+z};
 const CPR=/\b\d{6}\s*-?\s*\d{4}\b/;
 let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(_){}
@@ -1307,7 +1489,7 @@ const ago=t=>{const m=Math.floor((Date.now()-t)/60000);return m<1?'lige nu':m<60
 let evFilter='';
 /* ---------- render ---------- */
 let newTri='',newSt='ank';
-const cc=d=>{const n=ptsOf(d.id).length;return n>=3?'c3':n==2?'c2':n==1?'c1':''};
+const cc=d=>{const n=busy(d.id);return n>=5?'c3':n>=3?'c2':n>=1?'c1':''};
 const triCol=t=>({roed:'#d32f2f',orange:'#f57c00',gul:'#fbc02d',groen:'#43a047',blaa:'#1e88e5'}[t]||'var(--line)');
 const dots=s=>`<span class="pd-dots">${[1,2,3].map(i=>`<i class="${s[2]>=i?'f':''}"></i>`).join('')}</span>`;
 function stPill(p){const s=stOf(p.st);return `<label class="pd-st" data-s="${s[0]}" title="Status – klik for at skifte">${dots(s)}${s[1]}<select data-st="${p.id}">${ST.map(x=>`<option value="${x[0]}"${x[0]===s[0]?' selected':''}>${x[1]}</option>`).join('')}</select></label>`}
@@ -1316,20 +1498,22 @@ const zoneHtml=v=>{if(!v)return '<b>–</b>';const [z,r]=v.split(':');return `<s
 function render(){
   const sl=SL();
   const med=onDocs().filter(d=>!isKir(d));const medIds=new Set(med.map(d=>d.id));
-  const q=S.pts.filter(p=>!p.doc);const act=S.pts.filter(p=>p.doc&&medIds.has(p.doc));
+  const q=S.pts.filter(p=>!p.doc).sort((a,b)=>(PD_TRI_ORD[a.tri]??9)-(PD_TRI_ORD[b.tri]??9)||(a.ts||a.t0)-(b.ts||b.t0));const act=S.pts.filter(p=>p.doc&&medIds.has(p.doc));
   const syncOld=!S.lastSync||Date.now()-S.lastSync>60*60e3;
   $('#pdSync').innerHTML=`<button type="button" class="pd-sync${syncOld?' old':''}" data-sync="1" title="Dobbeltklik, når du har afstemt med Clinical Tasking">🔄 ${S.lastSync?'Afstemt '+hm(S.lastSync)+' · '+ago(S.lastSync):'Ikke afstemt med CT'}</button>`;
   $('#pdCounts').textContent=`${med.filter(d=>!isLead(d)).length} forvagter · ${q.length} ikke fordelt · ${act.length} hos lægerne · ${S.log.filter(l=>Date.now()-l.tEnd<16*3600e3).length} afsluttet`;
   const s1=suggest()[0],s2=suggestAk()[0];
-  $('#pdSug').innerHTML=`<div class="pd2-sg" title="${esc(whyText(false))}"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}</b></div>${s1?`<span class="pd-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak" title="${esc(whyText(true))}"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}</b></div>${s2?`<span class="pd-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
+  $('#pdSug').innerHTML=`<div class="pd2-sg" title="${esc(whyText(false))}"><div><small>Næste patient</small><b>${s1?esc(shortName(s1.name)):'–'}${s1&&lvlShort(s1)?` <span class="pd-p pdp-lv">${esc(lvlShort(s1))}</span>`:''}</b>${s1?`<span class="why">${pdWhy(s1)}</span>`:''}</div>${s1?`<span class="pd-cnt ${cc(s1)}">${ptsOf(s1.id).length}</span>`:''}</div><div class="pd2-sg ak" title="${esc(whyText(true))}"><div><small>🚑 Næste akutkald</small><b>${s2?esc(shortName(s2.name)):'Ingen med akut kursus'}${s2&&lvlShort(s2)?` <span class="pd-p pdp-lv">${esc(lvlShort(s2))}</span>`:''}</b>${s2?`<span class="why">${pdWhy(s2)}</span>`:''}</div>${s2?`<span class="pd-cnt ${cc(s2)}">${ptsOf(s2.id).length}</span>`:''}</div>`;
   /* påmindelser */
   const now=Date.now(),tAt=nightT(sl.at),showSt=isNight()&&!sl.made&&!sl.statusDone&&now>=tAt-15*60e3&&now<tAt+6*3600e3,showSl=isNight()&&!sl.made&&now>=tAt&&now<tAt+6*3600e3;
   const R0=REM();const ban=[];
-  if(showSt)ban.push(`<div class="pd-ban">🕑 Bed forvagterne opdatere status i Clinical Tasking inden soveplanen kl. ${sl.at}.<span class="sp"></span><button type="button" data-stdone="1">✓ Gjort</button></div>`);
-  if(isNight()&&remDue('tavle',22*60+40,23*60+15))ban.push(`<div class="pd-ban">📣 Send besked om tavlemøde kl. 23:00.<span class="sp"></span><button type="button" data-remcopy="tavle">Kopiér besked</button><button type="button" data-remdone="tavle">✓ Sendt</button></div>`);
-  if(isNight()&&remDue('tavle2',22*60+55,23*60+10))ban.push(`<div class="pd-ban">⏰ Tavlemøde om få minutter – kl. 23:00.<span class="sp"></span><button type="button" data-remdone="tavle2">✓ OK</button></div>`);
-  if(showSl)ban.push(`<div class="pd-ban sl">💤 Kl. ${sl.at}: tid til soveplan.<span class="sp"></span><button type="button" class="primary" data-slmake="1">Lav soveplan</button><span>Udsæt til</span><input type="time" id="pdSlPost" value="${addMin(sl.at,60)}"><button type="button" data-slpost="1">Udsæt</button></div>`);
-  $('#pdBanner').innerHTML=ban.join('');
+  if(showSt)ban.push(`<div class="pd-ban">🕑 Bed forvagterne opdatere status i Clinical Tasking inden soveplanen kl. ${sl.at}.<span class="sp"></span><button type="button" class="pd-ok" data-stdone="1" title="Gjort" aria-label="Gjort">✓</button></div>`);
+  if(isNight()&&remDue('tavle',22*60+40,23*60+15))ban.push(`<div class="pd-ban">📣 Send besked om tavlemøde kl. 23:00.<span class="sp"></span><button type="button" data-remcopy="tavle">Kopiér besked</button><button type="button" class="pd-ok" data-remdone="tavle" title="Sendt" aria-label="Sendt">✓</button></div>`);
+  if(isNight()&&remDue('tavle2',22*60+55,23*60+10))ban.push(`<div class="pd-ban">⏰ Tavlemøde om få minutter – kl. 23:00.<span class="sp"></span><button type="button" class="pd-ok" data-remdone="tavle2" title="OK" aria-label="OK">✓</button></div>`);
+  if(showSl)ban.push(`<div class="pd-ban sl">💤 Kl. ${sl.at}: tid til soveplan.<span class="sp"></span><span>Udsæt til</span><input type="text" id="pdSlPost" inputmode="numeric" maxlength="5" placeholder="tt:mm" title="24-timers tid, fx 00:30" value="${pdPostDefault(sl.at)}"><button type="button" data-slpost="1">Udsæt</button><span class="pd-bdiv"></span><button type="button" class="primary" data-slmake="1">Lav soveplan</button></div>`);
+  {const W=S.pts.filter(p=>!p.doc&&p.st!=='vej'&&pdAge(p)>15*60e3).sort((a,b)=>pdAge(b)-pdAge(a));if(W.length){const p=W[0];ban.push(`<div class="pd-ban kq">${W.length===1?'1 patient':W.length+' patienter'} har ventet over 15 min på fordeling – længst: ${esc(p.head||'patient')}${p.room?', st. '+esc(roomShort(p.room)):''} (${dur(pdAge(p))}).<span class="sp"></span><button type="button" class="primary" data-qfocus="1">Vis køen</button></div>`)}}
+  {const st=S.pts.filter(pdStale);if(st.length&&Date.now()-(S.staleAck||0)>30*60e3){const by={};st.forEach(p=>{const d=docOf(p.doc);const k=d?shortName(d.name):'?';(by[k]=by[k]||[]).push(p.head||'patient')});ban.push(`<div class="pd-ban st">${st.length===1?'1 patient':st.length+' patienter'} har haft samme status i over 2 t – ${Object.entries(by).map(([k,v])=>esc(k)+': '+v.map(esc).join(', ')).join(' · ')}.<span class="sp"></span><button type="button" data-staleok="1">Set – mind mig om 30 min</button></div>`)}}
+  $('#pdBanner').innerHTML=ban.join('');$('#pdBanner').dataset.n=ban.length;{const sg=$('#pdSug'),bn=$('#pdBanner');if(sg&&bn&&bn.previousElementSibling!==sg)sg.after(bn)}{const bd=$('#pdBoard');let w=document.getElementById('pdQWrap');if(bd&&!w){w=document.createElement('section');w.id='pdQWrap';w.className='pd-qwrap';w.append($('#pdQh'),$('#pdQueue'));bd.before(w)}if(w)w.hidden=!S.pts.some(p=>!p.doc)}
   /* soveplan-panel */
   $('#pdSleepBtn').hidden=!isNight();$$('#pdShift button').forEach(b=>b.classList.toggle('on',b.dataset.shift===(S.shift||defShift())));$$('#pdImpShift button').forEach(b=>b.classList.toggle('on',b.dataset.ishift===(S.shift||defShift())));
   $('#pdSleepBtn').textContent=sl.made?`💤 Soveplan ${sl.at}–${sl.to}`:'💤 Soveplan';
@@ -1343,11 +1527,12 @@ function render(){
   $$('#pdView button').forEach(b=>b.classList.toggle('on',b.dataset.view===VIEW));
   $('#pdTriNew').innerHTML=TRI.map(t=>`<button type="button" data-tn="${t[0]}" class="${t[0]===newTri?'on':''}" title="${t[1]}"><span class="pd-tri" data-t="${t[0]}"></span></button>`).join('');
   $$('#pdStNew button').forEach(b=>b.classList.toggle('on',b.dataset.v===newSt));$('#pdVej').hidden=newSt!=='vej';
+  {const r=$('#pdRoom');if(r&&document.activeElement!==r){const v=r.value;r.innerHTML=roomOpts(v);r.value=v}}
   const sg=suggest(),sa=suggestAk();
   $('#pdQh').textContent=`Ikke fordelt (${q.length})`;
   $('#pdQueue').innerHTML=q.length?q.map(p=>{const ak=p.st==='vej';const first=ak?sa[0]:sg[0],second=ak?sg[0]:sa[0];
-    const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="${esc(whyText(isAk))}">${isAk?'🚑 ':'→ '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
-    return `<div class="pd-qc"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span>${p.room?zoneHtml(p.room):''}<b>${esc(p.head||'Ny patient')}</b><span class="pd-meta">${dur(Date.now()-(p.ts||p.t0))}</span></div>
+    const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="${esc(whyText(isAk))}">${isAk?'Akutkald → ':'Tildel '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
+    return `<div class="pd-qc"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span>${p.room?zoneHtml(p.room):''}<b>${esc(p.head||'Ny patient')}</b><span class="pd-wait${pdAge(p)>30*60e3?' w30':pdAge(p)>15*60e3?' w15':''}" title="Ventet på fordeling">${dur(pdAge(p))}</span></div>
      <div class="m">${p.st==='vej'&&(p.krs||p.eta)?`<span class="pd-m vej">🚑 ${p.krs?'Kørsel '+esc(p.krs):''}${p.krs&&p.eta?' · ':''}${p.eta?'ETA '+esc(p.eta)+etaLeft(p.eta):''}</span> `:''}${esc(stOf(p.st)[1])} kl. ${hm(p.ts||p.t0)}${p.note?' · '+esc(p.note):''}</div>
      <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
     :'<div class="pd-empty">Ingen ufordelte patienter.</div>';
@@ -1355,7 +1540,9 @@ function render(){
   const lead=srt(onDocs().filter(d=>isLead(d)&&!isKir(d))),fv=srt(onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d))),asa=srt(onDocs().filter(d=>isAsa(d)&&!isLead(d)&&!isKir(d))),kir=srt(onDocs().filter(isKir));
   $$('#pdSort button').forEach(x=>x.classList.toggle('on',x.dataset.sort===SORT));
   const legend=VIEW==='bjaelke'?`<div class="pd-leg">${[['vej','På vej'],['ank','Ankommet/triageret'],['mtg','Modtagelse'],['mtt','Modtaget'],['pl','Plan lagt (½)']].map(([k,t])=>`<span><i style="background:${BARC[k]}"></i>${t}</span>`).join('')}<span class="pd-meta">Hver blok er én patient – klik for at rette</span></div>`:'';
-  const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}</h2>${t==="Forvagter"?legend:""}<div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
+  {const ud=onDocs().filter(d=>d.until),cnt={};ud.forEach(d=>cnt[d.until]=(cnt[d.until]||0)+1);const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];PD_COMMON=top&&top[1]>=2&&top[1]*2>=ud.length?top[0]:'';}
+  const cmn=PD_COMMON?(()=>{const u=untilInfo({until:PD_COMMON});const k=onDocs().filter(d=>d.until===PD_COMMON).length;return `<span class="pd-common${u.cls?' '+u.cls:''}" title="Tiden vises kun på forvagter, der har fri på et andet tidspunkt eller snart har fri">${k===onDocs().filter(d=>d.until).length?'Alle':k+' af '+onDocs().filter(d=>d.until).length} fri kl. <b>${PD_COMMON}</b>${u.left>0?' · om '+dur(u.left):''}</span>`})():'';
+  const sec=(t,L,x)=>L.length?`<div class="pd-secb"><h2 class="pd2-h">${t}${t==="Forvagter"?cmn:""}</h2>${t==="Forvagter"?legend:""}<div class="pd-rows">${L.map(docRow).join('')}</div></div>`:(x||'');
   $('#pdBoard').innerHTML=sec('Forvagter',fv,`<div class="pd2-box pd-empty" style="margin-bottom:16px">Ingen forvagter endnu. Tryk «📷 Importér fra Clinical Tasking» eller «+ Forvagt».</div>`)+sec('ASA vagthavende',asa)+sec('Koordinerende læge og bagvagt',lead)+
     (kir.length?`<details class="pd-secb pd-kir" open><summary><h2 class="pd2-h">Kirurgi – kun overblik (indgår ikke i fordelingen) · ${kir.length}</h2></summary><div class="pd-rows">${kir.map(docRow).join('')}</div></details>`:'')+
     (S.docs.some(d=>d.on===false)?`<div class="pd-secb"><h2 class="pd2-h">Ikke på vagt</h2><div class="pd-pills">${S.docs.filter(d=>d.on===false).map(d=>`<button type="button" class="pd-ib" data-don="${d.id}">+ ${esc(shortName(d.name))}</button>`).join('')}</div></div>`:'');
@@ -1369,17 +1556,25 @@ function render(){
   $('#pdKnown').innerHTML=S.known.map(k=>`<option value="${esc(k.name)}">`).join('');
   $('#pdLvls').innerHTML=[...new Set(S.known.map(k=>k.lvl).filter(Boolean).concat(['Læge - Akut medicin','Introlæge - Akut medicin','Lægestuderende - Akut medicin','Vikar for læge, medicinstuderende - Akut medicin']))].map(v=>`<option value="${esc(v)}">`).join('');
 }
+let PD_COMMON='';
+const PD_TRI_ORD={roed:0,orange:1,gul:2,groen:3,blaa:4};
+const pdAge=p=>Date.now()-(p.ts||p.t0);
+const pdStale=p=>!!p.doc&&pdAge(p)>2*3600e3;
+const pdWhy=d=>`belastning ${String(busy(d.id)).replace('.',',')} · ${d.lastAt?'sidst tildelt '+hm(d.lastAt):'ikke tildelt endnu'}`;
+const pdNormT=v=>{const m=String(v||'').trim().match(/^(\d{1,2})[:.]?(\d{2})$/);if(!m||+m[1]>23||+m[2]>59)return '';return p2(+m[1])+':'+m[2]};
+const pdPostDefault=at=>{let t=Math.max(Date.now(),nightT(at))+30*60e3;const d=new Date(t);d.setMinutes(Math.ceil(d.getMinutes()/15)*15,0,0);return p2(d.getHours())+':'+p2(d.getMinutes())};
+const pdLvlColor=d=>({Lægevikar:'#9dadbb',KBU:'#6eb0ec',Intro:'#5cc79f',HU:'#a894e6',Reservelæge:'#e8b54a',Speciallæge:'#ff9a6b',Overlæge:'#ff7a5c',Læge:'#c4d2e0'})[lvlShort(d)]||'#9dadbb';
 function docRow(d){const P=ptsOf(d.id);const u=untilInfo(d);const n=P.length;const lv=lvlShort(d);const si=sleepInfo(d);
   const pills=(lv?`<span class="pd-p pdp-lv">${esc(lv)}</span>`:'')+specsOf(d).map(x=>{const c=specColor(x);return `<span class="pd-p pdp-sp" style="--pc:${c};--pt:${txtOn(c)}">${esc(x)}</span>`}).join('')+
     (si?`<span class="pd-p pdp-zz">💤 ${si.now?'sover til '+si.t:'sover '+si.f+'–'+si.t}</span>`:'')+(d.nosug?'<span class="pd-p pdp-ns" title="Foreslås ikke til patienter">foreslås ikke</span>':'');
-  return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${avc(d.name)}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}${/intro/i.test(lvlPart(d))?'<span class="pd-amb" title="Introlæge – kan tage akutkald">🚑</span>':isStudVik(d)||d.akk?`<button type="button" class="pd-amb${d.akk?'':' no'}" data-akk="${d.id}" title="${d.akk?'Akut kursus bestået – kan tage akutkald. Klik for at fjerne':'Akut kursus ikke markeret – klik hvis bestået'}">🚑</button>`:''}</b><div class="pd-pills">${pills}</div><span class="pd-meta pd-mp">${u?`<span class="pd-m ${u.cls}" title="Til kl. ${d.until} · ${esc(u.txt)}">🕒 ${d.until==='08:30'?'15:00–08:30':'til '+d.until}</span>`:''}${d.tlf?`<span class="pd-m">☎ ${esc(d.tlf)}</span>`:''}${d.lastAt?`<span class="pd-m" title="Sidst tildelt kl. ${hm(d.lastAt)} (${ago(d.lastAt)})">→ ${hm(d.lastAt)}</span>`:''}${d.sync?`<span class="pd-m ok" title="Afstemt med Clinical Tasking kl. ${hm(d.sync)}">✓ ${hm(d.sync)}</span>`:''}</span></div>
-    <span class="pd-cnt ${cc(d)}" data-dsync="${d.id}" title="Aktive patienter. Dobbeltklik når lægen er afstemt med Clinical Tasking">${n}<small>${n?'pt.':'ledig'}</small></span><button class="pd-x" data-dedit="${d.id}" title="Ret lægen">⋯</button></div>
+  return `<div class="pd-row${si&&si.now?' slp':''}" data-did="${d.id}"><div class="pd-doc"><span class="pd-av" style="--avc:${pdLvlColor(d)}" title="${esc(lvlShort(d)||'')}">${esc(initials(d.name))}</span><div class="pd-dn"><b title="${esc(d.name)} – ${esc(d.lvl||'')}">${esc(shortName(d.name))}${/intro/i.test(lvlPart(d))?'<span class="pd-amb" title="Introlæge – kan tage akutkald">Akutkald</span>':isStudVik(d)||d.akk?`<button type="button" class="pd-amb${d.akk?'':' no'}" data-akk="${d.id}" title="${d.akk?'Akut kursus bestået – kan tage akutkald. Klik for at fjerne':'Akut kursus ikke markeret – klik hvis bestået'}">${d.akk?'Akutkald':'Akutkald?'}</button>`:''}</b><div class="pd-pills">${pills}</div><span class="pd-meta pd-mp">${u&&!(d.until===PD_COMMON&&!u.cls)?`<span class="pd-m ${u.cls}" title="Til kl. ${d.until} · ${esc(u.txt)}">${u.left>0?`Fri kl. <b>${d.until}</b> <i>· om ${dur(u.left)}</i>`:`Fri siden <b>${d.until}</b>`}</span>`:''}${d.lastAt?`<span class="pd-m" title="Sidst tildelt kl. ${hm(d.lastAt)} (${ago(d.lastAt)})">→ ${hm(d.lastAt)}</span>`:''}${d.sync?`<span class="pd-m ok" title="Afstemt med Clinical Tasking kl. ${hm(d.sync)}">✓ ${hm(d.sync)}</span>`:''}</span></div>
+    <span class="pd-cnt ${cc(d)}" data-dsync="${d.id}" title="Aktive patienter. Dobbeltklik når lægen er afstemt med Clinical Tasking">${n}<small>${n?'pt.':'ledig'}</small><span class="pd-lg" aria-hidden="true"><i style="width:${Math.min(busy(d.id),6)/6*100}%;--lgw:${busy(d.id)?600/Math.min(busy(d.id),6):100}%"></i></span></span><button class="pd-x" data-dedit="${d.id}" title="Ret lægen">⋯</button></div>
     <div class="pd-pts">${(VIEW==='bjaelke'?barRow(P):P.map(p=>VIEW==='avanceret'?acCell(p,d):scCell(p)).join(''))}<button type="button" class="pd-add" data-addp="${d.id}" title="Tilføj igangværende patient">+</button></div></div>`}
 const BARC={vej:'#d32f2f',ank:'#8a94a6',tri:'#8a94a6',mtg:'#64b5f6',mtt:'#1e88e5',pl:'#43a047'};
 function barRow(P){const order=['vej','ank','tri','mtg','mtt','pl'];const L=P.slice().sort((a,b)=>order.indexOf(a.st)-order.indexOf(b.st));
   const tot=P.reduce((a,p)=>a+(p.st==='pl'?.5:1),0);
   return `<div class="pd-bar"><div class="pd-bars">${L.map(p=>`<button type="button" class="pd-seg2" data-edit="${p.id}" style="--bc:${BARC[p.st]||'#8a94a6'};flex:${p.st==='pl'?1:2}" title="${esc(ptLabel(p))} · ${esc(stOf(p.st)[1])} · ${esc(tLbl(p))}">${p.room?'Z'+esc(p.room.split(':')[0])+' '+esc(p.room.split(':')[1]):''}</button>`).join('')}</div><span class="pd-barl">${String(tot).replace('.',',')}</span></div>`}
-function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc" data-edit="${p.id}" title="${esc(tTip(p))} – klik for at rette"><span class="a"><span class="pd-tri" data-t="${p.tri||''}"></span>${zoneHtml(p.room)}<span class="tt">${esc(tLbl(p))}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
+function scCell(p){const s=stOf(p.st);return `<button type="button" class="pd-sc${pdStale(p)?' stale':''}" data-edit="${p.id}" title="${esc(tTip(p))} – klik for at rette"><span class="a"><span class="pd-tri" data-t="${p.tri||''}"></span>${zoneHtml(p.room)}<span class="tt">${esc(tLbl(p))}</span></span><span class="h${p.head?'':' e'}">${esc(p.head||'problematik …')}</span><span class="s">${dots(s)}${s[1]}${p.note?' · '+esc(p.note):''}</span></button>`}
 function acCell(p,d){return `<div class="pd-ac" data-pid="${p.id}"><div class="r"><button type="button" class="pd-tri" data-t="${p.tri||''}" data-tric="${p.id}" title="Triage – klik for at skifte"></button><select class="fld" data-room="${p.id}" title="Stue">${roomOpts(p.room)}</select><span class="sp"></span><span class="tt" title="${esc(tTip(p))}">${esc(tLbl(p))}</span></div>
   <input class="fld h" data-hd="${p.id}" value="${esc(p.head||'')}" maxlength="60" placeholder="Problematik">
   <input class="fld n" data-nt="${p.id}" value="${esc(p.note||'')}" maxlength="60" placeholder="Note">
@@ -1461,7 +1656,10 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('[data-stdone]')){sl.statusDone=true;save();render();return}
   if(t.closest('[data-imp]')){const x=document.getElementById('pdImport');if(x)x.click();return}
   if(t.closest('[data-slmake]')){makeSleep();save();render();document.getElementById('pdSleep').scrollIntoView({block:'nearest'});return}
-  if(t.closest('[data-slpost]')){const v=$('#pdSlPost').value;if(v){sl.at=v;save();render()}return}
+  if(t.closest('[data-slpost]')){const v=pdNormT($('#pdSlPost').value);if(!v){$('#pdSlPost').focus();return}if(v){sl.at=v;save();render()}return}
+  if(t.closest('.pd-newbox .pd-bh')){const bx=t.closest('.pd-newbox');bx.classList.toggle('open');if(bx.classList.contains('open')){setTimeout(()=>{const i=bx.querySelector('input[name=head]');if(i)i.focus()},30)}return}
+  if(t.closest('[data-qfocus]')){const e=$('#pdQueue');if(e){e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.add('pd-flash');setTimeout(()=>e.classList.remove('pd-flash'),1600)}return}
+  if(t.closest('[data-staleok]')){S.staleAck=Date.now();save();render();return}
   if(t.closest('[data-slclose]')){sl.open=false;save();render();return}
   if(t.closest('[data-slnew]')){makeSleep();save();render();return}
   if(t.closest('[data-slsave]')){ev('sl',`Soveplan ${sl.at}–${sl.to} lagt`);sl.made=true;sl.statusDone=true;sl.open=false;save();render();return}
