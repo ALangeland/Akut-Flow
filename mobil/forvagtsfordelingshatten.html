@@ -1297,6 +1297,9 @@ span.pd-amb{cursor:default}
 .pd-qwrap #pdQueue{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
 .pd-qwrap .pd-qc{margin:0}
 .pd-qwrap .pd-empty{display:none}
+/* fjern fra køen */
+.pd-qc .as .pd-qdel{margin-left:auto;background:transparent!important;border:1px solid var(--line)!important;color:var(--muted)!important;padding:5px 10px!important;font-weight:700!important}
+.pd-qc .as .pd-qdel:hover{border-color:var(--hit)!important;color:var(--hit)!important}
 </style>
 </head>
 <body>
@@ -1542,7 +1545,7 @@ function render(){
     const btn=(d,isAk)=>d?`<button type="button" class="${isAk?'ak':''}" data-asg="${p.id}|${d.id}" title="${esc(whyText(isAk))}">${isAk?'Akutkald → ':'Tildel '}${esc(shortName(d.name))} <small>(${ptsOf(d.id).length})</small></button>`:'';
     return `<div class="pd-qc"><div class="t" data-edit="${p.id}" title="Klik for at rette"><span class="pd-tri" data-t="${p.tri||''}"></span>${p.room?zoneHtml(p.room):''}<b>${esc(p.head||'Ny patient')}</b><span class="pd-wait${pdAge(p)>30*60e3?' w30':pdAge(p)>15*60e3?' w15':''}" title="Ventet på fordeling">${dur(pdAge(p))}</span></div>
      <div class="m">${p.st==='vej'&&(p.krs||p.eta)?`<span class="pd-m vej">🚑 ${p.krs?'Kørsel '+esc(p.krs):''}${p.krs&&p.eta?' · ':''}${p.eta?'ETA '+esc(p.eta)+etaLeft(p.eta):''}</span> `:''}${esc(stOf(p.st)[1])} kl. ${hm(p.ts||p.t0)}${p.note?' · '+esc(p.note):''}</div>
-     <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select></div></div>`}).join('')
+     <div class="as">${btn(first,ak)}${second&&second!==first?btn(second,!ak):''}<select data-asgs="${p.id}"><option value="">Andre …</option>${onDocs().map(d=>`<option value="${d.id}">${esc(shortName(d.name))} (${ptsOf(d.id).length})</option>`).join('')}</select><button type="button" class="pd-qdel" data-qdel="${p.id}" title="Fjern fra køen" aria-label="Fjern fra køen">✕</button></div></div>`}).join('')
     :'<div class="pd-empty">Ingen ufordelte patienter.</div>';
   const srt=L=>SORT==='load'?L.slice().sort((a,b)=>busy(b.id)-busy(a.id)||ptsOf(b.id).length-ptsOf(a.id).length):SORT==='light'?L.slice().sort(byLoad):SORT==='name'?L.slice().sort((a,b)=>a.name.localeCompare(b.name,'da')):L;
   const lead=srt(onDocs().filter(d=>isLead(d)&&!isKir(d))),fv=srt(onDocs().filter(d=>!isLead(d)&&!isKir(d)&&!isAsa(d))),asa=srt(onDocs().filter(d=>isAsa(d)&&!isLead(d)&&!isKir(d))),kir=srt(onDocs().filter(isKir));
@@ -1666,6 +1669,7 @@ document.addEventListener('click',e=>{const t=e.target;let b;
   if(t.closest('[data-slmake]')){makeSleep();save();render();document.getElementById('pdSleep').scrollIntoView({block:'nearest'});return}
   if(t.closest('[data-slpost]')){const v=pdNormT($('#pdSlPost').value);if(!v){$('#pdSlPost').focus();return}if(v){sl.at=v;save();render()}return}
   if(t.closest('.pd-newbox .pd-bh')){const bx=t.closest('.pd-newbox');bx.classList.toggle('open');if(bx.classList.contains('open')){setTimeout(()=>{const i=bx.querySelector('input[name=head]');if(i)i.focus()},30)}return}
+  if(t.closest('[data-qdel]')){const p=S.pts.find(x=>x.id===t.closest('[data-qdel]').dataset.qdel);if(p&&confirm(`Fjern «${p.head||'patient'}» fra køen?`)){ev('end',`Fjernet fra køen: ${ptLabel(p)}`);S.pts=S.pts.filter(x=>x!==p);save();render()}return}
   if(t.closest('[data-qfocus]')){const e=$('#pdQueue');if(e){e.scrollIntoView({behavior:'smooth',block:'center'});e.classList.add('pd-flash');setTimeout(()=>e.classList.remove('pd-flash'),1600)}return}
   if(t.closest('[data-staleok]')){S.staleAck=Date.now();save();render();return}
   if(t.closest('[data-slclose]')){sl.open=false;save();render();return}
