@@ -1,7 +1,7 @@
 {
   "name": "Akuttøjskassen",
   "short_name": "Akuttøjskassen",
-  "description": "Ghostwriter, Fieldnotes, Specialefordelingshatten og Vagtflows – arbejdsværktøjer til Alb Akut- og Traumecenter.",
+  "description": "Ghostwriter, Fieldnotes, Specialefordelingshatten og Flows – arbejdsværktøjer til Alb Akut- og Traumecenter.",
   "lang": "da",
   "start_url": "./index.html",
   "scope": "./",
@@ -41,8 +41,9 @@
       "url": "./specialefordelingshatten.html"
     },
     {
-      "name": "Vagtflows",
-      "url": "./vagtflows.html"
+      "name": "Flows",
+      "url": "./vagtflows.html",
+      "short_name": "Flows"
     }
   ]
 }

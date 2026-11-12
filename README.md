@@ -17,7 +17,7 @@ Arbejdsværktøjer til Alb Akut- og Traumecenter i tre udgaver: web, mobil og lo
 - **Ghostwriter** (tidligere Pasteplaner og Journalflow): journalkladde som klikjournalen med fraser, normalfund og planer, der fordeles i journalfelterne.
 - **Fieldnotes:** hurtige vagtnoter med zone, stue, afdeling og 5 prioriteter, færdig-markering og overleveringstekst.
 - **Specialefordelingshatten** (tidligere Fordelingshatten): ASA – optælling pr. speciale i zonerne, bedste fordeling af nye akutte og 💾 Gem fordeling til loggen.
-- **Vagtflows** (tidligere Vagtflow): tidslinjer for vagtfunktioner, fx ASA-vagten – faser og trin, print som PDF i A4/A5.
+- **Flows:** samler to editorer med en vælger øverst – **Tidslinjer** (`vagtflows.html`, tidligere Vagtflows: faser og trin for vagtfunktioner, fx ASA-vagten, print som PDF i A4/A5) og **Flowcharts** (`flowcharts.html`: beslutningsdiagrammer med flere ben, print som PDF, PNG eller SVG).
 
 ## Opdatering
 

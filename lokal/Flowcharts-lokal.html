@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Flowcharts</title>
+<title>Flows – Flowcharts</title>
 <script>try{var t=localStorage.getItem('alb-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme='dark'}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Open+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -320,9 +320,10 @@ async function pickSave(blob,name,id){
 .topbtns .afmem-btn{margin-left:0;color:var(--bar-fg,#fff);border-color:var(--bar-muted,rgba(255,255,255,.4))}
 .topbtns .afmem-btn.ok{color:var(--bar-fg,#fff)}
 .topbtns #afmem-btn::before{display:none}
-</style></head>
+</style><style id="flowswitch">.flowswitch{display:flex;justify-content:center;padding:12px 16px 0}.flowswitch .fs{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}.flowswitch a{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;font:600 .9rem var(--sans,system-ui,sans-serif);color:var(--fg);text-decoration:none}.flowswitch a+a{border-left:1px solid var(--line)}.flowswitch a:hover{background:var(--bg)}.flowswitch a.on{background:#41505f;color:#fff}:root[data-theme="light"] .flowswitch a.on{background:var(--bar,#2a3560);color:#fff}.flowswitch small{font-weight:500;opacity:.75}</style>
+</head>
 <body>
-<header class="topbar"><div class="topbar-in"><h1>Flowcharts</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span><div class="topbtns"><button id="themeToggle" type="button" aria-label="Skift mellem lys og mørk" title="Skift mellem lys og mørk tilstand"></button></div></div></header>
+<header class="topbar"><div class="topbar-in"><h1>Flows</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span><div class="topbtns"><button id="themeToggle" type="button" aria-label="Skift mellem lys og mørk" title="Skift mellem lys og mørk tilstand"></button></div></div></header><div class="flowswitch"><div class="fs" role="tablist" aria-label="Type"><a href="Vagtflows-lokal.html">Tidslinjer <small>vagtfunktioner</small></a><a href="Flowcharts-lokal.html" class="on" aria-current="page">Flowcharts <small>beslutninger</small></a></div></div>
 <div class="wrap fc">
   <header>
     <p class="hsub">Byg flowcharts med flere ben – appen tegner diagrammet. Ændringer gemmes i din browser.</p>
