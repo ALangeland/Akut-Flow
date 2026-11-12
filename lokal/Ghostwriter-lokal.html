@@ -23,22 +23,23 @@
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
-  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#b4c0e0;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#b0bde0; --line:#2a3d6e;
   --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c;
   --warn:#ff9f5c; --warn-soft:#3a2a14; --done:#6fdc9a; --done-soft:#16372b;
   --ph:#3b2d1a; --ph-fg:#f0b36e; --fill:#1f3a31; --fill-fg:#7fd9b5;
   --cA:#6aa8e0; --cB:#5cc79f; --cC:#ff7a5c; --cD:#a594e0; --cE:#e0b452; --cX:#9aa9cc;
-  color-scheme:dark}}
+  --sel:#3a56a8; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
-  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#b4c0e0;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#b0bde0; --line:#2a3d6e;
   --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c;
   --warn:#ff9f5c; --warn-soft:#3a2a14; --done:#6fdc9a; --done-soft:#16372b;
   --ph:#3b2d1a; --ph-fg:#f0b36e; --fill:#1f3a31; --fill-fg:#7fd9b5;
   --cA:#6aa8e0; --cB:#5cc79f; --cC:#ff7a5c; --cD:#a594e0; --cE:#e0b452; --cX:#9aa9cc;
-  color-scheme:dark}
+  --sel:#3a56a8; color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]:not([data-skin="basic"]) .seg.nfmode button[aria-pressed="true"],:root[data-theme="dark"]:not([data-skin="basic"]) .fc-types button[aria-pressed="true"],:root[data-theme="dark"]:not([data-skin="basic"]) .sp-seg button[aria-pressed="true"]{background:var(--sel);border-color:var(--sel);color:#fff}
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -619,7 +620,72 @@ button .ico,.sbtn .ico{margin:-4px 5px -4px 0}
 .topbtns .afmem-btn{margin-left:0;color:var(--bar-fg,#fff);border-color:var(--bar-muted,rgba(255,255,255,.4))}
 .topbtns .afmem-btn.ok{color:var(--bar-fg,#fff)}
 .topbtns #afmem-btn::before{display:none}
-</style></head>
+</style><style id="tekst-synlig">/* tekstfarver: bedre synlighed i mørk tilstand */
+.sbadge.s-gpt{background:#0b8465!important;border-color:#0b8465!important;color:#fff!important}
+.klnmx{background:#23803a!important}
+:root[data-theme="dark"] .klbtns .kln.kli{border-color:#5fd07f!important;color:#5fd07f!important}
+:root[data-theme="dark"] .klbtns .kln.kli:hover{background:#23803a!important;color:#fff!important}
+:root[data-theme="dark"] .kdsaved{color:#5fd07f!important}
+.prio button[data-p="3"],.badge[data-p="3"],.fchip[data-p="3"].on{color:#06200d!important}
+.prio button{opacity:.85}
+</style>
+<style id="pill-ens">/* Formsprog (12.11.2026): handlinger (knapper) har 8 px hjørner; valg og mærker (chips, filtre, badges) er helt runde;
+   segmenter er runde skydere med en indre pille for det valgte. Kort og felter beholder deres hjørner.','Ens topbjælke og navigation i fuld bredde, gul hovedknap overalt, «Forbind hukommelse» som statusprik og ingen farvestriber.','PDF, Kopiér og Journal klar står på én række, og «klik for at folde ud» er fjernet.
+   #_p#_p#_p matcher aldrig; den løfter kun specificiteten over ældre !important-regler. */
+:is(button,.btn,a.btn,.afmem-btn,.kdtab,.step,#_p#_p#_p){border-radius:8px!important}
+:is(.chip,.chip2,.sbadge,.edtag,.badge,.verbtn,.klnsel,.klplan,.klnmx,.fchip,.prio button,.fc-types button,#tabs button,.nfgrp,#_p#_p#_p){border-radius:999px!important}
+:is(.sp-seg,.gwseg,.seg.nfmode,.seg.kltype,.siseg,.seg2,.flowswitch .fs,#_p#_p#_p){border-radius:999px!important;padding:3px!important;gap:3px!important;overflow:hidden}
+:is(.sp-seg>*,.gwseg>*,.seg.nfmode>*,.seg.kltype>*,.siseg>*,.seg2>*,.flowswitch .fs>*,#_p#_p#_p){border-radius:999px!important;border:0!important}
+:is(.sp-seg>*,.gwseg>*,.seg.nfmode>*,.seg.kltype>*,.siseg>*,.seg2>*,.flowswitch .fs>*,#_p#_p#_p):not([aria-pressed="true"]):not(.on):not(.sel):not([hidden]){background:transparent!important}
+:is(#themeToggle,.topbtns #afmem-btn,.kln.kli,.fc-colors button,.sw button,#_p#_p#_p){border-radius:50%!important}
+:is(.ztabs button,.klgrphd,.klmore,.grpfold,button.grp,button.item,.insbtn,.insed,#_p#_p#_p){border-radius:0!important}
+:is(.edtag,#_p#_p#_p){padding:1px 9px!important}
+:is(.kdtab,#_p#_p#_p){border-left-width:1.5px!important}
+:is(.tabs button,#_p#_p#_p){border-radius:8px 8px 0 0!important}
+</style>
+<style id="layout-ens">/* Layout (12.11.2026): ens topbjælke i fuld bredde, statusprik, én primærfarve, ingen farvestriber.
+   #_p#_p#_p matcher aldrig; den løfter kun specificiteten over ældre !important-regler. */
+:is(.topbar-in,#_p#_p#_p){max-width:none!important;width:100%!important;margin:0!important;flex-wrap:nowrap!important;justify-content:flex-start!important;align-items:center!important}
+:is(.topbar-in > .topbtns,#_p#_p#_p){margin-left:auto!important;flex-wrap:nowrap!important}
+:is(.topbar-in .sub,#_p#_p#_p){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+:is(.afnav-in,#_p#_p#_p){max-width:none!important;margin:0!important}
+@media (max-width:720px){:is(.topbar-in,#_p#_p#_p){flex-wrap:wrap!important}}
+:is(.topbtns #afmem-btn,#_p#_p#_p){font-size:0!important;width:34px!important;height:34px!important;min-width:0!important;padding:0!important;gap:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;border:1px solid var(--bar-muted)!important;background:transparent!important}
+.topbtns #afmem-btn::before{display:none!important}
+.topbtns #afmem-btn::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bar-muted);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+.topbtns #afmem-btn.ok::after{background:#5cc79f}
+.topbtns #afmem-btn.warn::after{background:#f0a85a}
+:root[data-theme="dark"]:not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn){background:var(--go,#ffc933)!important;border-color:var(--go,#ffc933)!important;color:#2a1c00!important}
+:root:not([data-theme="dark"]):not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn){background:var(--go,#2457c5)!important;border-color:var(--go,#2457c5)!important;color:#fff!important}
+:root:not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn):hover{filter:brightness(1.07)}
+:is(.filebar,#_p#_p#_p){border:1px solid var(--warn)!important}
+:is(.filebar.ok,.filebar.saving,#_p#_p#_p){border-color:var(--line)!important}
+:is(.kltip,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--warn) 60%,var(--line))!important}
+:is(.phbar,.phf,#_p#_p#_p){border:1px solid var(--warn)!important}
+:is(.pvvejl,.sif-t .sie-t,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--accent) 50%,var(--line))!important;border-radius:6px!important}
+:is(.srcs,.vitbox,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--go) 50%,var(--line))!important}
+:is(.item[aria-selected=true],.klrow.target,.pipx .xrow.next,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--go)!important}
+:is(.nfline.flash,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--done)!important}
+@keyframes got{0%{background:var(--done-soft);box-shadow:inset 0 0 0 1px var(--done)}100%{background:transparent}}
+:is(#klnav a,#_p#_p#_p){border-left-width:0!important}
+:is(#klnav a.on,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--go)}
+:is(.item,#_p#_p#_p){grid-template-columns:8px minmax(0,1fr) auto!important;padding-left:10px!important}
+:is(.item .stripe,#_p#_p#_p){width:8px!important;height:8px!important;border-radius:50%!important;align-self:start!important;margin-top:6px}
+:is(.insbtn .stripe,#_p#_p#_p){width:8px!important;height:8px!important;border-radius:50%!important;align-self:center!important}
+:is(.note .bar,#_p#_p#_p){display:none!important}
+:is(.op-note,#_p#_p#_p){border:1px solid color-mix(in srgb,#e0a100 60%,var(--line))!important;border-radius:6px!important}
+:is(.fc-node,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--nc,var(--line)) 55%,var(--line))!important}
+html:not(.afmob) :is(.actions.klact,#_p#_p#_p){display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+html:not(.afmob) :is(.klact > .btn,#_p#_p#_p){flex:1 1 auto!important;width:auto!important}
+html:not(.afmob) :is(.klact [data-kl=pdf],#_p#_p#_p){order:1!important;flex:0 1 auto!important;padding:0 18px!important}
+html:not(.afmob) :is(.klact [data-kl=copyall],#_p#_p#_p){order:2!important}
+html:not(.afmob) :is(.klact [data-kl=klar],#_p#_p#_p){order:3!important}
+html:not(.afmob) :is(.klmode-r .nfgrp,#_p#_p#_p){flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;gap:10px!important}
+html:not(.afmob) :is(.klmode-r .nfgrp .nfml,#_p#_p#_p){width:auto!important;flex:none!important}
+html:not(.afmob) :is(.klmode-r .nfgrp .seg.nfmode,#_p#_p#_p){width:auto!important;flex:1 1 auto!important}
+html:not(.afmob) :is(.klact .klnew,#_p#_p#_p){order:4!important;flex:0 0 100%!important;justify-self:center}
+</style>
+</head>
 <body>
 <header class="topbar"><div class="topbar-in">
   <div class="brand"><h1>Ghostwriter</h1><span class="edtag">LOKAL</span><span>Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" title="Versionshistorik"></button></div>
@@ -2562,7 +2628,7 @@ function renderPreview(){
     return;
   }
   const names=phNames(p.text);
-  const fields=names.length?`<details class="fwrap" ${names.length<=12?'open':''}><summary><span class="lbl">Udfyld felter</span><span class="status" id="fcount"></span>${names.length>12?'<span class="status">– klik for at folde ud</span>':''}</summary><div class="fields" id="fields">
+  const fields=names.length?`<details class="fwrap" ${names.length<=12?'open':''}><summary><span class="lbl">Udfyld felter</span><span class="status" id="fcount"></span></summary><div class="fields" id="fields">
       <div class="fh"><span style="flex:1"></span><button class="btn sm" data-act="clearvals">Ryd felter</button></div>
       ${names.map(n=>`<label><span title="${esc(n)}">${esc(n)}</span><input data-ph="${esc(n)}" value="${esc(vals[n]||'')}" autocomplete="off"></label>`).join('')}
     </div></details>`:'';
@@ -3080,7 +3146,7 @@ function renderKLDraft(){
     const hasN=sec.f.some(f=>klNormals(sec.s,f).length);
     const anyFilled=sec.f.some(f=>(KL[kk(sec.s,f)]||'').trim())||chSummary(sec).length>0;
     const open=!sec.fold||klOpen.has(sec.s)||anyFilled;
-    html+=`<div class="klsec${sec.free?' free':''}${sec.fold?' foldable':''}${open?'':' folded'}"><div class="nfh">${sec.fold?`<button class="klfold" data-klfold="${esc(sec.s)}" aria-expanded="${open}"><span class="arr">${open?'▾':'▸'}</span><span class="lbl">${esc(sec.s)}</span><span class="foldhint">${open?'':'– klik for at folde ud'}</span></button>`:`<span class="lbl">${esc(sec.s)}</span>`}
+    html+=`<div class="klsec${sec.free?' free':''}${sec.fold?' foldable':''}${open?'':' folded'}"><div class="nfh">${sec.fold?`<button class="klfold" data-klfold="${esc(sec.s)}" aria-expanded="${open}"><span class="arr">${open?'▾':'▸'}</span><span class="lbl">${esc(sec.s)}</span></button>`:`<span class="lbl">${esc(sec.s)}</span>`}
       ${hasN&&sec.f.length>1?`<button class="btn sm kln" data-klsecnorm="${esc(sec.s)}" title="Indsæt normalfund i alle tomme felter i afsnittet (valgfrie felter som Mammae, Genitalia m.fl. springes over) – felter du har skrevet i bliver ikke rørt">✓ Normal i tomme felter</button>`:''}</div>`;
     html+=`<div class="klbody"${open?'':' hidden'}>`;
     if(sec.ch)html+=sec.ch.map(c=>{const v=chGet(sec.s,c.id);return `<div class="klch"><span class="kllbl">${c.label?esc(c.label):''}</span><div class="chips2">${c.opts.map(o=>{const on=c.type==='radio'?v===o:Array.isArray(v)&&v.includes(o);return `<button class="chip2" data-chs="${esc(sec.s)}" data-chid="${c.id}" data-chv="${esc(o)}" aria-pressed="${on}"><span class="ck ck-${c.type==='radio'?'r':'c'}"></span>${esc(o)}</button>`}).join('')}</div></div>`}).join('');
@@ -3285,7 +3351,7 @@ const KL_TJEK=['Sygdomshistorik udfyldt','CAVE registreret / forespurgt','Medici
 function klTjekHtml(){const t=KL.__tjek||{};return `<div class="kltjek"><span class="tl">Tjekliste</span>${KL_TJEK.map((o,i)=>`<button class="chip2" data-tjek="${i}" aria-pressed="${!!t[i]}"><span class="ck ck-c"></span>${esc(o)}</button>`).join('')}</div>`}
 function klGrpOpen(g){const secs=JOURNAL.filter(x=>x.grp===g);const filled=secs.some(x=>x.f.some(f=>(KL[kk(x.s,f)]||'').trim()));const open=klOpen.has('grp:'+g)||filled;
   const sum=secs.flatMap(x=>chSummary(x)).join(' · ');
-  return `<div class="klgrp${open?'':' folded'}"><button class="klgrphd" data-klgrp="${esc(g)}" aria-expanded="${open}"><span class="arr">${open?'▾':'▸'}</span>${esc(g)}<span class="gs">${esc(sum||(open?'':'Alkohol, rygning, misbrug – klik for at folde ud'))}</span></button><div class="klgrpb">`}
+  return `<div class="klgrp${open?'':' folded'}"><button class="klgrphd" data-klgrp="${esc(g)}" aria-expanded="${open}"><span class="arr">${open?'▾':'▸'}</span>${esc(g)}<span class="gs">${esc(sum||(open?'':'Alkohol, rygning, misbrug'))}</span></button><div class="klgrpb">`}
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-tjek]');if(t&&t.closest('#kldraft')){KL.__tjek=KL.__tjek||{};const i=t.dataset.tjek;KL.__tjek[i]=!KL.__tjek[i];klSave();t.setAttribute('aria-pressed',String(!!KL.__tjek[i]));return}
   const g=e.target.closest('[data-klgrp]');if(g&&g.closest('#kldraft')){const k='grp:'+g.dataset.klgrp;klOpen.has(k)?klOpen.delete(k):klOpen.add(k);renderKLDraft();return}
@@ -4668,8 +4734,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='39';
+const APP_VERSION='40';
 const CHANGELOG=[
+ {v:'40',d:'12.11.2026',items:['Mørk tilstand beholder det klassiske navy-tema, men med lysere dæmpet tekst og bedre kontrast på mærker, knapper og grønne og røde tekster. Valgte faner og knapper har hvid tekst på mørk flade.','Ensartede former: knapper har bløde hjørner, chips og mærker er runde, og segmenter er runde skydere. Kort og felter beholder deres hjørner.']},
  {v:'39',d:'02.11.2026',items:['Nyt udseende: Arkade-ikoner og nye farver (mørk Arkade-navy, lys Kontor-creme). De gamle ikontemaer kan vælges på startsiden.']},
  {v:'38',d:'01.11.2026',items:['💾 Gem (og Eksportér mine ændringer) spørger nu, hvor filen skal gemmes, og husker mappen til næste gang. Gælder i Edge og Chrome på PC – ellers havner filen i Overførsler som før.']},
  {v:'37',d:'01.11.2026',items:['📎 Send kladden sender kladden som vedhæftet fil via telefonens del-menu (vælg Mail). Modtageradressen kopieres, så den kan sættes ind i Til. ✉ Send som tekst findes stadig under ✉ Send / mail.','Webudgaven har også Send-knapperne.','Lokal: træk filen fra mailen ind i Ghostwriter, eller brug 📂 Indlæs fil.']},

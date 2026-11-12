@@ -21,15 +21,15 @@
   --mono:"IBM Plex Mono",ui-monospace,Consolas,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
-  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#b4c0e0;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#b0bde0; --line:#2a3d6e;
   --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
-  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}}
+  --done:#6fdc9a; --done-soft:#16372b; --sel:#3a56a8; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#9aa9cc;
-  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#9aa9cc; --line:#2a3d6e;
+  --bar:#0a1226; --bar-2:#111c3a; --bar-muted:#b4c0e0;
+  --bg:#0e1830; --surface:#162447; --fg:#eaf0ff; --muted:#b0bde0; --line:#2a3d6e;
   --accent:#9aa9cc; --accent-soft:#1f2f5a; --go:#ffc933; --hit:#ff7a5c; --warn:#ff9f5c; --warn-soft:#3a2a14;
-  --done:#6fdc9a; --done-soft:#16372b; color-scheme:dark}
+  --done:#6fdc9a; --done-soft:#16372b; --sel:#3a56a8; color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.45}
 .topbar{background:var(--bar);color:var(--bar-fg);padding:14px 16px}
@@ -117,6 +117,7 @@ textarea{min-height:70px;resize:vertical}
 .empty{text-align:center;color:var(--muted);padding:30px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
 @media (max-width:760px){.grid{grid-template-columns:1fr 1fr}}
 :root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]:not([data-skin="basic"]) .seg.nfmode button[aria-pressed="true"],:root[data-theme="dark"]:not([data-skin="basic"]) .fc-types button[aria-pressed="true"],:root[data-theme="dark"]:not([data-skin="basic"]) .sp-seg button[aria-pressed="true"]{background:var(--sel);border-color:var(--sel);color:#fff}
 .verbtn{font:500 .74rem var(--mono);background:transparent;color:var(--bar-muted);border:1px solid var(--bar-muted);border-radius:999px;padding:2px 9px;cursor:pointer;position:relative}
 .verbtn.new::after{content:"";position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--hit)}
 dialog#verDlg{border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);max-width:min(560px,calc(100vw - 32px));padding:0}
@@ -222,7 +223,63 @@ async function pickSave(blob,name,id){
 .topbtns .afmem-btn{margin-left:0;color:var(--bar-fg,#fff);border-color:var(--bar-muted,rgba(255,255,255,.4))}
 .topbtns .afmem-btn.ok{color:var(--bar-fg,#fff)}
 .topbtns #afmem-btn::before{display:none}
-</style></head>
+</style><style id="tekst-synlig">/* tekstfarver: bedre synlighed i mørk tilstand */
+.prio button[data-p="3"],.badge[data-p="3"],.fchip[data-p="3"].on{color:#06200d!important}
+.prio button{opacity:.85}
+</style>
+<style id="pill-ens">/* Formsprog (12.11.2026): handlinger (knapper) har 8 px hjørner; valg og mærker (chips, filtre, badges) er helt runde;
+   segmenter er runde skydere med en indre pille for det valgte. Kort og felter beholder deres hjørner.','Ens topbjælke og navigation i fuld bredde, gul hovedknap overalt, «Forbind hukommelse» som statusprik og ingen farvestriber.','Prioritetsfiltrene er omridsede, så de ikke forveksles med prioritetsvalget.
+   #_p#_p#_p matcher aldrig; den løfter kun specificiteten over ældre !important-regler. */
+:is(button,.btn,a.btn,.afmem-btn,.kdtab,.step,#_p#_p#_p){border-radius:8px!important}
+:is(.chip,.chip2,.sbadge,.edtag,.badge,.verbtn,.klnsel,.klplan,.klnmx,.fchip,.prio button,.fc-types button,#tabs button,.nfgrp,#_p#_p#_p){border-radius:999px!important}
+:is(.sp-seg,.gwseg,.seg.nfmode,.seg.kltype,.siseg,.seg2,.flowswitch .fs,.tabs,#_p#_p#_p){border-radius:999px!important;padding:3px!important;gap:3px!important;overflow:hidden}
+:is(.sp-seg>*,.gwseg>*,.seg.nfmode>*,.seg.kltype>*,.siseg>*,.seg2>*,.flowswitch .fs>*,.tabs>*,#_p#_p#_p){border-radius:999px!important;border:0!important}
+:is(.sp-seg>*,.gwseg>*,.seg.nfmode>*,.seg.kltype>*,.siseg>*,.seg2>*,.flowswitch .fs>*,.tabs>*,#_p#_p#_p):not([aria-pressed="true"]):not(.on):not(.sel):not([hidden]){background:transparent!important}
+:is(#themeToggle,.topbtns #afmem-btn,.kln.kli,.fc-colors button,.sw button,#_p#_p#_p){border-radius:50%!important}
+:is(.ztabs button,.klgrphd,.klmore,.grpfold,button.grp,button.item,.insbtn,.insed,#_p#_p#_p){border-radius:0!important}
+:is(.edtag,#_p#_p#_p){padding:1px 9px!important}
+:is(.kdtab,#_p#_p#_p){border-left-width:1.5px!important}
+</style>
+<style id="layout-ens">/* Layout (12.11.2026): ens topbjælke i fuld bredde, statusprik, én primærfarve, ingen farvestriber.
+   #_p#_p#_p matcher aldrig; den løfter kun specificiteten over ældre !important-regler. */
+:is(.topbar-in,#_p#_p#_p){max-width:none!important;width:100%!important;margin:0!important;flex-wrap:nowrap!important;justify-content:flex-start!important;align-items:center!important}
+:is(.topbar-in > .topbtns,#_p#_p#_p){margin-left:auto!important;flex-wrap:nowrap!important}
+:is(.topbar-in .sub,#_p#_p#_p){white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+:is(.afnav-in,#_p#_p#_p){max-width:none!important;margin:0!important}
+@media (max-width:720px){:is(.topbar-in,#_p#_p#_p){flex-wrap:wrap!important}}
+:is(.topbtns #afmem-btn,#_p#_p#_p){font-size:0!important;width:34px!important;height:34px!important;min-width:0!important;padding:0!important;gap:0!important;display:inline-flex!important;align-items:center;justify-content:center;border-radius:50%!important;border:1px solid var(--bar-muted)!important;background:transparent!important}
+.topbtns #afmem-btn::before{display:none!important}
+.topbtns #afmem-btn::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--bar-muted);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+.topbtns #afmem-btn.ok::after{background:#5cc79f}
+.topbtns #afmem-btn.warn::after{background:#f0a85a}
+:root[data-theme="dark"]:not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn){background:var(--go,#ffc933)!important;border-color:var(--go,#ffc933)!important;color:#2a1c00!important}
+:root:not([data-theme="dark"]):not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn){background:var(--go,#2457c5)!important;border-color:var(--go,#2457c5)!important;color:#fff!important}
+:root:not([data-skin="basic"]) :is(button.primary,.btn.primary,#_p#_p#_p):not(#copyBtn):hover{filter:brightness(1.07)}
+:is(.filebar,#_p#_p#_p){border:1px solid var(--warn)!important}
+:is(.filebar.ok,.filebar.saving,#_p#_p#_p){border-color:var(--line)!important}
+:is(.kltip,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--warn) 60%,var(--line))!important}
+:is(.phbar,.phf,#_p#_p#_p){border:1px solid var(--warn)!important}
+:is(.pvvejl,.sif-t .sie-t,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--accent) 50%,var(--line))!important;border-radius:6px!important}
+:is(.srcs,.vitbox,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--go) 50%,var(--line))!important}
+:is(.item[aria-selected=true],.klrow.target,.pipx .xrow.next,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--go)!important}
+:is(.nfline.flash,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--done)!important}
+@keyframes got{0%{background:var(--done-soft);box-shadow:inset 0 0 0 1px var(--done)}100%{background:transparent}}
+:is(#klnav a,#_p#_p#_p){border-left-width:0!important}
+:is(#klnav a.on,#_p#_p#_p){box-shadow:inset 0 0 0 1px var(--go)}
+:is(.item,#_p#_p#_p){grid-template-columns:8px minmax(0,1fr) auto!important;padding-left:10px!important}
+:is(.item .stripe,#_p#_p#_p){width:8px!important;height:8px!important;border-radius:50%!important;align-self:start!important;margin-top:6px}
+:is(.insbtn .stripe,#_p#_p#_p){width:8px!important;height:8px!important;border-radius:50%!important;align-self:center!important}
+:is(.note .bar,#_p#_p#_p){display:none!important}
+:is(.op-note,#_p#_p#_p){border:1px solid color-mix(in srgb,#e0a100 60%,var(--line))!important;border-radius:6px!important}
+:is(.fc-node,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--nc,var(--line)) 55%,var(--line))!important}
+:is(.fchip[data-p="1"].on,#_p#_p#_p){background:color-mix(in srgb,var(--p1) 16%,transparent)!important;color:var(--fg)!important;border:2px solid var(--p1)!important}
+:is(.fchip[data-p="2"].on,#_p#_p#_p){background:color-mix(in srgb,var(--p2) 16%,transparent)!important;color:var(--fg)!important;border:2px solid var(--p2)!important}
+:is(.fchip[data-p="3"].on,#_p#_p#_p){background:color-mix(in srgb,var(--p3) 16%,transparent)!important;color:var(--fg)!important;border:2px solid var(--p3)!important}
+:is(.fchip[data-p="4"].on,#_p#_p#_p){background:color-mix(in srgb,var(--p4) 16%,transparent)!important;color:var(--fg)!important;border:2px solid var(--p4)!important}
+:is(.fchip[data-p="5"].on,#_p#_p#_p){background:color-mix(in srgb,var(--p5) 16%,transparent)!important;color:var(--fg)!important;border:2px solid var(--p5)!important}
+:is(.fchip:not(.on),#_p#_p#_p){background:transparent!important;border:1px solid var(--line)!important;color:var(--muted)!important}
+</style>
+</head>
 <body>
 <div class="topbar"><div class="topbar-in"><h1>Fieldnotes</h1><span class="edtag">LOKAL</span><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
   <div class="topbtns"><button id="btnCopy" type="button" title="Kopiér aktive noter som tekst">Kopiér overlevering</button><button id="themeToggle" type="button" aria-label="Skift mellem lys og mørk" title="Skift mellem lys og mørk tilstand"></button></div></div></div>
@@ -515,8 +572,9 @@ $('btnClearDone').onclick=()=>{
 };
 
 /* ---------- versionshistorik ---------- */
-const APP_VERSION='2';
+const APP_VERSION='3';
 const CHANGELOG=[
+ {v:'3',d:'12.11.2026',items:['Mørk tilstand beholder det klassiske navy-tema, men med lysere dæmpet tekst og bedre kontrast på mærker, knapper og grønne og røde tekster. Valgte faner og knapper har hvid tekst på mørk flade.','Ensartede former: knapper har bløde hjørner, chips og mærker er runde, og segmenter er runde skydere. Kort og felter beholder deres hjørner.']},
  {v:'2',d:'02.11.2026',items:['Fieldnotes er en del af Akuttøjskassen og findes i tre udgaver: lokal fil til PC, web og mobil (kan installeres på telefonen).','Versionshistorik og mørk tilstand som standard.','Knapperne Åbn/Ny datafil vises kun, hvor browseren kan gemme direkte i en fil (ikke på telefonen – brug Eksportér/Importér).','Større skrift i felterne på telefonen, så skærmen ikke zoomer.','Eksportér spørger, hvor filen skal gemmes (Edge/Chrome på PC).']},
  {v:'1',d:'31.10.2026',items:['Noter med patient, zone og stue (rullemenuer), CPR/tlf., afdeling og 5 prioriteter.','Færdig-markering, filtre, søgning, Kopiér overlevering, Skjul CPR og datafil (fieldnotes.json). Henter noter fra Vagtnoter første gang.']}
 ];
