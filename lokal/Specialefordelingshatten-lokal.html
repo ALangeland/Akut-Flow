@@ -341,7 +341,7 @@ async function pickSave(blob,name,id){
 :root[data-theme="dark"] .shot.assign,:root[data-theme="dark"] .shot.assign *{color:#2a1c00!important;opacity:1!important}
 </style>
 <style id="pill-ens">/* Formsprog (12.11.2026): handlinger (knapper) har 8 px hjørner; valg og mærker (chips, filtre, badges) er helt runde;
-   segmenter er runde skydere med en indre pille for det valgte. Kort og felter beholder deres hjørner.','Ens topbjælke og navigation i fuld bredde, gul hovedknap overalt, «Forbind hukommelse» som statusprik og ingen farvestriber.','«Venter på fordeling» har samme overskriftsbånd som resten af tabellen.
+   segmenter er runde skydere med en indre pille for det valgte. Kort og felter beholder deres hjørner.','Ens topbjælke og navigation i fuld bredde, gul hovedknap overalt, «Forbind hukommelse» som statusprik og ingen farvestriber.','«Venter på fordeling» har samme overskriftsbånd som resten af tabellen.','Regnskabsfil-boksen er fjernet – vagten gemmes i hukommelsen (Forbind hukommelse).
    #_p#_p#_p matcher aldrig; den løfter kun specificiteten over ældre !important-regler. */
 :is(button,.btn,a.btn,.afmem-btn,.kdtab,.step,#_p#_p#_p){border-radius:8px!important}
 :is(.chip,.chip2,.sbadge,.edtag,.badge,.verbtn,.klnsel,.klplan,.klnmx,.fchip,.prio button,.fc-types button,#tabs button,.nfgrp,#_p#_p#_p){border-radius:999px!important}
@@ -390,12 +390,13 @@ async function pickSave(blob,name,id){
 :is(.op-note,#_p#_p#_p){border:1px solid color-mix(in srgb,#e0a100 60%,var(--line))!important;border-radius:6px!important}
 :is(.fc-node,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--nc,var(--line)) 55%,var(--line))!important}
 :is(.zt thead .g th.gv,#_p#_p#_p){background:var(--bar-2)!important}
+:is(#filebar,#_p#_p#_p){display:none!important}
 </style>
 </head>
 <body>
 
 <div class="topbar"><div class="topbar-in"><h1>Specialefordelingshatten</h1><span class="sub">Alb Akut- og Traumecenter</span><button id="verBtn" class="verbtn" type="button" title="Versionshistorik"></button>
-  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="themeToggle" type="button" aria-label="Skift mellem lys og mørk" style="order:9"></button><button id="newShift" type="button" title="Tømmer skemaet og loggen, trækker ny lod og opretter en ny regnskabsfil. Den forrige vagts fil bliver liggende.">Nulstil · ny vagt</button></div></div></div>
+  <div class="topbtns"><button id="cancelShift" type="button" hidden>Annullér</button><button id="themeToggle" type="button" aria-label="Skift mellem lys og mørk" style="order:9"></button><button id="newShift" type="button" title="Tømmer skemaet og loggen og trækker ny lod.">Nulstil · ny vagt</button></div></div></div>
 
 <div class="page"><div class="wrap">
 
