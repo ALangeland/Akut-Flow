@@ -348,7 +348,7 @@ body.wide .layout{grid-template-columns:minmax(0,1fr)}
 .vitbox{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:5px 8px;border:1px solid var(--line);border-left:3px solid var(--go);border-radius:5px;background:var(--surface)}
 .vit{display:flex;align-items:center;gap:4px;font-size:.8rem;font-weight:700;color:var(--muted)}
 .vit input{width:46px;padding:5px 6px;background:var(--bg);border:1px solid var(--line);border-radius:5px;font-family:var(--mono);font-size:.86rem;text-align:center}
-.vit input[data-vit=bt]{width:68px}
+.vit input[data-vit=bts],.vit input[data-vit=btd]{width:46px}.vitbt{gap:3px!important}.vitsl{font-weight:700;color:var(--muted)}
 .vit input[data-vit=ilt]{width:54px}
 .vit i{font-style:normal;font-weight:400}
 .vithint{font-size:.74rem;color:var(--muted);margin-left:auto}
@@ -3375,7 +3375,8 @@ function vitLine(){const v=vitVals();const parts=[];
   if(v.rf)parts.push('RF: '+v.rf);if(v.bt)parts.push('BT: '+v.bt);if(v.p)parts.push('P: '+v.p);if(v.t)parts.push('T: '+v.t);if(v.gcs)parts.push('GCS: '+v.gcs);
   return parts.join(', ')}
 function renderVit(){const b=$('#vitbox');if(!b) return;const v=vitVals();
-  b.innerHTML=VIT.map(([k,l,ph,u])=>`<label class="vit"><span>${l}</span><input data-vit="${k}" value="${esc(v[k]||'')}" placeholder="${ph}" inputmode="${k==='ilt'||k==='bt'?'text':'decimal'}" autocomplete="off">${u?`<i>${u}</i>`:''}</label>`).join('')}
+  const bp=String(v.bt||'').split('/'),bs=v.bts!==undefined?v.bts:(bp[0]||'').replace(/…/g,''),bd=v.btd!==undefined?v.btd:(bp[1]||'').replace(/…/g,'');
+  b.innerHTML=VIT.map(([k,l,ph,u])=>k==='bt'?`<label class="vit vitbt"><span>${l}</span><input data-vit="bts" value="${esc(bs)}" placeholder="130" inputmode="numeric" autocomplete="off" title="Systolisk"><b class="vitsl">/</b><input data-vit="btd" value="${esc(bd)}" placeholder="80" inputmode="numeric" autocomplete="off" title="Diastolisk"></label>`:`<label class="vit"><span>${l}</span><input data-vit="${k}" value="${esc(v[k]||'')}" placeholder="${ph}" inputmode="${k==='ilt'?'text':'decimal'}" autocomplete="off">${u?`<i>${u}</i>`:''}</label>`).join('')}
 function applyVit({fill=true}={}){
   const line=vitLine();const v=vitVals();
   // 1) linje i Vurdering af vitale værdier: erstat værdilinje (SAT…/med {SAT}) eller indsæt øverst
@@ -4504,7 +4505,12 @@ $('#kl').addEventListener('focusin',e=>{const t=e.target.closest('textarea[data-
 $('#kl').addEventListener('input',e=>{
   if(e.target.classList&&e.target.classList.contains('inlin')){e.target.size=Math.max(6,e.target.value.length+1);return}
   const ag=e.target.closest('[data-agas]');if(ag){KL.__agas={...agasVals(),[ag.dataset.agas]:ag.value.trim()};applyAgas();return}
-  const vi=e.target.closest('[data-vit]');if(vi){KL.__vit={...vitVals(),[vi.dataset.vit]:vi.value.trim()};applyVit({fill:false});return}
+  const vi=e.target.closest('[data-vit]');if(vi){const k=vi.dataset.vit;
+    if(k==='bts'&&/[\/\s]/.test(vi.value)){const [a,c]=vi.value.split(/[\/\s]+/);vi.value=(a||'').trim();const d=document.querySelector('#vitbox [data-vit="btd"]');if(d){if(c)d.value=c.trim();d.focus();d.select()}}
+    KL.__vit={...vitVals(),[k]:vi.value.trim()};
+    if(k==='bts'||k==='btd'){const d=document.querySelector('#vitbox [data-vit="btd"]'),sy=document.querySelector('#vitbox [data-vit="bts"]');const S=(sy?sy.value:'').trim(),D=(d?d.value:'').trim();KL.__vit.bts=S;KL.__vit.btd=D;KL.__vit.bt=S||D?(S||'…')+'/'+(D||'…'):'';
+      if(k==='bts'&&/^\d{3}$/.test(S)&&d&&document.activeElement===vi&&!D){d.focus()}}
+    applyVit({fill:false});return}
   if(e.target.id==='klq'){klInsQ=e.target.value;const pos=e.target.selectionStart;renderKLIns();const q=$('#klq');q.focus();q.setSelectionRange(pos,pos);return}
   const t=e.target.closest('textarea[data-k]');if(!t) return;
   KL[t.dataset.k]=t.value;if(t.dataset.k===PARA_KEY&&!/^\s*A-gas\s*:/im.test(t.value)&&(KL.__agasTxt||Object.values(agasVals()).some(Boolean))){delete KL.__agas;delete KL.__agasTxt;delete KL.__agasOpen;const ab=$('#agasbox');if(ab){ab.hidden=true;renderAgas()}}klDone.delete(t.dataset.k);klGrow(t);klRefreshRow(t.dataset.k);clearTimeout(renderRowPh.t);renderRowPh.t=setTimeout(()=>renderRowPh(t.dataset.k),400);
@@ -4861,8 +4867,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='43';
+const APP_VERSION='44';
 const CHANGELOG=[
+ {v:'44',d:'17.11.2026',items:['Værdier: BT har nu to felter – systolisk og diastolisk. Skråstregen sættes selv; efter 3 cifre (eller / eller mellemrum) hopper markøren til diastolisk.']},
  {v:'43',d:'17.11.2026',items:['Flyt kladdefaner: fanen følger musen/fingeren, og en stiplet ramme viser, hvor den lander, når du slipper.']},
  {v:'42',d:'16.11.2026',items:['✓ på hver kladdefane (ved siden af ✎ og ✕): gemmer kladden i hukommelsen og lukker fanen. "Fortryd" i beskeden nederst bringer den tilbage, og ✓ Gemte ▾ åbner den igen senere. Gemte kladder slettes ikke efter 24 timer.','Kladdefanerne kan flyttes med træk og slip (på telefon: hold fingeren på fanen et øjeblik).','Parakliniske undersøgelser: ny knap + Viruspodning indsætter "Viruspodning: -Negativ Influenza A, B, Covid-19 og RS-virus."']},
  {v:'41',d:'13.11.2026',items:['Nye ikoner (fx værktøjskasse, hjem, sol og måne, favicon) og små animationer. De slås fra, hvis computeren er sat til reduceret bevægelse.','Ikoner på PDF, Fastgør, Favorit og Redigér; favoritstjernen popper, når den slås til.','I lys tilstand er det valgte i Voksen/Barn nu tydeligt (før mørk tekst på mørk flade).']},
