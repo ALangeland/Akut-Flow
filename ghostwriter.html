@@ -3100,6 +3100,33 @@ function kdUndoToast(msg,undo){
   el.querySelector('button').onclick=()=>{clearTimeout(kdUndoT);el.classList.remove('on');undo()};
   clearTimeout(kdUndoT);kdUndoT=setTimeout(()=>el.classList.remove('on'),8000);
 }
+const KD_DIRNAME='Gemte kladder';
+async function kdMemDir(){
+  if(!window.indexedDB||!window.showDirectoryPicker)return null;
+  const h=await new Promise(res=>{try{const r=indexedDB.open('akutflow-mem',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');
+    r.onsuccess=()=>{try{const q=r.result.transaction('h','readonly').objectStore('h').get('dir');q.onsuccess=()=>res(q.result||null);q.onerror=()=>res(null)}catch(e){res(null)}};r.onerror=()=>res(null)}catch(e){res(null)}});
+  if(!h)return null;try{if(await h.queryPermission({mode:'readwrite'})!=='granted')return null}catch(e){return null}
+  return h.getDirectoryHandle(KD_DIRNAME,{create:true});
+}
+function kdText(r){
+  const sK=KL,sJ=JOURNAL;let t='';
+  try{KL=(r.d&&r.d[r.type])||{};JOURNAL=(KL_TYPES[r.type]||KL_TYPES.optag).J;t=klText()}finally{KL=sK;JOURNAL=sJ}
+  const dt=x=>new Date(x).toLocaleDateString('da-DK')+' kl. '+kdHm(x);
+  return ['Ghostwriter-kladde','Type: '+(KL_TYPES[r.type]?KL_TYPES[r.type].name:r.type),'Mærke: '+kdLabel(r),'Oprettet: '+dt(r.created),'Gemt: '+dt(r.savedAt||Date.now()),'',t,''].join('\n');
+}
+function kdFileName(r){
+  const d=new Date(r.created),z=n=>String(n).padStart(2,'0');
+  const lbl=kdLabel(r).replace(/[\\/:*?"<>|\n\r\t…]+/g,' ').replace(/\s+/g,' ').trim().slice(0,40)||'Kladde';
+  return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())} ${z(d.getHours())}${z(d.getMinutes())} ${(KL_TYPES[r.type]?KL_TYPES[r.type].short:'')} - ${lbl} (${r.id}).txt`;
+}
+async function kdWriteFile(r){
+  try{const dir=await kdMemDir();if(!dir)return false;
+    const name=kdFileName(r);
+    if(r.file&&r.file!==name){try{await dir.removeEntry(r.file)}catch(_){}}
+    const fh=await dir.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write('\ufeff'+kdText(r).replace(/\n/g,'\r\n'));await w.close();
+    r.file=name;kdWrite();return true}catch(e){return false}
+}
+async function kdRemoveFile(r){try{const dir=await kdMemDir();if(dir&&r.file){await dir.removeEntry(r.file);delete r.file;kdWrite()}}catch(e){}}
 function kdSaveMem(id){
   const idx=KD.list.findIndex(x=>x.id===id);if(idx<0)return;const r=KD.list[idx];const wasActive=id===KD.active;
   if(wasActive){klSave();kdSync()}
@@ -3109,11 +3136,13 @@ function kdSaveMem(id){
   kdUndoToast('"'+kdLabel(r)+'" er gemt i hukommelsen',()=>{
     KD.saved=KD.saved.filter(x=>x!==r);delete r.savedAt;
     KD.list.splice(Math.min(idx,KD.list.length),0,r);
+    kdRemoveFile(r);
     if(wasActive)kdSwitch(r.id);
     if(blank){const b=KD.list.find(x=>x.id===blank);if(b&&b.id!==KD.active&&!kdFilled(b.d))KD.list=KD.list.filter(x=>x!==b)}
     kdWrite();renderKLDraft()
     toast('Fortrudt – kladden er åben igen');
   });
+  kdWriteFile(r).then(ok=>{const sp=document.querySelector('#kdundo span');if(sp&&KD.saved.includes(r))sp.textContent='"'+kdLabel(r)+'" er gemt'+(ok?' – også som fil i «'+KD_DIRNAME+'»':' i browseren (forbind hukommelsen for at få filen i mappen)')});
 }
 function kdFromSaved(id){const r=KD.saved.find(x=>x.id===id);if(!r)return;KD.saved=KD.saved.filter(x=>x!==r);delete r.savedAt;KD.list.push(r);kdSwitch(r.id);toast('Gemt kladde åbnet')}
 function kdDelSaved(id){const i=KD.saved.findIndex(x=>x.id===id);if(i<0)return;const r=KD.saved[i];KD.saved.splice(i,1);kdWrite();renderKLDraft();
@@ -3122,7 +3151,7 @@ function kdSavedMenu(btn){
   const old=document.getElementById('kdmenu');if(old){old.remove();return}
   const m=document.createElement('div');m.id='kdmenu';m.className='kdmenu';
   const dt=t=>{const d=new Date(t),td=new Date();return d.toDateString()===td.toDateString()?'kl. '+kdHm(t):d.toLocaleDateString('da-DK',{day:'numeric',month:'short'})+' kl. '+kdHm(t)};
-  m.innerHTML=KD.saved.map(r=>`<div class="kdsvrow"><button data-kdsvo="${r.id}"><b>${esc(kdLabel(r))}</b><span>${esc(KL_TYPES[r.type]?KL_TYPES[r.type].short:'')} · gemt ${dt(r.savedAt)}</span></button><button class="kdsvdel" data-kdsvdel="${r.id}" title="Slet den gemte kladde (kan fortrydes)">✕</button></div>`).join('')+'<p class="hint">Klik for at åbne kladden igen i en fane. Gemte kladder bliver liggende – også i hukommelsen – til du sletter dem.</p>';
+  m.innerHTML=KD.saved.map(r=>`<div class="kdsvrow"><button data-kdsvo="${r.id}"><b>${esc(kdLabel(r))}</b><span>${esc(KL_TYPES[r.type]?KL_TYPES[r.type].short:'')} · gemt ${dt(r.savedAt)}</span></button><button class="kdsvdel" data-kdsvdel="${r.id}" title="Slet den gemte kladde (kan fortrydes)">✕</button></div>`).join('')+'<p class="hint">Klik for at åbne kladden igen i en fane. Hver gemt kladde ligger også som tekstfil i mappen «Gemte kladder» i din hukommelsesmappe. Sletter du den her, bliver filen liggende.</p>';
   btn.parentElement.appendChild(m);
 }
 document.addEventListener('click',e=>{
@@ -4902,8 +4931,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='44';
+const APP_VERSION='45';
 const CHANGELOG=[
+ {v:'45',d:'17.11.2026',items:['✓ gemmer nu også kladden som tekstfil i undermappen «Gemte kladder» i din hukommelsesmappe (fx "2026-11-17 1615 Optagelse - Brystsmerter (…).txt"). Fortryd fjerner filen igen. Kræver at hukommelsen er forbundet.']},
  {v:'44',d:'17.11.2026',items:['Værdier: BT har nu to felter – systolisk og diastolisk. Skråstregen sættes selv; efter 3 cifre (eller / eller mellemrum) hopper markøren til diastolisk.']},
  {v:'43',d:'17.11.2026',items:['Flyt kladdefaner: fanen følger musen/fingeren, og en stiplet ramme viser, hvor den lander, når du slipper.']},
  {v:'42',d:'16.11.2026',items:['✓ på hver kladdefane (ved siden af ✎ og ✕): gemmer kladden i hukommelsen og lukker fanen. "Fortryd" i beskeden nederst bringer den tilbage, og ✓ Gemte ▾ åbner den igen senere. Gemte kladder slettes ikke efter 24 timer.','Kladdefanerne kan flyttes med træk og slip (på telefon: hold fingeren på fanen et øjeblik).','Parakliniske undersøgelser: ny knap + Viruspodning indsætter "Viruspodning: -Negativ Influenza A, B, Covid-19 og RS-virus."']},
