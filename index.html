@@ -310,6 +310,7 @@ img[data-ik]{image-rendering:auto!important}
 :is(.note .bar,#_p#_p#_p){display:none!important}
 :is(.op-note,#_p#_p#_p){border:1px solid color-mix(in srgb,#e0a100 60%,var(--line))!important;border-radius:6px!important}
 :is(.fc-node,#_p#_p#_p){border:1px solid color-mix(in srgb,var(--nc,var(--line)) 55%,var(--line))!important}
+.showlink{margin:22px 0 4px;text-align:center}.showlink a{display:inline-block;font:600 .85rem var(--sans);padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--muted);text-decoration:none}.showlink a:hover{border-color:var(--accent);color:var(--fg)}
 </style>
 </head>
 <body>
@@ -331,11 +332,13 @@ document.querySelectorAll('.sp-seg [data-skin]').forEach(function(b){b.addEventL
     <p>Gem filen og åbn den i Edge eller Chrome.</p>
     <p class="muted">Ved en opdatering henter du bare filen igen. Planer, normalfund og kladde ligger i browseren og bliver liggende.</p>
   </div></details>
+  <p class="showlink"><a href="forvagtsfordelingshatten.html" title="Udgået værktøj – kun til fremvisning">🎩 Patientdirigenten · fremvisning</a></p>
 </main>
 <dialog id="verDlg"><div class="dh"><h2>Versionshistorik</h2><button id="verClose" aria-label="Luk">✕</button></div><div class="db" id="verBody"></div></dialog>
 <script>
-const APP_VERSION='14';
+const APP_VERSION='15';
 const CHANGELOG=[
+ {v:'15',d:'23.11.2026',items:['Patientdirigenten kan åbnes fra en knap nederst på forsiden til fremvisning.']},
  {v:'14',d:'13.11.2026',items:['Nye ikoner (fx værktøjskasse, hjem, sol og måne, favicon) og små animationer. De slås fra, hvis computeren er sat til reduceret bevægelse.','Hilsenen flytter ikke længere fliserne, når den er lang.','Nye ikoner til Optageområde og Vigtige links; download-knapperne har et hent-ikon. Klik på værktøjskassen for næste hilsen.']},
  {v:'13',d:'12.11.2026',items:['Mørk tilstand beholder det klassiske navy-tema, men med lysere dæmpet tekst og bedre kontrast på mærker, knapper og grønne og røde tekster. Valgte faner og knapper har hvid tekst på mørk flade.','Ensartede former: knapper har bløde hjørner, chips og mærker er runde, og segmenter er runde skydere. Kort og felter beholder deres hjørner.','«Lige nu» ligger øverst til højre ved siden af hilsenen.','Ti skiftende hilsner i stedet for den samme hver gang (klik på hilsenen for næste).','Forsiden er strammet op: kompakte værktøjsfliser med en kort undertekst, og de lokale udgaver ligger i en sammenklappelig boks.','Mobiludgaven er parkeret og opdateres ikke mere; mobil-indhold er fjernet fra forsiden.']},
  {v:'12',d:'12.11.2026',items:['Vagtflows og Flowcharts er samlet under ét værktøj, Flows, med en vælger øverst: Tidslinjer eller Flowcharts. Dine gemte flows og flowcharts er uændrede.','Forsiden er afstemt: fire fliser under vagten, to i «Lige nu», topbjælken i samme bredde som siden, ingen farvestriber på fliserne og hukommelsen som lille statusprik.']},
