@@ -3440,7 +3440,7 @@ function vitLine(){const v=vitVals();const parts=[];
   return parts.join(', ')}
 function renderVit(){const b=$('#vitbox');if(!b) return;const v=vitVals();
   const bp=String(v.bt||'').split('/'),bs=v.bts!==undefined?v.bts:(bp[0]||'').replace(/…/g,''),bd=v.btd!==undefined?v.btd:(bp[1]||'').replace(/…/g,'');
-  b.innerHTML=VIT.map(([k,l,ph,u])=>k==='bt'?`<label class="vit vitbt"><span>${l}</span><input data-vit="bts" value="${esc(bs)}" placeholder="130" inputmode="numeric" autocomplete="off" title="Systolisk"><b class="vitsl">/</b><input data-vit="btd" value="${esc(bd)}" placeholder="80" inputmode="numeric" autocomplete="off" title="Diastolisk"></label>`:`<label class="vit"><span>${l}</span><input data-vit="${k}" value="${esc(v[k]||'')}" placeholder="${ph}" inputmode="${k==='ilt'?'text':'decimal'}" autocomplete="off">${u?`<i>${u}</i>`:''}</label>`).join('')}
+  b.innerHTML=VIT.map(([k,l,ph,u])=>k==='bt'?`<label class="vit vitbt"><span>${l}</span><input data-vit="bts" value="${esc(bs)}" placeholder="130" inputmode="numeric" autocomplete="off" title="Systolisk"><b class="vitsl">/</b><input data-vit="btd" value="${esc(bd)}" placeholder="80" inputmode="numeric" autocomplete="off" title="Diastolisk"></label>`:`<label class="vit"><span>${l}</span><input data-vit="${k}" value="${esc(v[k]||'')}" placeholder="${ph}" inputmode="${k==='ilt'?'text':k==='gcs'?'numeric':'decimal'}"${k==='gcs'?' maxlength="2"':''} autocomplete="off">${u?`<i>${u}</i>`:''}</label>`).join('')}
 function applyVit({fill=true}={}){
   const line=vitLine();const v=vitVals();
   // 1) linje i Vurdering af vitale værdier: erstat værdilinje (SAT…/med {SAT}) eller indsæt øverst
@@ -4570,6 +4570,7 @@ $('#kl').addEventListener('input',e=>{
   if(e.target.classList&&e.target.classList.contains('inlin')){e.target.size=Math.max(6,e.target.value.length+1);return}
   const ag=e.target.closest('[data-agas]');if(ag){KL.__agas={...agasVals(),[ag.dataset.agas]:ag.value.trim()};applyAgas();return}
   const vi=e.target.closest('[data-vit]');if(vi){const k=vi.dataset.vit;
+    if(k==='gcs'){let g=vi.value.replace(/\D/g,'').slice(0,2);while(g&&+g>15)g=g.slice(0,-1);if(g!==vi.value){vi.value=g;toast('GCS kan højst være 15')}}
     if(k==='bts'&&/[\/\s]/.test(vi.value)){const [a,c]=vi.value.split(/[\/\s]+/);vi.value=(a||'').trim();const d=document.querySelector('#vitbox [data-vit="btd"]');if(d){if(c)d.value=c.trim();d.focus();d.select()}}
     KL.__vit={...vitVals(),[k]:vi.value.trim()};
     if(k==='bts'||k==='btd'){const d=document.querySelector('#vitbox [data-vit="btd"]'),sy=document.querySelector('#vitbox [data-vit="bts"]');const S=(sy?sy.value:'').trim(),D=(d?d.value:'').trim();KL.__vit.bts=S;KL.__vit.btd=D;KL.__vit.bt=S||D?(S||'…')+'/'+(D||'…'):'';
@@ -4931,8 +4932,9 @@ document.addEventListener('paste',e=>{
 window.addEventListener('beforeunload',e=>{if(ui.editing&&$('#edText')){const p=byId(ui.sel);if(p&&($('#edText').value!==p.text)){e.preventDefault();e.returnValue=''}}});
 
 /* ---------- version og ændringseksport ---------- */
-const APP_VERSION='46';
+const APP_VERSION='47';
 const CHANGELOG=[
+ {v:'47',d:'25.11.2026',items:['Værdier: GCS kan ikke skrives højere end 15 – et forkert tryk (fx 16 eller 51) bliver afvist.']},
  {v:'46',d:'25.11.2026',items:['Hukommelse: kortvarige læse- og skrivefejl (fx når OneDrive synkroniserer filen) giver ikke længere fejlbesked. Der prøves igen op til 3 gange, og fejlen vises først, hvis det bliver ved.']},
  {v:'45',d:'17.11.2026',items:['✓ gemmer nu også kladden som tekstfil i undermappen «Gemte kladder» i din hukommelsesmappe (fx "2026-11-17 1615 Optagelse - Brystsmerter (…).txt"). Fortryd fjerner filen igen. Kræver at hukommelsen er forbundet.']},
  {v:'44',d:'17.11.2026',items:['Værdier: BT har nu to felter – systolisk og diastolisk. Skråstregen sættes selv; efter 3 cifre (eller / eller mellemrum) hopper markøren til diastolisk.']},
