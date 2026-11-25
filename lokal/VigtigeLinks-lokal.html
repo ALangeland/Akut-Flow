@@ -455,12 +455,14 @@ function reloadSoon(){
   var a=document.activeElement;
   if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)){a.addEventListener('blur',function(){setTimeout(go,300)},{once:true});return}
   go()}
+var fails=0;
+function soft(){fails++;if(fails<4){setTimeout(function(){syncNow(false)},2500*fails);return}ui('err')}
 async function syncNow(ask){
   if(!dir||busy)return;busy=true;
   try{
     if(!await perm(dir,ask)){ui('perm');return}
     var remote=await readRemote();
-    if(remote===undefined){ui('err');return}
+    if(remote===undefined){soft();return}
     var m=meta(),rk=(remote&&remote.keys)||{},out={},apply=[],now=Date.now(),need=!remote,k,i;
     Object.keys(rk).forEach(function(k){if(rk[k]&&typeof rk[k].v==='string')out[k]={v:rk[k].v,t:rk[k].t||0}});
     Object.keys(out).forEach(function(k){
@@ -477,9 +479,9 @@ async function syncNow(ask){
     setMeta(m);
     if(need)await writeRemote({v:1,updated:now,keys:out});
     var sv=need?now:((remote&&remote.updated)||now);rawSet.call(LS,'afmem.saved',String(sv));
-    lastOk=Date.now();ui('ok');
+    lastOk=Date.now();fails=0;ui('ok');
     if(apply.length)reloadSoon();
-  }catch(e){ui('err')}finally{busy=false}}
+  }catch(e){soft()}finally{busy=false}}
 function dirty(){clearTimeout(timer);timer=setTimeout(function(){syncNow(false)},1500)}
 async function connect(){
   try{var h=await window.showDirectoryPicker({id:'akutflow',mode:'readwrite'});dir=h;
